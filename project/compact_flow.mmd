@@ -1,10 +1,8 @@
 flowchart TD
-    DOQL_INTEGRATION["DOQL-INTEGRATION<br/>3 funcs"]
-    SUMD["SUMD<br/>840 funcs"]
-    SUMR["SUMR<br/>140 funcs"]
+%% generated in 0.02s
     examples__redeploy_iac_parsers["examples.redeploy_iac_parsers<br/>18 funcs"]
     redeploy__analyze["redeploy.analyze<br/>36 funcs"]
-    redeploy__apply["redeploy.apply<br/>74 funcs"]
+    redeploy__apply["redeploy.apply<br/>75 funcs"]
     redeploy__audit["redeploy.audit<br/>32 funcs"]
     redeploy__blueprint["redeploy.blueprint<br/>14 funcs"]
     redeploy__cli["redeploy.cli<br/>212 funcs"]
@@ -25,59 +23,61 @@ flowchart TD
     redeploy__patterns["redeploy.patterns<br/>11 funcs"]
     redeploy__plan["redeploy.plan<br/>21 funcs"]
     redeploy__plugins["redeploy.plugins<br/>36 funcs"]
+    redeploy__schema["redeploy.schema<br/>6 funcs"]
     redeploy__spec_loader["redeploy.spec_loader<br/>1 funcs"]
     redeploy__steps["redeploy.steps<br/>12 funcs"]
     redeploy__version["redeploy.version<br/>88 funcs"]
-    redeploy__cli ==>|122| SUMD
-    redeploy__apply ==>|33| SUMD
-    redeploy__heal ==>|21| SUMD
-    redeploy__dsl_python ==>|21| DOQL_INTEGRATION
-    redeploy__patterns ==>|17| SUMD
-    redeploy__cli ==>|15| redeploy__steps
-    redeploy__detect ==>|11| SUMD
-    redeploy__cli ==>|8| SUMR
-    redeploy__iac ==>|7| SUMD
+    redeploy__cli ==>|16| redeploy__steps
+    redeploy__cli ==>|16| redeploy__version
+    redeploy__cli ==>|7| redeploy__dsl
+    redeploy__cli ==>|7| redeploy__apply
     redeploy__iac ==>|7| redeploy__steps
-    redeploy__audit ==>|6| SUMR
-    redeploy__plugins ==>|6| SUMD
-    redeploy__blueprint ==>|6| SUMD
-    examples__redeploy_iac_parsers ==>|5| SUMD
+    redeploy__cli ==>|6| redeploy__discovery
+    redeploy__analyze ==>|5| redeploy__markpact
+    redeploy__cli ==>|4| redeploy__config_apply
     redeploy__models ==>|4| redeploy__steps
-    redeploy__cli ==>|4| DOQL_INTEGRATION
-    redeploy__fleet -->|3| redeploy__steps
-    redeploy__discovery -->|3| redeploy__steps
-    redeploy__mcp_server -->|3| SUMD
+    redeploy__mcp_server -->|3| redeploy__schema
     redeploy__detect -->|3| redeploy__steps
-    redeploy__analyze -->|3| redeploy__markpact
+    redeploy__discovery -->|3| redeploy__steps
+    redeploy__cli -->|3| redeploy__plugins
+    redeploy__cli -->|3| redeploy__blueprint
     redeploy__dsl_python -->|3| redeploy__steps
-    redeploy__version -->|3| SUMD
+    redeploy__apply -->|3| redeploy__hardware
+    redeploy__fleet -->|3| redeploy__steps
     redeploy__heal -->|2| redeploy__steps
-    redeploy__spec_loader -->|2| SUMD
-    redeploy__detect -->|2| SUMR
+    redeploy__heal -->|2| redeploy__spec_loader
+    redeploy__spec_loader -->|2| redeploy__markpact
+    redeploy__analyze -->|2| redeploy__audit
     redeploy__analyze -->|2| redeploy__steps
-    redeploy__analyze -->|2| SUMD
-    redeploy__analyze -->|2| SUMR
-    redeploy__config_apply -->|2| SUMD
+    redeploy__cli -->|2| redeploy__mcp_server
+    redeploy__cli -->|2| redeploy__detect
+    redeploy__cli -->|2| redeploy__hardware
     redeploy__cli -->|2| redeploy__analyze
-    redeploy__markpact -->|2| SUMR
+    redeploy__detect -->|2| redeploy__discovery
+    redeploy__cli -->|2| redeploy__iac
+    redeploy__markpact -->|2| redeploy__models
     redeploy__apply -->|2| redeploy__steps
     redeploy__blueprint -->|2| redeploy__steps
     redeploy__observe -->|1| redeploy__steps
     redeploy__patterns -->|1| redeploy__steps
-    redeploy__audit -->|1| SUMD
-    redeploy__models -->|1| SUMD
-    redeploy__models -->|1| SUMR
+    redeploy__detect -->|1| redeploy__integrations
+    redeploy__config_apply -->|1| redeploy__apply
+    redeploy__audit -->|1| redeploy__spec_loader
+    redeploy__cli -->|1| redeploy__spec_loader
     redeploy__cli -->|1| redeploy__markpact
-    redeploy__cli -->|1| redeploy__config_apply
+    redeploy__cli -->|1| redeploy__integrations
+    redeploy__cli -->|1| redeploy__audit
     redeploy__plugins -->|1| redeploy__steps
-    redeploy__dsl_python -->|1| SUMD
-    redeploy__hardware -->|1| SUMD
+    redeploy__dsl_python -->|1| redeploy__cli
     redeploy__hardware -->|1| redeploy__steps
     redeploy__apply -->|1| redeploy__markpact
-    redeploy__version -->|1| redeploy__steps
+    redeploy__blueprint -->|1| redeploy__integrations
     redeploy__plan -->|1| redeploy__steps
-    redeploy__plan -->|1| SUMD
+    redeploy__plan -->|1| redeploy__patterns
     redeploy__integrations -->|1| redeploy__steps
     redeploy__dsl -->|1| redeploy__steps
-    redeploy__dsl -->|1| SUMD
+    redeploy__iac -->|1| redeploy__markpact
     examples__redeploy_iac_parsers -->|1| redeploy__steps
+    redeploy__models -->|1| redeploy__dsl
+    redeploy__version -->|1| redeploy__steps
+    redeploy__cli -->|1| redeploy__schema

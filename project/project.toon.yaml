@@ -1,7 +1,8 @@
-# redeploy | 2902 func | 164f | 80735L | python | 2026-04-24
+# redeploy | 963 func | 148f | 41768L | python | 2026-05-20
+# generated in 0.00s
 
 HEALTH:
-  CC̄=1.7  critical=133 (limit:10)  dup=58  cycles=0
+  CC̄=5.1  critical=134 (limit:10)  dup=7  cycles=0
 
 ALERTS[20]:
   !!! high_fan_out     run = 44 (limit:10)
@@ -15,23 +16,23 @@ ALERTS[20]:
   !!! high_fan_out     _DockerBuildChecker.check = 27 (limit:10)
   !!! cc_exceeded      _ComposeChecker._scan_compose = 26 (limit:15)
 
-MODULES[291] (top by size):
-  M[project/calls.yaml] 7040L C:0 F:0 CC↑0 D:0 (yaml)
-  M[project/map.toon.yaml] 3523L C:0 F:906 CC↑0 D:0 (yaml)
-  M[SUMR.md] 2869L C:51 F:140 CC↑0 D:11 (md)
-  M[SUMD.md] 2860L C:51 F:840 CC↑0 D:58 (md)
-  M[docs/README.md] 2569L C:0 F:1 CC↑0 D:0 (md)
-  M[CHANGELOG.md] 1416L C:0 F:1 CC↑0 D:0 (md)
-  M[README.md] 1117L C:0 F:1 CC↑0 D:0 (md)
+MODULES[282] (top by size):
+  M[docs/README.md] 2532L C:0 F:0 CC↑0 D:0 (md)
+  M[CHANGELOG.md] 1457L C:0 F:0 CC↑0 D:0 (md)
+  M[README.md] 1117L C:0 F:0 CC↑0 D:0 (md)
   M[redeploy/cli/commands/plan_apply.py] 1005L C:0 F:19 CC↑32 D:0 (python)
-  M[redeploy/discovery.py] 789L C:2 F:26 CC↑17 D:0 (python)
+  M[redeploy/discovery.py] 789L C:2 F:26 CC↑17 D:5 (python)
   M[redeploy/analyze/spec_analyzer.py] 742L C:14 F:30 CC↑31 D:0 (python)
-  M[code2llm_output/context.md] 722L C:0 F:0 CC↑0 D:0 (md)
-  M[project/context.md] 721L C:0 F:0 CC↑0 D:0 (md)
-  M[project/validation.toon.yaml] 683L C:0 F:0 CC↑0 D:0 (yaml)
-  M[redeploy/apply/handlers.py] 655L C:0 F:22 CC↑16 D:0 (python)
+  M[redeploy/apply/handlers.py] 655L C:0 F:22 CC↑16 D:2 (python)
   M[redeploy/plan/planner.py] 627L C:1 F:21 CC↑10 D:0 (python)
-  LANGS: python:187/md:52/yaml:45/shell:2/other:1/yml:1/txt:1/toml:1/json:1
+  M[redeploy/audit.py] 609L C:6 F:32 CC↑14 D:2 (python)
+  M[redeploy/cli/commands/version/commands.py] 594L C:0 F:8 CC↑26 D:0 (python)
+  M[goal.yaml] 512L C:0 F:0 CC↑0 D:0 (yaml)
+  M[docs/dsl-migration.md] 478L C:0 F:0 CC↑0 D:0 (md)
+  M[redeploy/iac/docker_compose.py] 476L C:1 F:23 CC↑25 D:0 (python)
+  M[redeploy/detect/templates.py] 419L C:6 F:13 CC↑9 D:0 (python)
+  M[redeploy/detect/workflow.py] 418L C:3 F:12 CC↑18 D:0 (python)
+  LANGS: python:188/md:44/yaml:42/yml:3/shell:2/other:1/toml:1/json:1
 
 HOTSPOTS[10]:
   ★ run fan=44  // Execute migration from a single YAML spec (source + target in one file).
@@ -52,11 +53,11 @@ Returns *(decision, failed_step
 Checks DSI display, DRM connector
 
 REFACTOR[15]:
-  [1] H/L Split FleetDevice.verify_expectations (CC=25)
-  [2] H/L Split _ComposeChecker._scan_compose (CC=26)
-  [3] H/L Split _DockerBuildChecker.check (CC=31)
-  [4] H/L Split probe (CC=26)
-  [5] H/L Split run (CC=30)
+  [1] H/L Split _ComposeChecker._scan_compose (CC=26)
+  [2] H/L Split _DockerBuildChecker.check (CC=31)
+  [3] H/L Split probe (CC=26)
+  [4] H/L Split run (CC=30)
+  [5] H/L Split _build_checksum_verification (CC=32)
 
 EVOLUTION:
-  2026-04-24 CC̄=1.7 crit=133 80735L // Automated analysis
+  2026-05-20 CC̄=5.1 crit=134 41768L // Automated analysis

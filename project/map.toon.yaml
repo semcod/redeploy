@@ -1,4 +1,4 @@
-# redeploy | 260f 44911L | python:257,shell:2,less:1 | 2026-04-24
+# redeploy | 260f 44917L | python:257,shell:2,less:1 | 2026-05-20
 # stats: 832 func | 384 cls | 260 mod | CC̄=4.8 | critical:94 | cycles:0
 # alerts[5]: CC _build_checksum_verification=32; CC run=30; CC probe=26; CC version_init=26; CC _bump_single=25
 # hotspots[5]: run fan=42; fix_cmd fan=29; hardware fan=28; device_map_cmd fan=27; version_init fan=26
@@ -126,7 +126,7 @@ M[260]:
   redeploy/heal/hint_provider.py,328
   redeploy/heal/log_writer.py,52
   redeploy/heal/loop_detector.py,62
-  redeploy/heal/runner.py,262
+  redeploy/heal/runner.py,266
   redeploy/heal.py,483
   redeploy/iac/__init__.py,53
   redeploy/iac/base.py,276
@@ -253,7 +253,7 @@ M[260]:
   tests/test_example_helm_kustomize_plugin.py,73
   tests/test_hardware_config.py,163
   tests/test_hardware_kiosk.py,231
-  tests/test_hardware_rules.py,190
+  tests/test_hardware_rules.py,192
   tests/test_heal_decider.py,64
   tests/test_heal_loop_detector.py,48
   tests/test_iac.py,512
