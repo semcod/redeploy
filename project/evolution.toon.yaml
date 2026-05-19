@@ -1,4 +1,4 @@
-# code2llm/evolution | 945 func | 144f | 2026-05-20
+# code2llm/evolution | 951 func | 159f | 2026-05-20
 # generated in 0.00s
 
 NEXT[10] (ranked by impact):
@@ -6,53 +6,53 @@ NEXT[10] (ranked by impact):
       WHY: CC=30 exceeds 15
       EFFORT: ~1h  IMPACT: 1320
 
-  [2] !! SPLIT-FUNC      _DockerBuildChecker.check  CC=31  fan=27
-      WHY: CC=31 exceeds 15
-      EFFORT: ~1h  IMPACT: 837
-
-  [3] !! SPLIT-FUNC      version_init  CC=26  fan=26
+  [2] !! SPLIT-FUNC      version_init  CC=26  fan=26
       WHY: CC=26 exceeds 15
       EFFORT: ~1h  IMPACT: 676
 
-  [4] !! SPLIT-FUNC      _build_checksum_verification  CC=32  fan=21
+  [3] !! SPLIT-FUNC      _build_checksum_verification  CC=32  fan=21
       WHY: CC=32 exceeds 15
       EFFORT: ~1h  IMPACT: 672
 
-  [5] !! SPLIT-FUNC      _ComposeChecker._scan_compose  CC=26  fan=24
-      WHY: CC=26 exceeds 15
-      EFFORT: ~1h  IMPACT: 624
-
-  [6] !! SPLIT-FUNC      DockerComposeParser.parse  CC=25  fan=24
+  [4] !! SPLIT-FUNC      DockerComposeParser.parse  CC=25  fan=24
       WHY: CC=25 exceeds 15
       EFFORT: ~1h  IMPACT: 600
 
-  [7] !  SPLIT-FUNC      device_map_cmd  CC=20  fan=28
+  [5] !  SPLIT-FUNC      device_map_cmd  CC=20  fan=28
       WHY: CC=20 exceeds 15
       EFFORT: ~1h  IMPACT: 560
 
-  [8] !! SPLIT-FUNC      probe  CC=26  fan=21
+  [6] !! SPLIT-FUNC      probe  CC=26  fan=21
       WHY: CC=26 exceeds 15
       EFFORT: ~1h  IMPACT: 546
 
-  [9] !  SPLIT-FUNC      import_cmd  CC=21  fan=26
+  [7] !  SPLIT-FUNC      import_cmd  CC=21  fan=26
       WHY: CC=21 exceeds 15
       EFFORT: ~1h  IMPACT: 546
 
-  [10] !! SPLIT-FUNC      ConfigHintsParser._parse_k8s_yaml  CC=26  fan=20
+  [8] !! SPLIT-FUNC      ConfigHintsParser._parse_k8s_yaml  CC=26  fan=20
       WHY: CC=26 exceeds 15
       EFFORT: ~1h  IMPACT: 520
 
+  [9] !  SPLIT-FUNC      fix_cmd  CC=17  fan=30
+      WHY: CC=17 exceeds 15
+      EFFORT: ~1h  IMPACT: 510
+
+  [10] !  SPLIT-FUNC      gh_workflow_run  CC=19  fan=25
+      WHY: CC=19 exceeds 15
+      EFFORT: ~1h  IMPACT: 475
+
 
 RISKS[3]:
-  ⚠ Splitting docs/README.md may break 0 import paths
   ⚠ Splitting CHANGELOG.md may break 0 import paths
   ⚠ Splitting README.md may break 0 import paths
+  ⚠ Splitting docs/README.md may break 0 import paths
 
 METRICS-TARGET:
-  CC̄:          5.1 → ≤3.6
+  CC̄:          5.0 → ≤3.5
   max-CC:      32 → ≤16
-  god-modules: 11 → 0
-  high-CC(≥15): 44 → ≤22
+  god-modules: 9 → 0
+  high-CC(≥15): 41 → ≤20
   hub-types:   0 → ≤0
 
 PATTERNS (language parser shared logic):
@@ -80,4 +80,4 @@ PATTERNS (language parser shared logic):
     - Standardized FunctionInfo/ClassInfo models
 
 HISTORY:
-  prev CC̄=1.7 → now CC̄=5.1
+  prev CC̄=5.1 → now CC̄=5.0

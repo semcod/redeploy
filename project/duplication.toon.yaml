@@ -1,12 +1,12 @@
-# redup/duplication | 10 groups | 184f 28193L | 2026-05-19
+# redup/duplication | 10 groups | 199f 28986L | 2026-05-19
 
 SUMMARY:
-  files_scanned: 184
-  total_lines:   28193
+  files_scanned: 199
+  total_lines:   28986
   dup_groups:    10
   dup_fragments: 20
   saved_lines:   117
-  scan_ms:       2729
+  scan_ms:       2550
 
 HOTSPOTS[7] (files with most duplication):
   redeploy/cli/commands/version/helpers.py  dup=38L  groups=2  frags=2  (0.1%)

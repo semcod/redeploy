@@ -17,7 +17,7 @@ from typing import Any
 import yaml
 
 from ..ssh import SshClient
-from .spec_analyzer import AnalysisResult, IssueSeverity
+from .models import AnalysisResult, IssueSeverity
 
 
 @dataclass

@@ -1,10 +1,10 @@
-# redeploy | 260f 44917L | python:257,shell:2,less:1 | 2026-05-20
-# stats: 832 func | 384 cls | 260 mod | CC̄=4.8 | critical:94 | cycles:0
+# redeploy | 276f 45125L | python:273,shell:2,less:1 | 2026-05-20
+# stats: 844 func | 384 cls | 276 mod | CC̄=4.8 | critical:96 | cycles:0
 # alerts[5]: CC _build_checksum_verification=32; CC run=30; CC probe=26; CC version_init=26; CC _bump_single=25
 # hotspots[5]: run fan=42; fix_cmd fan=29; hardware fan=28; device_map_cmd fan=27; version_init fan=26
 # evolution: baseline
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
-M[260]:
+M[276]:
   app.doql.less,60
   examples/redeploy_iac_parsers/argocd_flux.py,130
   examples/redeploy_iac_parsers/gitops_ci.py,138
@@ -12,10 +12,20 @@ M[260]:
   examples/redeploy_iac_parsers/helm_kustomize.py,114
   project.sh,42
   redeploy/__init__.py,154
-  redeploy/analyze/__init__.py,15
-  redeploy/analyze/checkers/__init__.py,2
+  redeploy/analyze/__init__.py,16
+  redeploy/analyze/checkers/__init__.py,48
+  redeploy/analyze/checkers/base.py,20
+  redeploy/analyze/checkers/binary.py,75
+  redeploy/analyze/checkers/command_ref.py,84
+  redeploy/analyze/checkers/compose.py,144
+  redeploy/analyze/checkers/docker_build.py,161
+  redeploy/analyze/checkers/env.py,24
+  redeploy/analyze/checkers/path.py,95
+  redeploy/analyze/checkers/reference.py,40
+  redeploy/analyze/ignore.py,87
+  redeploy/analyze/models.py,49
   redeploy/analyze/preflight_schema.py,280
-  redeploy/analyze/spec_analyzer.py,743
+  redeploy/analyze/spec_analyzer.py,119
   redeploy/apply/__init__.py,60
   redeploy/apply/exceptions.py,13
   redeploy/apply/executor.py,355
@@ -26,7 +36,13 @@ M[260]:
   redeploy/apply/state_apply.py,223
   redeploy/apply/utils/__init__.py,7
   redeploy/apply/utils/run_container_build.py,70
-  redeploy/audit.py,610
+  redeploy/audit/__init__.py,52
+  redeploy/audit/auditor.py,156
+  redeploy/audit/extractor.py,183
+  redeploy/audit/models.py,82
+  redeploy/audit/paths.py,35
+  redeploy/audit/patterns.py,29
+  redeploy/audit/probe.py,79
   redeploy/blueprint/__init__.py,12
   redeploy/blueprint/extractor.py,141
   redeploy/blueprint/generators/__init__.py,1
@@ -287,6 +303,52 @@ D:
   redeploy/__init__.py:
   redeploy/analyze/__init__.py:
   redeploy/analyze/checkers/__init__.py:
+  redeploy/analyze/checkers/base.py:
+    e: Checker
+    Checker: check(4)
+  redeploy/analyze/checkers/binary.py:
+    e: extract_binaries,BinaryChecker
+    BinaryChecker: check(4)  # Warn if commands reference binaries not available locally (b
+    extract_binaries(cmd)
+  redeploy/analyze/checkers/command_ref.py:
+    e: CommandRefChecker
+    CommandRefChecker: check(4),_check_external_ref(6)  # Validate command_ref references for nested markdown/script d
+  redeploy/analyze/checkers/compose.py:
+    e: _is_ignored,_check_build_section,_check_env_files,_check_volumes,scan_compose_file,ComposeChecker
+    ComposeChecker: check(4)  # Validate docker-compose files declared in spec or found in p
+    _is_ignored(check_path;base_dir;ign)
+    _check_build_section(svc_name;svc;base_dir;result;ign)
+    _check_env_files(svc_name;svc;base_dir;result;ign)
+    _check_volumes(svc_name;svc;base_dir;result;ign)
+    scan_compose_file(path;base_dir;result;ign)
+  redeploy/analyze/checkers/docker_build.py:
+    e: collect_sync_mappings,parse_docker_build,match_local_src,resolve_local_dockerfile,DockerBuildChecker
+    DockerBuildChecker: check(4),_check_dockerfile(4),_check_remote_context(7)  # Validate docker build commands: Dockerfile exists, context i
+    collect_sync_mappings(spec)
+    parse_docker_build(cmd)
+    match_local_src(sync_mappings;remote_context)
+    resolve_local_dockerfile(local_src;dockerfile;base_dir)
+  redeploy/analyze/checkers/env.py:
+    e: EnvFileChecker
+    EnvFileChecker: check(4)  # Check that .env referenced by target.env_file exists.
+  redeploy/analyze/checkers/path.py:
+    e: resolve_local_path,is_inside,PathChecker,CommandPathChecker
+    PathChecker: check(4),_check_field(5)  # Validate local file paths referenced by steps.
+    CommandPathChecker: check(4)  # Scan command strings for hardcoded absolute paths outside th
+    resolve_local_path(val;base_dir)
+    is_inside(path;base)
+  redeploy/analyze/checkers/reference.py:
+    e: ReferenceChecker
+    ReferenceChecker: check(4)  # Ensure command_ref and insert_before point to existing thing
+  redeploy/analyze/ignore.py:
+    e: ensure_redeployignore,IgnoreList
+    IgnoreList: __init__(1),_load(1),is_ignored(1)  # Read .gitignore and .redeployignore patterns and test if pat
+    ensure_redeployignore(base_dir)
+  redeploy/analyze/models.py:
+    e: IssueSeverity,Issue,AnalysisResult
+    IssueSeverity:
+    Issue:
+    AnalysisResult: add(6),errors(0),warnings(0)
   redeploy/analyze/preflight_schema.py:
     e: generate_preflight_schema,save_preflight_schema,_resolve_command_refs,_collect_local_artifacts,_collect_remote_checks,_resolve_local_path,PreflightResult
     PreflightResult: has_blockers(0)
@@ -297,22 +359,8 @@ D:
     _collect_remote_checks(spec;host)
     _resolve_local_path(val;base_dir)
   redeploy/analyze/spec_analyzer.py:
-    e: ensure_redeployignore,IssueSeverity,Issue,AnalysisResult,_IgnoreList,_Checker,_PathChecker,_CommandPathChecker,_ReferenceChecker,_ComposeChecker,_DockerBuildChecker,_CommandRefChecker,_EnvFileChecker,_BinaryChecker,SpecAnalyzer
-    IssueSeverity:
-    Issue:
-    AnalysisResult: add(6),errors(0),warnings(0)
-    _IgnoreList: __init__(1),_load(1),is_ignored(1)  # Read .gitignore and .redeployignore patterns and test if pat
-    _Checker: check(4)
-    _PathChecker: check(4),_check_field(5),_check_env_file(3),_resolve(2)  # Validate local file paths referenced by steps.
-    _CommandPathChecker: check(4),_resolve(2),_is_inside(2)  # Scan command strings for hardcoded absolute paths outside th
-    _ReferenceChecker: check(4)  # Ensure command_ref and insert_before point to existing thing
-    _ComposeChecker: check(4),_scan_compose(4)  # Validate docker-compose files declared in spec or found in p
-    _DockerBuildChecker: check(4),_match_local_src(2),_resolve_local_dockerfile(3)  # Validate docker build commands: Dockerfile exists, context i
-    _CommandRefChecker: check(4),_resolve(2)  # Validate command_ref references for nested markdown/script d
-    _EnvFileChecker: check(4)  # Check that .env referenced by target.env_file exists.
-    _BinaryChecker: check(4),_extract_binaries(1),_which(1)  # Warn if commands reference binaries not available locally (b
+    e: SpecAnalyzer
     SpecAnalyzer: __init__(3),analyze(2),analyze_file(1)  # Run static checks against a compiled MigrationSpec (and opti
-    ensure_redeployignore(base_dir)
   redeploy/apply/__init__.py:
   redeploy/apply/exceptions.py:
     e: StepError
@@ -371,18 +419,29 @@ D:
   redeploy/apply/utils/run_container_build.py:
     e: run_container_build
     run_container_build(step;probe;emitter;engine)
-  redeploy/audit.py:
-    e: _extract_port,_normalize_path,_strip_remote_dir,audit_spec,AuditCheck,AuditReport,_Expect,_Extractor,_Probe,Auditor
+  redeploy/audit/__init__.py:
+    e: audit_spec
+    audit_spec(spec_path)
+  redeploy/audit/auditor.py:
+    e: Auditor
+    Auditor: __init__(2),run(0),_add_disk_check(1),_probe_one(1),_check(3),_probe_binary(1),_probe_directory(1),_probe_file(1),_probe_local_file(1),_probe_port_listening(1),_probe_container_image(1),_probe_systemd_unit(1),_probe_apt_package(1)
+  redeploy/audit/extractor.py:
+    e: Extractor
+    Extractor: __init__(1),collect(0),_from_target(0),_from_step(1),_from_command(2)  # Walk a MigrationSpec and emit Expect tuples.
+  redeploy/audit/models.py:
+    e: AuditCheck,AuditReport,Expect
     AuditCheck: ok(0)  # Outcome of a single audit probe.
     AuditReport: add(1),passed(0),failed(0),warned(0),skipped(0),ok(0),summary(0),to_dict(0)
-    _Expect: extras(0)
-    _Extractor: __init__(1),collect(0),_from_target(0),_from_step(1),_from_command(2)  # Walk a MigrationSpec and emit Expect tuples.
-    _Probe: __init__(1),has_binary(1),has_path(1),port_listening(1),has_image(1),has_systemd_unit(1),apt_package(1),disk_free_gib(1)  # Thin wrapper around SshClient with sensible audit timeouts.
-    Auditor: __init__(2),run(0),_dispatch(2),_probe_one(1),_probe_binary(1),_probe_directory(1),_probe_file(1),_probe_local_file(1),_probe_port_listening(1),_probe_container_image(1),_probe_systemd_unit(2),_probe_apt_package(1)  # Compare a MigrationSpec's expectations against a live target
-    _extract_port(url)
-    _normalize_path(path)
-    _strip_remote_dir(path)
-    audit_spec(spec_path)
+    Expect: extras(0)
+  redeploy/audit/paths.py:
+    e: extract_port,normalize_path,strip_remote_dir
+    extract_port(url)
+    normalize_path(path)
+    strip_remote_dir(path)
+  redeploy/audit/patterns.py:
+  redeploy/audit/probe.py:
+    e: Probe
+    Probe: __init__(1),has_binary(1),has_path(1),port_listening(1),has_image(1),has_systemd_unit(1),apt_package(1),disk_free_gib(1)  # Thin wrapper around SshClient with sensible audit timeouts.
   redeploy/blueprint/__init__.py:
   redeploy/blueprint/extractor.py:
     e: extract_blueprint

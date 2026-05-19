@@ -1,7 +1,7 @@
 <!-- code2docs:start --># redeploy
 
-![version](https://img.shields.io/badge/version-0.1.0-blue) ![python](https://img.shields.io/badge/python-%3E%3D3.11-blue) ![coverage](https://img.shields.io/badge/coverage-unknown-lightgrey) ![functions](https://img.shields.io/badge/functions-963-green)
-> **963** functions | **179** classes | **284** files | CC̄ = 5.1
+![version](https://img.shields.io/badge/version-0.1.0-blue) ![python](https://img.shields.io/badge/python-%3E%3D3.11-blue) ![coverage](https://img.shields.io/badge/coverage-unknown-lightgrey) ![functions](https://img.shields.io/badge/functions-969-green)
+> **969** functions | **179** classes | **300** files | CC̄ = 5.1
 
 > Auto-generated project documentation from source code analysis.
 
@@ -110,7 +110,6 @@ redeploy/
     ├── ssh
     ├── patterns
     ├── discovery
-    ├── audit
     ├── mcp_server
         ├── process_control_template
         ├── detector
@@ -140,8 +139,18 @@ redeploy/
         ├── generic
     ├── analyze/
         ├── spec_analyzer
+        ├── models
+        ├── ignore
         ├── preflight_schema
+            ├── base
+            ├── path
         ├── checkers/
+            ├── compose
+            ├── command_ref
+            ├── binary
+            ├── env
+            ├── docker_build
+            ├── reference
         ├── applier
         ├── loader
     ├── config_apply/
@@ -199,6 +208,13 @@ redeploy/
                 ├── utils/
                     ├── git_config
                     ├── changelog_config
+        ├── probe
+    ├── audit/
+        ├── extractor
+        ├── paths
+        ├── models
+        ├── patterns
+        ├── auditor
     ├── plugins/
             ├── notify
         ├── builtin/
@@ -380,9 +396,6 @@ redeploy/
 - **`RollbackOnFailurePattern`** — Capture pre-deploy image tag, roll back automatically on failure.
 - **`DiscoveredHost`** — —
 - **`ProbeResult`** — Full autonomous probe result for a single host.
-- **`AuditCheck`** — Outcome of a single audit probe.
-- **`AuditReport`** — —
-- **`Auditor`** — Compare a MigrationSpec's expectations against a live target host.
 - **`Detector`** — Probe infrastructure and produce InfraState.
 - **`Condition`** — A single scoreable condition.
 - **`DetectionTemplate`** — Named template for a device+environment+strategy combination.
@@ -399,11 +412,21 @@ redeploy/
 - **`HealLoopDetector`** — Detect repeated non-converging heal hints for a given step.
 - **`HealRunner`** — Wraps :class:`Executor` with a self-healing loop.
 - **`StepLibrary`** — Registry of pre-defined named MigrationSteps.
+- **`SpecAnalyzer`** — Run static checks against a compiled MigrationSpec (and optional raw MarkpactDocument).
 - **`IssueSeverity`** — —
 - **`Issue`** — —
 - **`AnalysisResult`** — —
-- **`SpecAnalyzer`** — Run static checks against a compiled MigrationSpec (and optional raw MarkpactDocument).
+- **`IgnoreList`** — Read .gitignore and .redeployignore patterns and test if paths are ignored.
 - **`PreflightResult`** — —
+- **`Checker`** — —
+- **`PathChecker`** — Validate local file paths referenced by steps.
+- **`CommandPathChecker`** — Scan command strings for hardcoded absolute paths outside the project.
+- **`ComposeChecker`** — Validate docker-compose files declared in spec or found in project.
+- **`CommandRefChecker`** — Validate command_ref references for nested markdown/script dependencies.
+- **`BinaryChecker`** — Warn if commands reference binaries not available locally (best-effort).
+- **`EnvFileChecker`** — Check that .env referenced by target.env_file exists.
+- **`DockerBuildChecker`** — Validate docker build commands: Dockerfile exists, context is consistent.
+- **`ReferenceChecker`** — Ensure command_ref and insert_before point to existing things.
 - **`DeployRecord`** — Single deployment event recorded for a device.
 - **`KnownDevice`** — Device known to redeploy — persisted in ~/.config/redeploy/devices.yaml.
 - **`DeviceMap`** — Full, persisted snapshot of a device: identity + InfraState + HardwareInfo.
@@ -438,6 +461,12 @@ redeploy/
 - **`TargetConfig`** — Desired infrastructure state — input to `plan`.
 - **`InfraSpec`** — Declarative description of one infrastructure state (from OR to).
 - **`MigrationSpec`** — Single YAML file describing full migration: from-state → to-state.
+- **`Probe`** — Thin wrapper around SshClient with sensible audit timeouts.
+- **`Extractor`** — Walk a MigrationSpec and emit Expect tuples.
+- **`AuditCheck`** — Outcome of a single audit probe.
+- **`AuditReport`** — —
+- **`Expect`** — —
+- **`Auditor`** — —
 - **`PluginContext`** — Passed to every plugin handler.
 - **`PluginRegistry`** — Central registry mapping plugin_type strings to handler callables.
 - **`HardwareInfo`** — Hardware diagnostic information.
@@ -545,7 +574,6 @@ redeploy/
 - `discover(subnet, ssh_users, ssh_port, ping)` — Discover SSH-accessible hosts in the local network.
 - `update_registry(hosts, registry, save)` — Merge discovered hosts into DeviceRegistry and optionally save.
 - `auto_probe(ip_or_host, users, port, timeout)` — Autonomously probe a host — try all available SSH keys and users.
-- `audit_spec(spec_path)` — Convenience: load spec from file and run an audit.
 - `schema(directory)` — Discover the workspace: find migration specs, read version, git branch.
 - `plan_spec(spec, cwd)` — Preview a migration spec: show all steps without executing anything.
 - `run_spec(spec, force, dry_run, heal)` — Apply a migration spec.
@@ -580,6 +608,14 @@ redeploy/
 - `ensure_redeployignore(base_dir)` — Create .redeployignore with sensible defaults if it doesn't exist.
 - `generate_preflight_schema()` — —
 - `save_preflight_schema(schema, output_path)` — —
+- `resolve_local_path(val, base_dir)` — —
+- `is_inside(path, base)` — —
+- `scan_compose_file(path, base_dir, result, ign)` — —
+- `extract_binaries(cmd)` — —
+- `collect_sync_mappings(spec)` — —
+- `parse_docker_build(cmd)` — —
+- `match_local_src(sync_mappings, remote_context)` — —
+- `resolve_local_dockerfile(local_src, dockerfile, base_dir)` — —
 - `apply_config_dict(data, probe, console)` — Apply *data* to the host behind *probe*.
 - `apply_config_file(path)` — Load *path* and apply its hardware/infra settings to the remote host.
 - `load_config_file(path)` — Read *path* and return a dict (YAML or JSON auto-detected).
@@ -665,6 +701,10 @@ redeploy/
 - `version_diff(manifest, package_name, all_packages, spec)` — Compare manifest version vs spec vs live.
 - `resolve_package_release_git_config(manifest_model, package_name)` — Return the git config for *package_name* with optional root fallback.
 - `resolve_package_release_changelog_config(manifest_model, package_name)` — Return the changelog config for *package_name* with optional root fallback.
+- `audit_spec(spec_path)` — Convenience: load spec from file and run an audit.
+- `extract_port(url)` — —
+- `normalize_path(path)` — —
+- `strip_remote_dir(path)` — —
 - `register_plugin(name)` — Decorator shortcut: @register_plugin('browser_reload').
 - `load_user_plugins()` — Load user plugins from project-local and user-global directories.
 - `notify(ctx)` — —
@@ -857,8 +897,18 @@ redeploy/
 📦 `redeploy`
 📦 `redeploy.analyze`
 📦 `redeploy.analyze.checkers`
+📄 `redeploy.analyze.checkers.base` (1 functions, 1 classes)
+📄 `redeploy.analyze.checkers.binary` (2 functions, 1 classes)
+📄 `redeploy.analyze.checkers.command_ref` (2 functions, 1 classes)
+📄 `redeploy.analyze.checkers.compose` (6 functions, 1 classes)
+📄 `redeploy.analyze.checkers.docker_build` (7 functions, 1 classes)
+📄 `redeploy.analyze.checkers.env` (1 functions, 1 classes)
+📄 `redeploy.analyze.checkers.path` (5 functions, 2 classes)
+📄 `redeploy.analyze.checkers.reference` (1 functions, 1 classes)
+📄 `redeploy.analyze.ignore` (4 functions, 1 classes)
+📄 `redeploy.analyze.models` (3 functions, 3 classes)
 📄 `redeploy.analyze.preflight_schema` (6 functions, 1 classes)
-📄 `redeploy.analyze.spec_analyzer` (30 functions, 14 classes)
+📄 `redeploy.analyze.spec_analyzer` (3 functions, 1 classes)
 📦 `redeploy.apply`
 📄 `redeploy.apply.exceptions` (1 functions, 1 classes)
 📄 `redeploy.apply.executor` (17 functions, 1 classes)
@@ -869,7 +919,13 @@ redeploy/
 📄 `redeploy.apply.state_apply` (9 functions, 4 classes)
 📦 `redeploy.apply.utils`
 📄 `redeploy.apply.utils.run_container_build` (1 functions)
-📄 `redeploy.audit` (32 functions, 6 classes)
+📦 `redeploy.audit` (1 functions)
+📄 `redeploy.audit.auditor` (13 functions, 1 classes)
+📄 `redeploy.audit.extractor` (5 functions, 1 classes)
+📄 `redeploy.audit.models` (3 functions, 3 classes)
+📄 `redeploy.audit.paths` (3 functions)
+📄 `redeploy.audit.patterns`
+📄 `redeploy.audit.probe` (8 functions, 1 classes)
 📦 `redeploy.blueprint`
 📄 `redeploy.blueprint.extractor` (1 functions)
 📦 `redeploy.blueprint.generators`

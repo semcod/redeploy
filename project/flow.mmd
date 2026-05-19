@@ -5,21 +5,21 @@ flowchart TD
     classDef entry fill:#4dabf7,stroke:#1971c2,color:#fff
 
     subgraph CLI
-        redeploy__cli__query__execute_query["execute_query"]
-        redeploy__cli___setup_logging["_setup_logging"]
-        redeploy__cli__cli["cli"]
-        redeploy__cli___resolve_device["_resolve_device"]
-        redeploy__cli__core__load_spec_or_exit["load_spec_or_exit"]
-        redeploy__cli__core__find_manifest_path["find_manifest_path"]
-        redeploy__cli__core__resolve_device["resolve_device"]
-        redeploy__cli__core__load_spec_with_manifest["load_spec_with_manifest"]
-        redeploy__cli__core__overlay_device_onto_spec["overlay_device_onto_spec"]
-        redeploy__cli__core__run_detect_for_spec["run_detect_for_spec"]
-        redeploy__cli__core__run_detect_workflow["run_detect_workflow"]
-        redeploy__cli__commands__target__target["target"]
-        redeploy__cli__commands__inspect___find_css_path["_find_css_path"]
-        redeploy__cli__commands__inspect__inspect["inspect"]
-        redeploy__cli__commands__device_map_renderers__render_yaml["render_yaml"]
+        redeploy__cli__display__print_plan_table["print_plan_table"]
+        redeploy__cli__display__print_infrastructure_summary["print_infrastructure_summary"]
+        redeploy__cli__display__print_docker_services["print_docker_services"]
+        redeploy__cli__display__print_k3s_pods["print_k3s_pods"]
+        redeploy__cli__display__print_conflicts["print_conflicts"]
+        redeploy__cli__display__print_inspect_app_metadata["print_inspect_app_metadata"]
+        redeploy__cli__display__print_inspect_environments["print_inspect_environments"]
+        redeploy__cli__display__print_inspect_templates["print_inspect_templates"]
+        redeploy__cli__display___get_plugin_hint["_get_plugin_hint"]
+        redeploy__cli__display___format_workflow_header["_format_workflow_header"]
+        redeploy__cli__display___print_workflow_step["_print_workflow_step"]
+        redeploy__cli__display__print_inspect_workflows["print_inspect_workflows"]
+        redeploy__cli__display__print_inspect_devices["print_inspect_devices"]
+        redeploy__cli__display__print_inspect_raw_nodes_summary["print_inspect_raw_nodes_summar"]
+        redeploy__cli__display__print_workflow_summary_table["print_workflow_summary_table"]
         ...["+197 more"]
     end
 
@@ -35,11 +35,11 @@ flowchart TD
         redeploy__observe__DeployReport__text["text"]
         redeploy__observe__DeployReport__yaml["yaml"]
         redeploy__observe__DeployReport__summary_line["summary_line"]
-        redeploy__mcp_server__schema["schema"]
-        redeploy__mcp_server__plan_spec["plan_spec"]
-        redeploy__mcp_server__run_spec["run_spec"]
-        redeploy__mcp_server__fix_spec["fix_spec"]
-        ...["+473 more"]
+        redeploy__data_sync__collect_sqlite_counts["collect_sqlite_counts"]
+        redeploy__data_sync__rsync_timeout_for_path["rsync_timeout_for_path"]
+        redeploy__heal__HealLoopDetector__observe["observe"]
+        redeploy__heal__HealLoopDetector__reset["reset"]
+        ...["+467 more"]
     end
 
     class redeploy__observe__AuditEntry__to_dict,redeploy__observe__AuditEntry____repr__,redeploy__observe__DeployAuditLog__record,redeploy__observe__DeployAuditLog___append,redeploy__observe__DeployAuditLog__load,redeploy__observe__DeployAuditLog__tail,redeploy__observe__DeployAuditLog__filter,redeploy__observe__DeployAuditLog__clear,redeploy__observe__DeployReport__text,redeploy__observe__DeployReport__yaml entry

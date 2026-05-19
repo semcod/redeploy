@@ -24,12 +24,12 @@ Infrastructure migration toolkit: detect → plan → apply
 ## Metadata
 
 - **name**: `redeploy`
-- **version**: `0.2.74`
+- **version**: `0.2.75`
 - **python_requires**: `>=3.11`
-- **license**: {'text': 'Apache-2.0'}
+- **license**: Apache-2.0
 - **ai_model**: `openrouter/qwen/qwen3-coder-next`
 - **ecosystem**: SUMD + DOQL + testql + taskfile
-- **generated_from**: pyproject.toml, Makefile, testql(2), app.doql.less, pyqual.yaml, goal.yaml, .env.example, src(15 mod), project/(2 analysis files)
+- **generated_from**: pyproject.toml, Makefile, testql(2), app.doql.less, pyqual.yaml, goal.yaml, .env.example, src(14 mod), project/(2 analysis files)
 
 ## Architecture
 
@@ -45,7 +45,7 @@ SUMD (description) → DOQL/source (code) → taskfile (automation) → testql (
 
 app {
   name: redeploy;
-  version: 0.2.74;
+  version: 0.2.75;
 }
 
 interface[type="cli"] {
@@ -103,7 +103,6 @@ environment[name="local"] {
 
 ### Source Modules
 
-- `redeploy.audit`
 - `redeploy.cli`
 - `redeploy.data_sync`
 - `redeploy.discovery`
@@ -216,7 +215,7 @@ pipeline:
 ```yaml
 project:
   name: redeploy
-  version: 0.2.74
+  version: 0.2.75
   env: local
 ```
 
@@ -318,13 +317,13 @@ pip install -e .[dev]
 ### `project/map.toon.yaml`
 
 ```toon markpact:analysis path=project/map.toon.yaml
-# redeploy | 260f 44917L | python:257,shell:2,less:1 | 2026-05-20
-# stats: 832 func | 384 cls | 260 mod | CC̄=4.8 | critical:94 | cycles:0
+# redeploy | 276f 45125L | python:273,shell:2,less:1 | 2026-05-20
+# stats: 844 func | 384 cls | 276 mod | CC̄=4.8 | critical:96 | cycles:0
 # alerts[5]: CC _build_checksum_verification=32; CC run=30; CC probe=26; CC version_init=26; CC _bump_single=25
 # hotspots[5]: run fan=42; fix_cmd fan=29; hardware fan=28; device_map_cmd fan=27; version_init fan=26
 # evolution: baseline
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
-M[260]:
+M[276]:
   app.doql.less,60
   examples/redeploy_iac_parsers/argocd_flux.py,130
   examples/redeploy_iac_parsers/gitops_ci.py,138
@@ -332,10 +331,20 @@ M[260]:
   examples/redeploy_iac_parsers/helm_kustomize.py,114
   project.sh,42
   redeploy/__init__.py,154
-  redeploy/analyze/__init__.py,15
-  redeploy/analyze/checkers/__init__.py,2
+  redeploy/analyze/__init__.py,16
+  redeploy/analyze/checkers/__init__.py,48
+  redeploy/analyze/checkers/base.py,20
+  redeploy/analyze/checkers/binary.py,75
+  redeploy/analyze/checkers/command_ref.py,84
+  redeploy/analyze/checkers/compose.py,144
+  redeploy/analyze/checkers/docker_build.py,161
+  redeploy/analyze/checkers/env.py,24
+  redeploy/analyze/checkers/path.py,95
+  redeploy/analyze/checkers/reference.py,40
+  redeploy/analyze/ignore.py,87
+  redeploy/analyze/models.py,49
   redeploy/analyze/preflight_schema.py,280
-  redeploy/analyze/spec_analyzer.py,743
+  redeploy/analyze/spec_analyzer.py,119
   redeploy/apply/__init__.py,60
   redeploy/apply/exceptions.py,13
   redeploy/apply/executor.py,355
@@ -346,7 +355,13 @@ M[260]:
   redeploy/apply/state_apply.py,223
   redeploy/apply/utils/__init__.py,7
   redeploy/apply/utils/run_container_build.py,70
-  redeploy/audit.py,610
+  redeploy/audit/__init__.py,52
+  redeploy/audit/auditor.py,156
+  redeploy/audit/extractor.py,183
+  redeploy/audit/models.py,82
+  redeploy/audit/paths.py,35
+  redeploy/audit/patterns.py,29
+  redeploy/audit/probe.py,79
   redeploy/blueprint/__init__.py,12
   redeploy/blueprint/extractor.py,141
   redeploy/blueprint/generators/__init__.py,1
@@ -607,6 +622,52 @@ D:
   redeploy/__init__.py:
   redeploy/analyze/__init__.py:
   redeploy/analyze/checkers/__init__.py:
+  redeploy/analyze/checkers/base.py:
+    e: Checker
+    Checker: check(4)
+  redeploy/analyze/checkers/binary.py:
+    e: extract_binaries,BinaryChecker
+    BinaryChecker: check(4)  # Warn if commands reference binaries not available locally (b
+    extract_binaries(cmd)
+  redeploy/analyze/checkers/command_ref.py:
+    e: CommandRefChecker
+    CommandRefChecker: check(4),_check_external_ref(6)  # Validate command_ref references for nested markdown/script d
+  redeploy/analyze/checkers/compose.py:
+    e: _is_ignored,_check_build_section,_check_env_files,_check_volumes,scan_compose_file,ComposeChecker
+    ComposeChecker: check(4)  # Validate docker-compose files declared in spec or found in p
+    _is_ignored(check_path;base_dir;ign)
+    _check_build_section(svc_name;svc;base_dir;result;ign)
+    _check_env_files(svc_name;svc;base_dir;result;ign)
+    _check_volumes(svc_name;svc;base_dir;result;ign)
+    scan_compose_file(path;base_dir;result;ign)
+  redeploy/analyze/checkers/docker_build.py:
+    e: collect_sync_mappings,parse_docker_build,match_local_src,resolve_local_dockerfile,DockerBuildChecker
+    DockerBuildChecker: check(4),_check_dockerfile(4),_check_remote_context(7)  # Validate docker build commands: Dockerfile exists, context i
+    collect_sync_mappings(spec)
+    parse_docker_build(cmd)
+    match_local_src(sync_mappings;remote_context)
+    resolve_local_dockerfile(local_src;dockerfile;base_dir)
+  redeploy/analyze/checkers/env.py:
+    e: EnvFileChecker
+    EnvFileChecker: check(4)  # Check that .env referenced by target.env_file exists.
+  redeploy/analyze/checkers/path.py:
+    e: resolve_local_path,is_inside,PathChecker,CommandPathChecker
+    PathChecker: check(4),_check_field(5)  # Validate local file paths referenced by steps.
+    CommandPathChecker: check(4)  # Scan command strings for hardcoded absolute paths outside th
+    resolve_local_path(val;base_dir)
+    is_inside(path;base)
+  redeploy/analyze/checkers/reference.py:
+    e: ReferenceChecker
+    ReferenceChecker: check(4)  # Ensure command_ref and insert_before point to existing thing
+  redeploy/analyze/ignore.py:
+    e: ensure_redeployignore,IgnoreList
+    IgnoreList: __init__(1),_load(1),is_ignored(1)  # Read .gitignore and .redeployignore patterns and test if pat
+    ensure_redeployignore(base_dir)
+  redeploy/analyze/models.py:
+    e: IssueSeverity,Issue,AnalysisResult
+    IssueSeverity:
+    Issue:
+    AnalysisResult: add(6),errors(0),warnings(0)
   redeploy/analyze/preflight_schema.py:
     e: generate_preflight_schema,save_preflight_schema,_resolve_command_refs,_collect_local_artifacts,_collect_remote_checks,_resolve_local_path,PreflightResult
     PreflightResult: has_blockers(0)
@@ -617,22 +678,8 @@ D:
     _collect_remote_checks(spec;host)
     _resolve_local_path(val;base_dir)
   redeploy/analyze/spec_analyzer.py:
-    e: ensure_redeployignore,IssueSeverity,Issue,AnalysisResult,_IgnoreList,_Checker,_PathChecker,_CommandPathChecker,_ReferenceChecker,_ComposeChecker,_DockerBuildChecker,_CommandRefChecker,_EnvFileChecker,_BinaryChecker,SpecAnalyzer
-    IssueSeverity:
-    Issue:
-    AnalysisResult: add(6),errors(0),warnings(0)
-    _IgnoreList: __init__(1),_load(1),is_ignored(1)  # Read .gitignore and .redeployignore patterns and test if pat
-    _Checker: check(4)
-    _PathChecker: check(4),_check_field(5),_check_env_file(3),_resolve(2)  # Validate local file paths referenced by steps.
-    _CommandPathChecker: check(4),_resolve(2),_is_inside(2)  # Scan command strings for hardcoded absolute paths outside th
-    _ReferenceChecker: check(4)  # Ensure command_ref and insert_before point to existing thing
-    _ComposeChecker: check(4),_scan_compose(4)  # Validate docker-compose files declared in spec or found in p
-    _DockerBuildChecker: check(4),_match_local_src(2),_resolve_local_dockerfile(3)  # Validate docker build commands: Dockerfile exists, context i
-    _CommandRefChecker: check(4),_resolve(2)  # Validate command_ref references for nested markdown/script d
-    _EnvFileChecker: check(4)  # Check that .env referenced by target.env_file exists.
-    _BinaryChecker: check(4),_extract_binaries(1),_which(1)  # Warn if commands reference binaries not available locally (b
+    e: SpecAnalyzer
     SpecAnalyzer: __init__(3),analyze(2),analyze_file(1)  # Run static checks against a compiled MigrationSpec (and opti
-    ensure_redeployignore(base_dir)
   redeploy/apply/__init__.py:
   redeploy/apply/exceptions.py:
     e: StepError
@@ -691,18 +738,29 @@ D:
   redeploy/apply/utils/run_container_build.py:
     e: run_container_build
     run_container_build(step;probe;emitter;engine)
-  redeploy/audit.py:
-    e: _extract_port,_normalize_path,_strip_remote_dir,audit_spec,AuditCheck,AuditReport,_Expect,_Extractor,_Probe,Auditor
+  redeploy/audit/__init__.py:
+    e: audit_spec
+    audit_spec(spec_path)
+  redeploy/audit/auditor.py:
+    e: Auditor
+    Auditor: __init__(2),run(0),_add_disk_check(1),_probe_one(1),_check(3),_probe_binary(1),_probe_directory(1),_probe_file(1),_probe_local_file(1),_probe_port_listening(1),_probe_container_image(1),_probe_systemd_unit(1),_probe_apt_package(1)
+  redeploy/audit/extractor.py:
+    e: Extractor
+    Extractor: __init__(1),collect(0),_from_target(0),_from_step(1),_from_command(2)  # Walk a MigrationSpec and emit Expect tuples.
+  redeploy/audit/models.py:
+    e: AuditCheck,AuditReport,Expect
     AuditCheck: ok(0)  # Outcome of a single audit probe.
     AuditReport: add(1),passed(0),failed(0),warned(0),skipped(0),ok(0),summary(0),to_dict(0)
-    _Expect: extras(0)
-    _Extractor: __init__(1),collect(0),_from_target(0),_from_step(1),_from_command(2)  # Walk a MigrationSpec and emit Expect tuples.
-    _Probe: __init__(1),has_binary(1),has_path(1),port_listening(1),has_image(1),has_systemd_unit(1),apt_package(1),disk_free_gib(1)  # Thin wrapper around SshClient with sensible audit timeouts.
-    Auditor: __init__(2),run(0),_dispatch(2),_probe_one(1),_probe_binary(1),_probe_directory(1),_probe_file(1),_probe_local_file(1),_probe_port_listening(1),_probe_container_image(1),_probe_systemd_unit(2),_probe_apt_package(1)  # Compare a MigrationSpec's expectations against a live target
-    _extract_port(url)
-    _normalize_path(path)
-    _strip_remote_dir(path)
-    audit_spec(spec_path)
+    Expect: extras(0)
+  redeploy/audit/paths.py:
+    e: extract_port,normalize_path,strip_remote_dir
+    extract_port(url)
+    normalize_path(path)
+    strip_remote_dir(path)
+  redeploy/audit/patterns.py:
+  redeploy/audit/probe.py:
+    e: Probe
+    Probe: __init__(1),has_binary(1),has_path(1),port_listening(1),has_image(1),has_systemd_unit(1),apt_package(1),disk_free_gib(1)  # Thin wrapper around SshClient with sensible audit timeouts.
   redeploy/blueprint/__init__.py:
   redeploy/blueprint/extractor.py:
     e: extract_blueprint
@@ -2283,56 +2341,6 @@ D:
 
 *Top 5 modules by symbol density — signatures for LLM orientation.*
 
-### `redeploy.audit` (`redeploy/audit.py`)
-
-```python
-def _extract_port(url)  # CC=5, fan=5
-def _normalize_path(path)  # CC=3, fan=4
-def _strip_remote_dir(path)  # CC=5, fan=3
-def audit_spec(spec_path)  # CC=1, fan=3
-class AuditCheck:  # Outcome of a single audit probe.
-    def ok()  # CC=1
-class AuditReport:
-    def add(check)  # CC=1
-    def passed()  # CC=3
-    def failed()  # CC=3
-    def warned()  # CC=3
-    def skipped()  # CC=3
-    def ok()  # CC=1
-    def summary()  # CC=1
-    def to_dict()  # CC=2
-class _Expect:
-    def extras()  # CC=1
-class _Extractor:  # Walk a MigrationSpec and emit Expect tuples.
-    def __init__(spec)  # CC=4
-    def collect()  # CC=4
-    def _from_target()  # CC=7
-    def _from_step(raw)  # CC=12 ⚠
-    def _from_command(cmd, sid)  # CC=14 ⚠
-class _Probe:  # Thin wrapper around SshClient with sensible audit timeouts.
-    def __init__(client)  # CC=4
-    def has_binary(name)  # CC=3
-    def has_path(path)  # CC=3
-    def port_listening(port)  # CC=4
-    def has_image(ref)  # CC=4
-    def has_systemd_unit(unit)  # CC=4
-    def apt_package(name)  # CC=3
-    def disk_free_gib(path)  # CC=3
-class Auditor:  # Compare a MigrationSpec's expectations against a live target
-    def __init__(spec, spec_path)  # CC=4
-    def run()  # CC=5
-    def _dispatch(exp, report)  # CC=1
-    def _probe_one(exp)  # CC=10 ⚠
-    def _probe_binary(exp)  # CC=4
-    def _probe_directory(exp)  # CC=4
-    def _probe_file(exp)  # CC=4
-    def _probe_local_file(exp)  # CC=3
-    def _probe_port_listening(exp)  # CC=4
-    def _probe_container_image(exp)  # CC=4
-    def _probe_systemd_unit(exp, user)  # CC=4
-    def _probe_apt_package(exp)  # CC=4
-```
-
 ### `redeploy.observe` (`redeploy/observe.py`)
 
 ```python
@@ -2476,9 +2484,36 @@ class RemoteExecutor:  # Thin wrapper kept for deploy.core compatibility.
     def scp_opts()  # CC=1
 ```
 
+### `redeploy.heal` (`redeploy/heal.py`)
+
+```python
+def _ssh(host, command)  # CC=3, fan=2
+def collect_diagnostics(host, failed_step)  # CC=2, fan=4
+def ask_llm(failed_step, step_output, diag, spec_text, fix_hint)  # CC=8, fan=5
+def apply_fix_to_spec(spec_path, failed_step, llm_response)  # CC=6, fan=10
+def write_repair_log(spec_path, version, repairs)  # CC=6, fan=9
+def parse_failed_step(executor_summary, executor)  # CC=8, fan=7
+class HealLoopDetector:  # Detect repeated non-converging heal hints for a given step.
+    def __init__(max_identical_hints)  # CC=2
+    def observe(step_id, hint)  # CC=5
+    def reset(step_id)  # CC=1
+class HealRunner:  # Wraps Executor with self-healing loop.
+    def __init__(migration, spec_path, host, fix_hint, max_retries, dry_run, console, version)  # CC=2
+    def _make_executor(resume)  # CC=4
+    def _reload_migration()  # CC=1
+    def _run_executor_attempt(executor)  # CC=1
+    def _collect_diag_with_hint(failed_step)  # CC=2
+    def _extract_diag_hint(diag)  # CC=5
+    def _ask_and_apply_fix(failed_step, step_output, diag)  # CC=7
+    def _record_repair(failed_step, attempt, summary, diag_hint, fixed)  # CC=1
+    def _is_repeating_loop(failed_step, summary, diag_hint)  # CC=1
+    def _retry_after_heal()  # CC=1
+    def run()  # CC=8
+```
+
 ## Call Graph
 
-*407 nodes · 376 edges · 99 modules · CC̄=5.1*
+*425 nodes · 393 edges · 108 modules · CC̄=5.1*
 
 ### Hubs (by degree)
 
@@ -2488,15 +2523,15 @@ class RemoteExecutor:  # Thin wrapper kept for deploy.core compatibility.
 | `snapshot_to_hardware_info` *(in redeploy.integrations.op3_bridge)* | 10 ⚠ | 2 | 49 | **51** |
 | `gh_workflow_run` *(in redeploy.cli.commands.gh_workflow)* | 19 ⚠ | 0 | 49 | **49** |
 | `lint` *(in redeploy.cli.commands.lint)* | 19 ⚠ | 0 | 44 | **44** |
-| `_heal_step` *(in redeploy.heal.runner.HealRunner)* | 14 ⚠ | 0 | 40 | **40** |
 | `exec_cmd` *(in redeploy.cli.commands.exec_)* | 9 | 0 | 40 | **40** |
+| `_heal_step` *(in redeploy.heal.runner.HealRunner)* | 14 ⚠ | 0 | 40 | **40** |
 | `_bump_single` *(in redeploy.cli.commands.version.helpers)* | 25 ⚠ | 4 | 35 | **39** |
-| `_parse_k8s_yaml` *(in redeploy.iac.config_hints.ConfigHintsParser)* | 26 ⚠ | 0 | 38 | **38** |
+| `plugin_cmd` *(in redeploy.cli.commands.plugin)* | 13 ⚠ | 0 | 38 | **38** |
 
 ```toon markpact:analysis path=project/calls.toon.yaml
 # code2llm call graph | /home/tom/github/maskservice/redeploy
-# generated in 0.19s
-# nodes: 407 | edges: 376 | modules: 99
+# generated in 0.18s
+# nodes: 425 | edges: 393 | modules: 108
 # CC̄=5.1
 
 HUBS[20]:
@@ -2508,22 +2543,22 @@ HUBS[20]:
     CC=19  in:0  out:49  total:49
   redeploy.cli.commands.lint.lint
     CC=19  in:0  out:44  total:44
-  redeploy.heal.runner.HealRunner._heal_step
-    CC=14  in:0  out:40  total:40
   redeploy.cli.commands.exec_.exec_cmd
     CC=9  in:0  out:40  total:40
+  redeploy.heal.runner.HealRunner._heal_step
+    CC=14  in:0  out:40  total:40
   redeploy.cli.commands.version.helpers._bump_single
     CC=25  in:4  out:35  total:39
+  redeploy.cli.commands.plugin.plugin_cmd
+    CC=13  in:0  out:38  total:38
   redeploy.iac.config_hints.ConfigHintsParser._parse_k8s_yaml
     CC=26  in:0  out:38  total:38
   redeploy.cli.commands.version.commands.version_list
     CC=13  in:0  out:38  total:38
-  redeploy.cli.commands.plugin.plugin_cmd
-    CC=13  in:0  out:38  total:38
-  redeploy.cli.commands.prompt_cmd.prompt_cmd
-    CC=15  in:0  out:37  total:37
   redeploy.discovery.auto_probe
     CC=7  in:4  out:33  total:37
+  redeploy.cli.commands.prompt_cmd.prompt_cmd
+    CC=15  in:0  out:37  total:37
   redeploy.blueprint.sources.compose._merge_compose
     CC=21  in:1  out:33  total:34
   redeploy.cli.commands.plan_apply._build_checksum_verification
@@ -2536,10 +2571,10 @@ HUBS[20]:
     CC=9  in:0  out:30  total:30
   redeploy.heal.hint_provider.apply_fix_to_spec
     CC=16  in:0  out:30  total:30
-  redeploy.schema._discover_specs
-    CC=14  in:1  out:26  total:27
   redeploy.apply.executor.Executor._execute_step
     CC=4  in:0  out:27  total:27
+  redeploy.apply.state_apply.HardwareStateHandler.apply
+    CC=18  in:0  out:27  total:27
 
 MODULES:
   examples.redeploy_iac_parsers.gitops_ci  [2 funcs]
@@ -2547,17 +2582,44 @@ MODULES:
     _is_gitops_command  CC=2  out:2
   examples.redeploy_iac_parsers.helm_kustomize  [1 funcs]
     parse  CC=17  out:27
+  redeploy.analyze.checkers.binary  [2 funcs]
+    check  CC=7  out:8
+    extract_binaries  CC=14  out:8
+  redeploy.analyze.checkers.command_ref  [1 funcs]
+    _check_external_ref  CC=6  out:8
+  redeploy.analyze.checkers.compose  [6 funcs]
+    check  CC=7  out:7
+    _check_build_section  CC=7  out:12
+    _check_env_files  CC=6  out:8
+    _check_volumes  CC=11  out:12
+    _is_ignored  CC=2  out:4
+    scan_compose_file  CC=6  out:9
+  redeploy.analyze.checkers.docker_build  [6 funcs]
+    _check_remote_context  CC=12  out:12
+    check  CC=4  out:8
+    collect_sync_mappings  CC=5  out:10
+    match_local_src  CC=5  out:3
+    parse_docker_build  CC=9  out:7
+    resolve_local_dockerfile  CC=3  out:6
+  redeploy.analyze.checkers.path  [4 funcs]
+    check  CC=9  out:13
+    _check_field  CC=9  out:15
+    is_inside  CC=2  out:3
+    resolve_local_path  CC=3  out:6
+  redeploy.analyze.ignore  [2 funcs]
+    is_ignored  CC=9  out:10
+    ensure_redeployignore  CC=2  out:2
+  redeploy.analyze.models  [1 funcs]
+    add  CC=2  out:2
   redeploy.analyze.preflight_schema  [5 funcs]
     _collect_local_artifacts  CC=6  out:16
     _collect_remote_checks  CC=8  out:14
     _resolve_command_refs  CC=11  out:20
     _resolve_local_path  CC=4  out:7
     generate_preflight_schema  CC=14  out:25
-  redeploy.analyze.spec_analyzer  [4 funcs]
+  redeploy.analyze.spec_analyzer  [2 funcs]
     __init__  CC=3  out:2
     analyze_file  CC=7  out:10
-    check  CC=7  out:7
-    ensure_redeployignore  CC=2  out:2
   redeploy.apply.executor  [3 funcs]
     __init__  CC=14  out:8
     _execute_step  CC=4  out:27
@@ -2589,12 +2651,13 @@ MODULES:
     detect_handler  CC=3  out:1
   redeploy.apply.utils.run_container_build  [1 funcs]
     run_container_build  CC=10  out:21
-  redeploy.audit  [5 funcs]
-    add  CC=1  out:1
-    _from_target  CC=7  out:9
-    _extract_port  CC=5  out:6
-    _normalize_path  CC=3  out:5
+  redeploy.audit  [1 funcs]
     audit_spec  CC=1  out:3
+  redeploy.audit.extractor  [1 funcs]
+    _from_target  CC=7  out:9
+  redeploy.audit.paths  [2 funcs]
+    extract_port  CC=5  out:6
+    normalize_path  CC=3  out:5
   redeploy.blueprint.extractor  [1 funcs]
     extract_blueprint  CC=22  out:23
   redeploy.blueprint.generators.docker_compose  [2 funcs]
@@ -2716,11 +2779,10 @@ MODULES:
     _finalize_monorepo_version_set  CC=11  out:8
     _print_monorepo_set_dry_run  CC=3  out:5
     _set_monorepo_version  CC=8  out:13
-  redeploy.cli.commands.version.release  [6 funcs]
+  redeploy.cli.commands.version.release  [5 funcs]
     _create_release_tags  CC=3  out:5
     _format_release_tag  CC=1  out:1
     _resolve_package_release_changelog_config  CC=5  out:2
-    _resolve_package_release_git_config  CC=5  out:5
     _update_monorepo_release_changelogs  CC=5  out:12
     _update_release_changelog  CC=7  out:7
   redeploy.cli.commands.version.scanner  [17 funcs]
@@ -2818,9 +2880,10 @@ MODULES:
   redeploy.dsl_python.steps  [2 funcs]
     ssh  CC=4  out:4
     version_check  CC=7  out:10
-  redeploy.fleet  [3 funcs]
+  redeploy.fleet  [4 funcs]
     __init__  CC=1  out:1
     from_registry  CC=6  out:5
+    get  CC=3  out:1
     merge  CC=3  out:3
   redeploy.hardware.config_txt  [2 funcs]
     ensure_line  CC=14  out:20
@@ -2978,9 +3041,8 @@ MODULES:
     build_schema  CC=2  out:7
   redeploy.spec_loader  [1 funcs]
     load_migration_spec  CC=4  out:8
-  redeploy.steps  [3 funcs]
+  redeploy.steps  [2 funcs]
     all  CC=2  out:2
-    get  CC=2  out:4
     list  CC=1  out:2
   redeploy.version  [1 funcs]
     read_remote_version  CC=4  out:3
@@ -3009,28 +3071,11 @@ MODULES:
     _stage_one  CC=6  out:7
 
 EDGES:
+  redeploy.schema.build_schema → redeploy.schema._read_version
+  redeploy.schema.build_schema → redeploy.schema._git_branch
+  redeploy.schema.build_schema → redeploy.schema._discover_specs
+  redeploy.schema.build_schema → redeploy.schema._iac_info
   redeploy.observe.DeployAuditLog.record → redeploy.steps.StepLibrary.list
-  redeploy.mcp_server._run → redeploy.mcp_server._redeploy_bin
-  redeploy.mcp_server.schema → redeploy.schema.build_schema
-  redeploy.mcp_server.plan_spec → redeploy.mcp_server._run
-  redeploy.mcp_server.run_spec → redeploy.mcp_server._run
-  redeploy.mcp_server.fix_spec → redeploy.mcp_server._run
-  redeploy.mcp_server.bump_version → redeploy.mcp_server._run
-  redeploy.mcp_server.diagnose → redeploy.mcp_server._run
-  redeploy.mcp_server.list_specs → redeploy.schema.build_schema
-  redeploy.mcp_server.exec_ssh → redeploy.mcp_server._validate_exec_ssh_inputs
-  redeploy.mcp_server.nlp_command → redeploy.mcp_server._run
-  redeploy.mcp_server.get_workspace → redeploy.schema.build_schema
-  redeploy.patterns.BlueGreenPattern.expand → redeploy.patterns._step
-  redeploy.patterns.CanaryPattern.expand → redeploy.patterns._step
-  redeploy.patterns.RollbackOnFailurePattern.expand → redeploy.patterns._step
-  redeploy.patterns.list_patterns → redeploy.steps.StepLibrary.list
-  redeploy.parse.parse_diagnostics → redeploy.parse._parse_section_line
-  redeploy.parse._parse_section_line → redeploy.parse._apply_system_line
-  redeploy.parse._parse_section_line → redeploy.parse.parse_container_line
-  redeploy.parse._parse_section_line → redeploy.parse._apply_git_line
-  redeploy.parse._parse_section_line → redeploy.parse._apply_health_line
-  redeploy.parse._parse_section_line → redeploy.parse._apply_network_line
   redeploy.heal.collect_diagnostics → redeploy.heal._ssh
   redeploy.heal.HealLoopDetector.observe → redeploy.steps.StepLibrary.all
   redeploy.heal.HealRunner._reload_migration → redeploy.spec_loader.load_migration_spec
@@ -3040,25 +3085,42 @@ EDGES:
   redeploy.heal.HealRunner._record_repair → redeploy.heal.write_repair_log
   redeploy.heal.HealRunner.run → redeploy.heal.write_repair_log
   redeploy.heal.HealRunner.run → redeploy.heal.parse_failed_step
-  redeploy.detect.detector.Detector.run → redeploy.detect.probes.probe_runtime
-  redeploy.detect.detector.Detector.run → redeploy.detect.probes.probe_ports
-  redeploy.detect.detector.Detector.run → redeploy.detect.probes.probe_iptables_dnat
-  redeploy.detect.hardware_rules.analyze → redeploy.detect.hardware_rules._hw_info_to_dict
-  redeploy.detect.hardware_rules.analyze → redeploy.detect.hardware_rules._op3_diag_to_hw_diag
-  redeploy.detect.hardware.probe_hardware → redeploy.detect.hardware._wrap_remote_probe
-  redeploy.detect.hardware.probe_hardware → redeploy.integrations.op3_bridge.snapshot_to_hardware_info
-  redeploy.detect.hardware.probe_hardware → redeploy.steps.StepLibrary.list
+  redeploy.parse.parse_diagnostics → redeploy.parse._parse_section_line
+  redeploy.parse._parse_section_line → redeploy.parse._apply_system_line
+  redeploy.parse._parse_section_line → redeploy.parse.parse_container_line
+  redeploy.parse._parse_section_line → redeploy.parse._apply_git_line
+  redeploy.parse._parse_section_line → redeploy.parse._apply_health_line
+  redeploy.parse._parse_section_line → redeploy.parse._apply_network_line
+  redeploy.fleet.Fleet.__init__ → redeploy.steps.StepLibrary.list
+  redeploy.fleet.Fleet.from_registry → redeploy.steps.StepLibrary.list
+  redeploy.fleet.Fleet.merge → redeploy.steps.StepLibrary.list
   redeploy.spec_loader.load_migration_spec → redeploy.markpact.compiler.compile_markpact_document
   redeploy.spec_loader.load_migration_spec → redeploy.markpact.parser.parse_markpact_file
-  redeploy.detect.probes.detect_conflicts → redeploy.steps.StepLibrary.list
-  redeploy.config_apply.applier.apply_config_dict → redeploy.config_apply.applier._normalize_hardware
-  redeploy.config_apply.applier.apply_config_dict → redeploy.apply.state_apply.apply_state
-  redeploy.config_apply.applier.apply_config_file → redeploy.config_apply.loader.load_config_file
-  redeploy.config_apply.applier.apply_config_file → redeploy.config_apply.applier.apply_config_dict
-  redeploy.config_apply.handlers.display.apply_display_transform → redeploy.config_apply.handlers.display._validate_display_inputs
-  redeploy.audit._Extractor._from_target → redeploy.audit._extract_port
-  redeploy.audit._Extractor._from_target → redeploy.audit._normalize_path
-  redeploy.audit.audit_spec → redeploy.spec_loader.load_migration_spec
+  redeploy.patterns.BlueGreenPattern.expand → redeploy.patterns._step
+  redeploy.patterns.CanaryPattern.expand → redeploy.patterns._step
+  redeploy.patterns.RollbackOnFailurePattern.expand → redeploy.patterns._step
+  redeploy.patterns.list_patterns → redeploy.steps.StepLibrary.list
+  redeploy.discovery._scan_arp_cache → redeploy.discovery._run
+  redeploy.discovery._scan_mdns → redeploy.discovery._run
+  redeploy.discovery._scan_mdns → redeploy.discovery._is_ip
+  redeploy.discovery._ping_sweep → redeploy.steps.StepLibrary.list
+  redeploy.discovery._probe_ssh → redeploy.steps.StepLibrary.list
+  redeploy.discovery._detect_local_subnet → redeploy.discovery._run
+  redeploy.discovery._merge → redeploy.steps.StepLibrary.list
+  redeploy.discovery.discover → redeploy.discovery._merge
+  redeploy.discovery.discover → redeploy.discovery._scan_known_hosts
+  redeploy.discovery.discover → redeploy.discovery._scan_arp_cache
+  redeploy.discovery.discover → redeploy.discovery._probe_ssh
+  redeploy.discovery._try_ssh_credentials → redeploy.discovery._tcp_reachable
+  redeploy.discovery._detect_strategy_remote → redeploy.discovery._build_probe_command
+  redeploy.discovery._detect_strategy_remote → redeploy.discovery._build_ssh_command
+  redeploy.discovery._detect_strategy_remote → redeploy.discovery._run_ssh_probe
+  redeploy.discovery._detect_strategy_remote → redeploy.discovery._parse_probe_output
+  redeploy.discovery._detect_strategy_remote → redeploy.discovery._infer_strategy
+  redeploy.discovery.auto_probe → redeploy.discovery._parse_probe_input
+  redeploy.discovery.auto_probe → redeploy.discovery._collect_ssh_keys
+  redeploy.discovery.auto_probe → redeploy.discovery._try_ssh_credentials
+  redeploy.discovery.auto_probe → redeploy.discovery._detect_strategy_remote
 ```
 
 ## Test Contracts
