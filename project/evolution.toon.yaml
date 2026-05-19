@@ -1,4 +1,4 @@
-# code2llm/evolution | 963 func | 164f | 2026-05-20
+# code2llm/evolution | 967 func | 173f | 2026-05-20
 # generated in 0.00s
 
 NEXT[10] (ranked by impact):
@@ -10,37 +10,37 @@ NEXT[10] (ranked by impact):
       WHY: CC=25 exceeds 15
       EFFORT: ~1h  IMPACT: 600
 
-  [3] !  SPLIT-FUNC      device_map_cmd  CC=20  fan=28
-      WHY: CC=20 exceeds 15
-      EFFORT: ~1h  IMPACT: 560
-
-  [4] !! SPLIT-FUNC      probe  CC=26  fan=21
-      WHY: CC=26 exceeds 15
-      EFFORT: ~1h  IMPACT: 546
-
-  [5] !  SPLIT-FUNC      import_cmd  CC=21  fan=26
+  [3] !  SPLIT-FUNC      import_cmd  CC=21  fan=26
       WHY: CC=21 exceeds 15
       EFFORT: ~1h  IMPACT: 546
 
-  [6] !  SPLIT-FUNC      run  CC=16  fan=34
-      WHY: CC=16 exceeds 15
-      EFFORT: ~1h  IMPACT: 544
-
-  [7] !! SPLIT-FUNC      ConfigHintsParser._parse_k8s_yaml  CC=26  fan=20
+  [4] !! SPLIT-FUNC      ConfigHintsParser._parse_k8s_yaml  CC=26  fan=20
       WHY: CC=26 exceeds 15
       EFFORT: ~1h  IMPACT: 520
 
-  [8] !  SPLIT-FUNC      fix_cmd  CC=17  fan=30
+  [5] !  SPLIT-FUNC      fix_cmd  CC=17  fan=30
       WHY: CC=17 exceeds 15
       EFFORT: ~1h  IMPACT: 510
 
-  [9] !  SPLIT-FUNC      gh_workflow_run  CC=19  fan=25
+  [6] !  SPLIT-FUNC      gh_workflow_run  CC=19  fan=25
       WHY: CC=19 exceeds 15
       EFFORT: ~1h  IMPACT: 475
 
-  [10] !  SPLIT-FUNC      ConfigHintsParser._parse_github_actions  CC=22  fan=21
+  [7] !  SPLIT-FUNC      ConfigHintsParser._parse_github_actions  CC=22  fan=21
       WHY: CC=22 exceeds 15
       EFFORT: ~1h  IMPACT: 462
+
+  [8] !  SPLIT-FUNC      extract_blueprint  CC=22  fan=20
+      WHY: CC=22 exceeds 15
+      EFFORT: ~1h  IMPACT: 440
+
+  [9] !  SPLIT-FUNC      audit  CC=18  fan=24
+      WHY: CC=18 exceeds 15
+      EFFORT: ~1h  IMPACT: 432
+
+  [10] !  SPLIT-FUNC      lint  CC=19  fan=22
+      WHY: CC=19 exceeds 15
+      EFFORT: ~1h  IMPACT: 418
 
 
 RISKS[3]:
@@ -49,10 +49,10 @@ RISKS[3]:
   ⚠ Splitting README.md may break 0 import paths
 
 METRICS-TARGET:
-  CC̄:          5.0 → ≤3.5
+  CC̄:          4.9 → ≤3.4
   max-CC:      26 → ≤13
-  god-modules: 9 → 0
-  high-CC(≥15): 38 → ≤19
+  god-modules: 7 → 0
+  high-CC(≥15): 34 → ≤17
   hub-types:   0 → ≤0
 
 PATTERNS (language parser shared logic):
@@ -80,4 +80,4 @@ PATTERNS (language parser shared logic):
     - Standardized FunctionInfo/ClassInfo models
 
 HISTORY:
-  prev CC̄=5.0 → now CC̄=5.0
+  prev CC̄=5.0 → now CC̄=4.9

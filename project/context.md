@@ -5,12 +5,12 @@
 
 - **Project**: /home/tom/github/maskservice/redeploy
 - **Primary Language**: python
-- **Languages**: python: 209, md: 44, yaml: 37, yml: 3, shell: 2
+- **Languages**: python: 220, md: 44, yaml: 37, yml: 3, shell: 2
 - **Analysis Mode**: static
-- **Total Functions**: 981
-- **Total Classes**: 181
-- **Modules**: 298
-- **Entry Points**: 584
+- **Total Functions**: 985
+- **Total Classes**: 179
+- **Modules**: 309
+- **Entry Points**: 582
 
 ## Architecture by Module
 
@@ -27,11 +27,6 @@
 - **Functions**: 23
 - **Classes**: 1
 - **File**: `docker_compose.py`
-
-### redeploy.discovery
-- **Functions**: 23
-- **Classes**: 2
-- **File**: `discovery.py`
 
 ### redeploy.apply.handlers
 - **Functions**: 22
@@ -109,23 +104,17 @@
 - **Classes**: 2
 - **File**: `git_integration.py`
 
+### redeploy.iac.base
+- **Functions**: 13
+- **Classes**: 7
+- **File**: `base.py`
+
 ## Key Entry Points
 
 Main execution flows into the system:
 
-### redeploy.cli.commands.plan_apply.run
+### redeploy.cli.commands.run_cmd.run
 > Execute migration from a single YAML spec (source + target in one file).
-
-SPEC defaults to migration.yaml (or value from redeploy.yaml manifest).
-
-
-E
-- **Calls**: click.command, click.argument, click.option, click.option, click.option, click.option, click.option, click.option
-
-### redeploy.cli.commands.device_map.device_map_cmd
-> Generate a full standardized device snapshot (hardware + infra + diagnostics).
-
-The DeviceMap is a portable, persisted YAML file that captures the com
 - **Calls**: click.command, click.argument, click.option, click.option, click.option, click.option, click.option, click.option
 
 ### redeploy.cli.commands.import_.import_cmd
@@ -148,13 +137,6 @@ Examples:
     redeploy audit --last 50 --failed
     redeploy audit --
 - **Calls**: click.command, click.option, click.option, click.option, click.option, click.option, click.option, click.option
-
-### redeploy.cli.commands.probe.probe
-> Autonomously probe one or more hosts — detect SSH credentials, strategy, app.
-
-Tries all available SSH keys (~/.ssh/) and common usernames.
-Detects de
-- **Calls**: click.command, click.argument, click.option, click.option, click.option, click.option, click.option, click.option
 
 ### redeploy.cli.commands.patterns.patterns
 > List available deploy patterns or show detail for one.
@@ -191,11 +173,11 @@ Detects missing files, broken references, missing command_ref blocks,
 docker-compose inco
 - **Calls**: click.command, click.argument, click.option, click.option, click.option, Console, ProjectManifest.find_and_load, redeploy.cli.core.load_spec_or_exit
 
-### redeploy.cli.commands.plan_apply.migrate
+### redeploy.cli.commands.migrate_cmd.migrate
 > Full pipeline: detect → plan → apply.
 - **Calls**: click.command, click.option, click.option, click.option, click.option, click.option, click.option, click.option
 
-### redeploy.cli.commands.plan_apply.plan
+### redeploy.cli.commands.plan_cmd.plan
 > Generate migration-plan.yaml from infra.yaml + target config.
 - **Calls**: click.command, click.option, click.option, click.option, click.option, click.option, click.option, click.option
 
@@ -231,6 +213,10 @@ Examples:
     redeploy version bump patch --commit --tag --push
     redep
 - **Calls**: version_cmd.command, click.argument, click.option, click.option, click.option, click.option, click.option, click.option
+
+### redeploy.cli.commands.device_map.device_map_cmd
+> Generate a full standardized device snapshot (hardware + infra + diagnostics).
+- **Calls**: click.command, click.argument, click.option, click.option, click.option, click.option, click.option, click.option
 
 ### redeploy.cli.commands.plugin.plugin_cmd
 > List or inspect registered redeploy plugins.
@@ -299,58 +285,61 @@ Sources (passive by default, zero packets unless --ping):
   known_hosts  — parse ~/.ssh/known_h
 - **Calls**: click.command, click.option, click.option, click.option, click.option, click.option, click.option, click.option
 
+### redeploy.detect.detector.Detector.run
+- **Calls**: logger.info, logger.debug, redeploy.detect.probes.probe_runtime, logger.debug, logger.debug, redeploy.detect.probes.probe_ports, logger.debug, logger.debug
+
 ## Process Flows
 
 Key execution flows identified:
 
 ### Flow 1: run
 ```
-run [redeploy.cli.commands.plan_apply]
+run [redeploy.cli.commands.run_cmd]
 ```
 
-### Flow 2: device_map_cmd
-```
-device_map_cmd [redeploy.cli.commands.device_map]
-```
-
-### Flow 3: import_cmd
+### Flow 2: import_cmd
 ```
 import_cmd [redeploy.cli.commands.import_]
 ```
 
-### Flow 4: version_init
+### Flow 3: version_init
 ```
 version_init [redeploy.cli.commands.version.commands]
 ```
 
-### Flow 5: audit
+### Flow 4: audit
 ```
 audit [redeploy.cli.commands.audit]
 ```
 
-### Flow 6: probe
-```
-probe [redeploy.cli.commands.probe]
-```
-
-### Flow 7: patterns
+### Flow 5: patterns
 ```
 patterns [redeploy.cli.commands.patterns]
 ```
 
-### Flow 8: gh_workflow_run
+### Flow 6: gh_workflow_run
 ```
 gh_workflow_run [redeploy.cli.commands.gh_workflow]
 ```
 
-### Flow 9: hardware
+### Flow 7: hardware
 ```
 hardware [redeploy.cli.commands.hardware]
 ```
 
-### Flow 10: fix_cmd
+### Flow 8: fix_cmd
 ```
 fix_cmd [redeploy.cli.commands.bump_fix]
+```
+
+### Flow 9: lint
+```
+lint [redeploy.cli.commands.lint]
+```
+
+### Flow 10: migrate
+```
+migrate [redeploy.cli.commands.migrate_cmd]
 ```
 
 ## Key Classes
@@ -521,6 +510,9 @@ Handles sections: ===SYSTEM===, ==
 > Extract (step_id, step_output) from executor state or summary string.
 - **Output to**: re.search, getattr, getattr, results.get, isinstance
 
+### redeploy.discovery_probe.parse_probe_output
+- **Output to**: out.splitlines, line.strip, line.startswith, line.startswith, line.split
+
 ### redeploy.analyze.checkers.docker_build.parse_docker_build
 - **Output to**: FILE_FLAG_RE.finditer, cmd.split, len, token.startswith, match.group
 
@@ -537,6 +529,9 @@ Parameters
 ### redeploy.cli.display._format_workflow_header
 > Format workflow header string.
 - **Output to**: len
+
+### redeploy.cli.commands.plan_apply_report._parse_rsync_output
+- **Output to**: ln.rstrip, str, len, None.splitlines, ln.strip
 
 ### redeploy.cli.commands.gh_workflow._parse_fields
 - **Output to**: parsed.append, click.ClickException
@@ -564,13 +559,6 @@ Parameters
 ### redeploy.plugins.builtin.process_control._kill_process
 > Kill a process by PID. Returns True if successful.
 - **Output to**: os.kill, logger.warning
-
-### redeploy.plugins.builtin.process_control.process_control
-> Kill processes on specified ports.
-- **Output to**: redeploy.plugins.register_plugin, ctx.params.get, ctx.params.get, ctx.params.get, ctx.params.get
-
-### redeploy.markpact.parser.parse_markpact_file
-- **Output to**: Path, redeploy.markpact.parser.parse_markpact_text, file_path.read_text
 
 ## Behavioral Patterns
 
@@ -638,33 +626,33 @@ Parameters
 
 Functions exposed as public API (no underscore prefix):
 
-- `redeploy.cli.commands.plan_apply.run` - 74 calls
-- `redeploy.cli.commands.device_map.device_map_cmd` - 59 calls
+- `redeploy.cli.commands.run_cmd.run` - 69 calls
 - `redeploy.cli.commands.import_.import_cmd` - 56 calls
 - `redeploy.cli.commands.version.commands.version_init` - 56 calls
 - `redeploy.cli.commands.audit.audit` - 51 calls
-- `redeploy.cli.commands.probe.probe` - 50 calls
 - `redeploy.cli.commands.patterns.patterns` - 50 calls
 - `redeploy.cli.commands.gh_workflow.gh_workflow_run` - 49 calls
 - `redeploy.integrations.op3_bridge.snapshot_to_hardware_info` - 49 calls
 - `redeploy.cli.commands.hardware.hardware` - 47 calls
 - `redeploy.cli.commands.bump_fix.fix_cmd` - 44 calls
 - `redeploy.cli.commands.lint.lint` - 44 calls
-- `redeploy.cli.commands.plan_apply.migrate` - 43 calls
-- `redeploy.cli.commands.plan_apply.plan` - 41 calls
+- `redeploy.cli.commands.migrate_cmd.migrate` - 43 calls
+- `redeploy.cli.commands.plan_cmd.plan` - 41 calls
 - `redeploy.cli.commands.exec_.exec_cmd` - 40 calls
 - `examples.redeploy_iac_parsers.argocd_flux.FluxKustomizationParser.parse` - 40 calls
 - `redeploy.cli.commands.push.push` - 39 calls
 - `redeploy.cli.commands.version.commands.version_bump` - 39 calls
+- `redeploy.cli.commands.device_map.device_map_cmd` - 39 calls
 - `redeploy.cli.commands.plugin.plugin_cmd` - 38 calls
 - `redeploy.cli.commands.version.commands.version_list` - 38 calls
 - `examples.redeploy_iac_parsers.argocd_flux.ArgoCDApplicationParser.parse` - 38 calls
 - `redeploy.cli.commands.prompt_cmd.prompt_cmd` - 37 calls
+- `redeploy.cli.commands.device_map_actions.print_device_map_diff` - 36 calls
 - `redeploy.cli.commands.exec_.exec_multi_cmd` - 35 calls
 - `redeploy.cli.commands.blueprint.capture` - 35 calls
 - `redeploy.cli.commands.detect.detect` - 35 calls
 - `redeploy.iac.docker_compose.DockerComposeParser.parse` - 33 calls
-- `redeploy.discovery.auto_probe` - 33 calls
+- `redeploy.discovery.auto_probe.auto_probe` - 33 calls
 - `redeploy.cli.commands.target.target` - 31 calls
 - `redeploy.cli.commands.devices.scan` - 31 calls
 - `redeploy.detect.detector.Detector.run` - 30 calls
@@ -673,11 +661,11 @@ Functions exposed as public API (no underscore prefix):
 - `redeploy.cli.commands.init.init` - 29 calls
 - `redeploy.cli.commands.version.commands.version_set` - 29 calls
 - `examples.redeploy_iac_parsers.gitops_ci.GitHubActionsGitOpsParser.parse` - 29 calls
-- `redeploy.cli.commands.devices.devices` - 28 calls
 - `redeploy.apply.state_apply.HardwareStateHandler.apply` - 27 calls
 - `examples.redeploy_iac_parsers.helm_kustomize.HelmTemplatesParser.parse` - 27 calls
 - `redeploy.cli.commands.status.status` - 26 calls
 - `redeploy.plugins.builtin.browser_reload.browser_reload` - 26 calls
+- `redeploy.apply.handlers.run_ensure_kanshi_profile` - 26 calls
 
 ## System Interactions
 
@@ -688,9 +676,6 @@ graph TD
     run --> command
     run --> argument
     run --> option
-    device_map_cmd --> command
-    device_map_cmd --> argument
-    device_map_cmd --> option
     import_cmd --> command
     import_cmd --> argument
     import_cmd --> option
@@ -698,9 +683,6 @@ graph TD
     version_init --> option
     audit --> command
     audit --> option
-    probe --> command
-    probe --> argument
-    probe --> option
     patterns --> command
     patterns --> argument
     patterns --> Console
@@ -715,6 +697,12 @@ graph TD
     fix_cmd --> command
     fix_cmd --> argument
     fix_cmd --> option
+    lint --> command
+    lint --> argument
+    lint --> option
+    migrate --> command
+    migrate --> option
+    plan --> command
 ```
 
 ## Reverse Engineering Guidelines

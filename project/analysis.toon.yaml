@@ -1,33 +1,33 @@
-# code2llm | 299f 40750L | python:209,md:44,yaml:37,yml:3,shell:2,json:1,toml:1 | 2026-05-20
+# code2llm | 310f 40584L | python:220,md:44,yaml:37,yml:3,shell:2,json:1,toml:1 | 2026-05-20
 # generated in 0.07s
-# CC̄=5.0 | critical:41/981 | dups:0 | cycles:0
+# CC̄=5.0 | critical:37/985 | dups:0 | cycles:0
 
 HEALTH[20]:
   🟡 CC    verify_expectations CC=25 (limit:15)
   🟡 CC    _collect_hosts CC=18 (limit:15)
   🟡 CC    apply_fix_to_spec CC=16 (limit:15)
+  🟡 CC    parse_probe_output CC=16 (limit:15)
   🟡 CC    apply_to_spec CC=20 (limit:15)
-  🟡 CC    devices CC=22 (limit:15)
   🟡 CC    render_rich CC=22 (limit:15)
   🟡 CC    _find_spec CC=15 (limit:15)
   🟡 CC    fix_cmd CC=17 (limit:15)
   🟡 CC    _print_blueprint CC=20 (limit:15)
-  🟡 CC    probe CC=26 (limit:15)
   🟡 CC    import_cmd CC=21 (limit:15)
   🟡 CC    _print_import_spec CC=15 (limit:15)
   🟡 CC    _spec_to_migration_yaml CC=22 (limit:15)
   🟡 CC    gh_workflow_run CC=19 (limit:15)
-  🟡 CC    device_map_cmd CC=20 (limit:15)
   🟡 CC    lint CC=19 (limit:15)
   🟡 CC    prompt_cmd CC=15 (limit:15)
   🟡 CC    push CC=15 (limit:15)
   🟡 CC    audit CC=18 (limit:15)
   🟡 CC    version_init CC=26 (limit:15)
+  🟡 CC    _bump_single CC=25 (limit:15)
+  🟡 CC    browser_reload CC=16 (limit:15)
 
 REFACTOR[1]:
   1. split 20 high-CC methods  (CC>15)
 
-PIPELINES[520]:
+PIPELINES[518]:
   [1] Src [to_dict]: to_dict
       PURITY: 100% pure
   [2] Src [record]: record → list
@@ -107,9 +107,7 @@ LAYERS:
   │ redeploy.yaml                4L  0C    0m  CC=0.0    ←0
   │ redeploy.yaml                3L  0C    0m  CC=0.0    ←0
   │
-  redeploy/                       CC̄=5.0    ←in:79  →out:2
-  │ !! discovery                  693L  2C   23m  CC=14     ←5
-  │ !! plan_apply                 686L  0C   13m  CC=16     ←0
+  redeploy/                       CC̄=4.9    ←in:77  →out:3
   │ !! handlers                   655L  0C   22m  CC=16     ←2
   │ !! planner                    627L  1C   21m  CC=10     ←0
   │ !! commands                   594L  0C    8m  CC=26     ←0
@@ -133,7 +131,6 @@ LAYERS:
   │ schema                     311L  0C    6m  CC=14     ←2
   │ parser                     310L  1C   10m  CC=14     ←6
   │ ssh                        301L  4C   17m  CC=7      ←0
-  │ !! device_map                 299L  0C    5m  CC=20     ←0
   │ !! compose                    299L  1C   18m  CC=18     ←0
   │ plan_apply_report          296L  0C   10m  CC=14     ←1
   │ steps                      294L  0C    7m  CC=7      ←0
@@ -147,9 +144,10 @@ LAYERS:
   │ runner                     265L  1C    5m  CC=14     ←0
   │ scanner                    262L  0C   18m  CC=13     ←1
   │ parser                     261L  2C    8m  CC=8      ←0
+  │ scanners                   254L  0C    8m  CC=14     ←3
   │ op3_bridge                 250L  0C    5m  CC=10     ←3
   │ exec_                      240L  0C    6m  CC=10     ←0
-  │ !! devices                    226L  0C    4m  CC=22     ←0
+  │ plan_apply_shared          235L  0C   10m  CC=13     ←1
   │ !! state_apply                222L  4C    9m  CC=18     ←2
   │ !! commits                    218L  2C    3m  CC=18     ←2
   │ templates.yaml             215L  0C    0m  CC=0.0    ←0
@@ -157,18 +155,22 @@ LAYERS:
   │ !! runner                     205L  1C    5m  CC=15     ←0
   │ changelog                  204L  1C   15m  CC=7      ←1
   │ fixes                      203L  0C    6m  CC=7      ←1
+  │ devices                    192L  0C    4m  CC=14     ←0
   │ parse                      190L  0C   10m  CC=12     ←0
   │ !! docker_compose             190L  0C    2m  CC=20     ←1
+  │ auto_probe                 186L  0C    9m  CC=7      ←4
   │ spec                       182L  3C    6m  CC=5      ←1
   │ extractor                  182L  1C    5m  CC=14     ←0
   │ compiler                   182L  1C    6m  CC=11     ←3
   │ __init__                   180L  2C   10m  CC=7      ←8
   │ core                       179L  0C    7m  CC=10     ←7
   │ !! migration                  179L  0C    1m  CC=19     ←1
+  │ device_map_actions         174L  0C    5m  CC=13     ←1
   │ devices                    170L  4C   13m  CC=5      ←0
-  │ !! device_map_renderers       170L  0C    7m  CC=22     ←1
+  │ !! device_map_renderers       170L  0C    7m  CC=22     ←0
   │ manifest                   169L  8C   10m  CC=6      ←0
   │ notify                     168L  0C    7m  CC=6      ←0
+  │ run_cmd                    168L  0C    1m  CC=13     ←0
   │ process_control_template.yaml   164L  0C    0m  CC=0.0    ←0
   │ transaction                162L  2C    6m  CC=12     ←0
   │ state                      161L  1C   13m  CC=5      ←2
@@ -179,7 +181,6 @@ LAYERS:
   │ !! manifest                   151L  2C    6m  CC=20     ←0
   │ __init__                   148L  0C    4m  CC=8      ←1
   │ !! compose                    146L  0C    6m  CC=21     ←1
-  │ !! probe                      144L  0C    1m  CC=26     ←0
   │ compose                    143L  1C    6m  CC=11     ←0
   │ git_integration            142L  2C   13m  CC=4      ←0
   │ !! extractor                  140L  0C    1m  CC=22     ←1
@@ -198,26 +199,28 @@ LAYERS:
   │ diff                       118L  1C    3m  CC=8      ←1
   │ hardware                   117L  5C    0m  CC=0.0    ←0
   │ init                       111L  0C    1m  CC=10     ←0
+  │ ssh_credentials            111L  0C    3m  CC=14     ←1
   │ !! push                       110L  0C    1m  CC=15     ←0
   │ progress                   107L  1C   11m  CC=2      ←0
   │ registry                   107L  0C    4m  CC=14     ←1
   │ git_transaction            105L  2C    5m  CC=9      ←0
   │ detector                   104L  1C    4m  CC=9      ←2
+  │ plan_apply_run             104L  0C    3m  CC=8      ←1
   │ patterns                   104L  0C    1m  CC=8      ←0
   │ toml_                      104L  1C    3m  CC=10     ←0
-  │ plan_apply_run             104L  0C    3m  CC=8      ←1
   │ systemd_reload              98L  0C    2m  CC=12     ←0
-  │ __init__                    97L  1C    4m  CC=4      ←41
+  │ __init__                    97L  1C    4m  CC=4      ←43
   │ target                      97L  0C    1m  CC=10     ←1
   │ blueprint                   95L  6C    3m  CC=3      ←0
   │ path                        94L  2C    5m  CC=9      ←1
   │ yaml_                       94L  1C    3m  CC=10     ←0
   │ verify                      92L  1C    7m  CC=8      ←0
+  │ probe                       91L  0C    1m  CC=11     ←0
   │ json_                       90L  1C    3m  CC=9      ←0
   │ config_txt                  88L  1C    2m  CC=14     ←1
   │ generic                     87L  0C    1m  CC=1      ←0
   │ workflow                    87L  0C    3m  CC=10     ←0
-  │ ignore                      86L  1C    4m  CC=9      ←1
+  │ ignore                      86L  1C    4m  CC=9      ←2
   │ !! lint                        86L  0C    1m  CC=19     ←0
   │ decider                     85L  2C    2m  CC=7      ←1
   │ autostart                   84L  1C    3m  CC=6      ←1
@@ -229,18 +232,23 @@ LAYERS:
   │ plugin                      79L  0C    1m  CC=13     ←0
   │ probe                       78L  1C    8m  CC=4      ←0
   │ browsers                    78L  1C    1m  CC=5      ←0
+  │ device_map                  78L  0C    1m  CC=11     ←0
+  │ plan_cmd                    78L  0C    1m  CC=11     ←0
+  │ probe_display               77L  0C    3m  CC=9      ←1
   │ infra                       77L  6C    0m  CC=0.0    ←0
   │ __init__                    77L  0C    0m  CC=0.0    ←0
+  │ migrate_cmd                 75L  0C    1m  CC=13     ←0
   │ binary                      74L  1C    2m  CC=14     ←0
   │ inspect                     73L  0C    2m  CC=4      ←0
   │ applier                     72L  0C    3m  CC=4      ←3
   │ run_container_build         69L  0C    1m  CC=10     ←1
   │ enums                       69L  4C    0m  CC=0.0    ←0
   │ output_profiles             68L  1C    2m  CC=5      ←0
-  │ discovery_registry          66L  0C    3m  CC=9      ←1
   │ regex                       65L  1C    2m  CC=5      ←0
   │ __init__                    65L  1C    5m  CC=2      ←3
+  │ registry                    64L  0C    3m  CC=9      ←1
   │ loop_detector               61L  2C    4m  CC=5      ←0
+  │ devices_display             61L  0C    2m  CC=13     ←1
   │ __init__                    59L  0C    0m  CC=0.0    ←0
   │ k3s                         58L  0C    1m  CC=1      ←0
   │ hardware_rules              56L  0C    3m  CC=3      ←0
@@ -250,6 +258,7 @@ LAYERS:
   │ log_writer                  51L  0C    1m  CC=6      ←0
   │ __init__                    51L  0C    1m  CC=1      ←1
   │ panels                      51L  1C    5m  CC=2      ←2
+  │ apply_cmd                   51L  0C    1m  CC=9      ←0
   │ base                        49L  1C    5m  CC=3      ←0
   │ kiosk                       49L  0C    0m  CC=0.0    ←0
   │ models                      48L  3C    3m  CC=3      ←1
@@ -259,7 +268,6 @@ LAYERS:
   │ __init__                    47L  0C    0m  CC=0.0    ←0
   │ data_sync                   45L  0C    2m  CC=7      ←0
   │ hardware                    45L  0C    1m  CC=13     ←1
-  │ !! discovery_probe             45L  0C    2m  CC=16     ←0
   │ exceptions                  44L  6C    4m  CC=1      ←0
   │ rollback                    44L  0C    1m  CC=8      ←1
   │ __init__                    44L  0C    0m  CC=0.0    ←0
@@ -277,8 +285,9 @@ LAYERS:
   │ migration                   34L  0C    1m  CC=9      ←1
   │ diff                        33L  0C    1m  CC=1      ←0
   │ process                     32L  0C    1m  CC=1      ←0
+  │ helpers                     32L  0C    3m  CC=2      ←1
   │ raspi_config                32L  0C    1m  CC=3      ←1
-  │ helpers                     32L  0C    3m  CC=2      ←0
+  │ __init__                    31L  0C    0m  CC=0.0    ←0
   │ __init__                    30L  0C    0m  CC=0.0    ←0
   │ patterns                    28L  0C    0m  CC=0.0    ←0
   │ persisted                   27L  1C    2m  CC=1      ←0
@@ -300,6 +309,7 @@ LAYERS:
   │ exceptions                  12L  1C    1m  CC=1      ←0
   │ __init__                    11L  0C    0m  CC=0.0    ←0
   │ __init__                    10L  0C    0m  CC=0.0    ←0
+  │ plan_apply                   9L  0C    0m  CC=0.0    ←0
   │ __init__                     8L  0C    0m  CC=0.0    ←0
   │ __init__                     8L  0C    0m  CC=0.0    ←0
   │ __init__                     8L  0C    0m  CC=0.0    ←0
@@ -314,10 +324,11 @@ LAYERS:
   │ __init__                     1L  0C    0m  CC=0.0    ←0
   │ __init__                     1L  0C    0m  CC=0.0    ←0
   │ heal                         0L  2C   20m  CC=8      ←1
+  │ !! discovery_probe              0L  0C    2m  CC=16     ←1
   │ __init__                     0L  0C    0m  CC=0.0    ←0
   │
   ./                              CC̄=0.0    ←in:0  →out:0
-  │ !! CHANGELOG.md              1503L  0C    0m  CC=0.0    ←0
+  │ !! CHANGELOG.md              1526L  0C    0m  CC=0.0    ←0
   │ !! README.md                 1117L  0C    0m  CC=0.0    ←0
   │ !! goal.yaml                  512L  0C    0m  CC=0.0    ←0
   │ REFACTORING.md             399L  0C    0m  CC=0.0    ←0
@@ -332,7 +343,7 @@ LAYERS:
   │ tree.sh                      1L  0C    0m  CC=0.0    ←0
   │
   docs/                           CC̄=0.0    ←in:0  →out:0
-  │ !! README.md                 1141L  0C    0m  CC=0.0    ←0
+  │ !! README.md                 1176L  0C    0m  CC=0.0    ←0
   │ dsl-migration.md           478L  0C    0m  CC=0.0    ←0
   │ fleet.md                   366L  0C    0m  CC=0.0    ←0
   │ patterns.md                304L  0C    0m  CC=0.0    ←0
@@ -355,36 +366,38 @@ LAYERS:
   │
   ── zero ──
      redeploy/blueprint/generators/__init__.py  0L
+     redeploy/discovery_probe.py               0L
      redeploy/heal.py                          0L
 
 COUPLING:
-                                      redeploy           redeploy.cli       redeploy.version         redeploy.apply      redeploy.markpact          redeploy.heal       redeploy.analyze           redeploy.iac           redeploy.dsl        redeploy.detect        redeploy.models     redeploy.blueprint      redeploy.hardware  redeploy.config_apply       redeploy.plugins
-               redeploy                     ──                    ←30                     ←1                     ←2                      2                    ←11                     ←3                     ←7                     ←1                     ←5                     ←4                     ←2                     ←1                                            ←5  hub
-           redeploy.cli                     30                     ──                     15                      7                      1                                             2                      2                      7                      2                                             3                      2                      4                         !! fan-out
+                                      redeploy           redeploy.cli       redeploy.version         redeploy.apply     redeploy.discovery      redeploy.markpact       redeploy.analyze          redeploy.heal           redeploy.iac           redeploy.dsl        redeploy.detect        redeploy.models     redeploy.blueprint      redeploy.hardware  redeploy.config_apply
+               redeploy                     ──                    ←25                     ←1                     ←2                      1                      2                     ←3                    ←11                     ←7                     ←1                     ←3                     ←4                     ←2                     ←1                         hub
+           redeploy.cli                     25                     ──                     15                      7                      5                      1                      3                                             2                      7                      2                                             3                      2                      4  !! fan-out
        redeploy.version                      1                    ←15                     ──                                                                                                                                                                                                                                                                                      hub
-         redeploy.apply                      2                     ←7                                            ──                      1                                                                                                                                                                                       3                     ←1                         hub
-      redeploy.markpact                     ←2                     ←1                                            ←1                     ──                                            ←5                     ←1                                                                    2                                                                                              hub
-          redeploy.heal                     11                                                                                                                 ──                                                                                                                                                                                                                 !! fan-out
-       redeploy.analyze                      3                     ←2                                                                    5                                            ──                                                                                                                                                                                          !! fan-out
-           redeploy.iac                      7                     ←2                                                                    1                                                                   ──                                                                                                                                                                   !! fan-out
-           redeploy.dsl                      1                     ←7                                                                                                                                                               ──                                            ←1                                                                                              hub
-        redeploy.detect                      5                     ←2                                                                                                                                                                                      ──                                                                                                                   
-        redeploy.models                      4                                                                                          ←2                                                                                           1                                            ──                                                                                            
-     redeploy.blueprint                      2                     ←3                                                                                                                                                                                                                                    ──                                                                     
-      redeploy.hardware                      1                     ←2                                            ←3                                                                                                                                                                                                             ──                                                hub
-  redeploy.config_apply                                            ←4                                             1                                                                                                                                                                                                                                    ──                       
-       redeploy.plugins                      5                                                                                                                                                                                                                                                                                                                                ──
+         redeploy.apply                      2                     ←7                                            ──                                             1                                                                                                                                                                                       3                     ←1  hub
+     redeploy.discovery                      5                     ←5                                                                   ──                                                                                                                                        ←2                                                                                              hub
+      redeploy.markpact                     ←2                     ←1                                            ←1                                            ──                     ←5                                            ←1                                                                    2                                                                       hub
+       redeploy.analyze                      3                     ←3                                                                                           5                     ──                                                                                                                                                                                          !! fan-out
+          redeploy.heal                     11                                                                                                                                                               ──                                                                                                                                                                   !! fan-out
+           redeploy.iac                      7                     ←2                                                                                           1                                                                   ──                                                                                                                                            !! fan-out
+           redeploy.dsl                      1                     ←7                                                                                                                                                                                      ──                                            ←1                                                                       hub
+        redeploy.detect                      3                     ←2                                                                    2                                                                                                                                        ──                                                                                            
+        redeploy.models                      4                                                                                                                 ←2                                                                                           1                                            ──                                                                     
+     redeploy.blueprint                      2                     ←3                                                                                                                                                                                                                                                           ──                                              
+      redeploy.hardware                      1                     ←2                                            ←3                                                                                                                                                                                                                                    ──                         hub
+  redeploy.config_apply                                            ←4                                             1                                                                                                                                                                                                                                                           ──
   CYCLES: none
-  HUB: redeploy.dsl/ (fan-in=8)
-  HUB: redeploy/ (fan-in=79)
   HUB: redeploy.hardware/ (fan-in=5)
-  HUB: redeploy.version/ (fan-in=15)
-  HUB: redeploy.markpact/ (fan-in=10)
   HUB: redeploy.apply/ (fan-in=8)
+  HUB: redeploy/ (fan-in=77)
+  HUB: redeploy.version/ (fan-in=15)
+  HUB: redeploy.dsl/ (fan-in=8)
+  HUB: redeploy.markpact/ (fan-in=10)
+  HUB: redeploy.discovery/ (fan-in=8)
+  SMELL: redeploy.analyze/ fan-out=8 → split needed
   SMELL: redeploy.heal/ fan-out=11 → split needed
   SMELL: redeploy.iac/ fan-out=8 → split needed
-  SMELL: redeploy.cli/ fan-out=76 → split needed
-  SMELL: redeploy.analyze/ fan-out=8 → split needed
+  SMELL: redeploy.cli/ fan-out=77 → split needed
 
 EXTERNAL:
   validation: run `vallm batch .` → validation.toon

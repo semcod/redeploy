@@ -1,7 +1,7 @@
 """Tests for discovery_probe parsing helpers."""
 from __future__ import annotations
 
-from redeploy.discovery_probe import infer_strategy, parse_probe_output
+from redeploy.discovery.probe_parse import infer_strategy, parse_probe_output
 
 
 SAMPLE_PROBE_OUTPUT = """

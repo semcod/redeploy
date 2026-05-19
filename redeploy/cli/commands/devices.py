@@ -7,7 +7,6 @@ from pathlib import Path
 
 import click
 from rich.console import Console
-from rich.table import Table
 
 
 @click.command()
@@ -28,18 +27,13 @@ def devices(tag, strategy, rpi, reachable, as_json):
     import json as _json
     from ...models import DeviceRegistry
 
+    from .devices_display import filter_devices, render_devices_table
+
     console = Console()
     reg = DeviceRegistry.load()
-    devs = reg.devices
-
-    if tag:
-        devs = [d for d in devs if tag in d.tags]
-    if strategy:
-        devs = [d for d in devs if d.strategy == strategy]
-    if rpi:
-        devs = [d for d in devs if "raspberry-pi" in d.tags]
-    if reachable:
-        devs = [d for d in devs if d.is_reachable]
+    devs = filter_devices(
+        reg.devices, tag=tag, strategy=strategy, rpi=rpi, reachable=reachable,
+    )
 
     if as_json:
         print(
@@ -55,35 +49,7 @@ def devices(tag, strategy, rpi, reachable, as_json):
         console.print("[dim]No devices found. Run:[/dim]  redeploy scan")
         return
 
-    t = Table(show_header=True, box=None, padding=(0, 2))
-    t.add_column("ID", style="bold")
-    t.add_column("Host")
-    t.add_column("Strategy", style="cyan")
-    t.add_column("App")
-    t.add_column("Tags", style="dim")
-    t.add_column("Last seen", style="dim")
-    t.add_column("SSH", style="dim")
-
-    for d in devs:
-        seen = d.last_seen.strftime("%m-%d %H:%M") if d.last_seen else "never"
-        ssh = "[green]✓[/green]" if d.last_ssh_ok else "[red]✗[/red]"
-        tags_str = ",".join(d.tags) or "—"
-        # Highlight raspberry-pi tag
-        if "raspberry-pi" in d.tags:
-            tags_str = tags_str.replace("raspberry-pi", "[bold magenta]raspberry-pi[/bold magenta]")
-        t.add_row(
-            d.id,
-            d.host,
-            d.strategy,
-            d.app or "—",
-            tags_str,
-            seen,
-            ssh,
-        )
-    console.print(t)
-    console.print(
-        f"\n  [dim]{len(devs)} device(s)  •  registry: {DeviceRegistry.default_path()}[/dim]"
-    )
+    render_devices_table(console, devs)
 
 
 @click.command()

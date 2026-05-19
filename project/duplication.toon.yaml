@@ -1,26 +1,23 @@
-# redup/duplication | 13 groups | 207f 29261L | 2026-05-19
+# redup/duplication | 11 groups | 216f 28973L | 2026-05-19
 
 SUMMARY:
-  files_scanned: 207
-  total_lines:   29261
-  dup_groups:    13
-  dup_fragments: 26
-  saved_lines:   165
-  scan_ms:       2624
+  files_scanned: 216
+  total_lines:   28973
+  dup_groups:    11
+  dup_fragments: 22
+  saved_lines:   121
+  scan_ms:       2758
 
 HOTSPOTS[7] (files with most duplication):
-  redeploy/discovery/probe_parse.py  dup=40L  groups=2  frags=2  (0.1%)
-  redeploy/discovery_probe.py  dup=40L  groups=2  frags=2  (0.1%)
   redeploy/cli/commands/version/helpers.py  dup=38L  groups=2  frags=2  (0.1%)
   redeploy/cli/commands/version/release.py  dup=38L  groups=2  frags=2  (0.1%)
   redeploy/hardware/fixes.py  dup=26L  groups=1  frags=2  (0.1%)
   redeploy/cli/commands/version/utils/changelog_config.py  dup=21L  groups=1  frags=1  (0.1%)
   redeploy/cli/commands/version/utils/git_config.py  dup=21L  groups=1  frags=1  (0.1%)
+  examples/redeploy_iac_parsers/argocd_flux.py  dup=20L  groups=1  frags=2  (0.1%)
+  redeploy/heal.py  dup=18L  groups=3  frags=3  (0.1%)
 
-DUPLICATES[13] (ranked by impact):
-  [da68af415fa60292] ! EXAC  parse_probe_output  L=32 N=2 saved=32 sim=1.00
-      redeploy/discovery/probe_parse.py:4-35  (parse_probe_output)
-      redeploy/discovery_probe.py:4-35  (parse_probe_output)
+DUPLICATES[11] (ranked by impact):
   [bb546964bbb3b9b9]   EXAC  _resolve_package_release_git_config  L=22 N=2 saved=22 sim=1.00
       redeploy/cli/commands/version/helpers.py:60-81  (_resolve_package_release_git_config)
       redeploy/cli/commands/version/release.py:114-135  (_resolve_package_release_git_config)
@@ -36,104 +33,93 @@ DUPLICATES[13] (ranked by impact):
   [6378b1bc4c001c05]   STRU  can_parse  L=10 N=2 saved=10 sim=1.00
       examples/redeploy_iac_parsers/argocd_flux.py:27-36  (can_parse)
       examples/redeploy_iac_parsers/argocd_flux.py:81-90  (can_parse)
-  [af902116d9805742]   EXAC  _load_dotenv  L=9 N=2 saved=9 sim=1.00
+  [38b4a0d706405cb1]   STRU  _load_dotenv  L=9 N=2 saved=9 sim=1.00
       redeploy/cli/commands/bump_fix.py:163-171  (_load_dotenv)
-      redeploy/cli/commands/plan_apply.py:562-571  (_load_dotenv)
-  [b3424a74c0953eff]   EXAC  infer_strategy  L=8 N=2 saved=8 sim=1.00
-      redeploy/discovery/probe_parse.py:38-45  (infer_strategy)
-      redeploy/discovery_probe.py:38-45  (infer_strategy)
+      redeploy/cli/commands/plan_apply_shared.py:119-127  (load_dotenv_for_heal)
   [fc600e8d2f11c2ec]   EXAC  collect_diagnostics  L=8 N=2 saved=8 sim=1.00
       redeploy/heal/hint_provider.py:82-89  (collect_diagnostics)
       redeploy/heal.py:87-94  (collect_diagnostics)
   [069a3d8b69b2d778]   STRU  run_docker_build  L=8 N=2 saved=8 sim=1.00
       redeploy/apply/handlers.py:119-126  (run_docker_build)
       redeploy/apply/handlers.py:129-136  (run_podman_build)
-  [7b14143d76345ae5]   STRU  run_shell  L=8 N=2 saved=8 sim=1.00
-      redeploy/discovery/helpers.py:21-28  (run_shell)
-      redeploy/discovery.py:355-360  (_run)
   [2bcb64b1eb9fa406]   EXAC  _ssh  L=7 N=2 saved=7 sim=1.00
       redeploy/heal/hint_provider.py:73-79  (_ssh)
       redeploy/heal.py:78-84  (_ssh)
+  [18c2c8acae3b5cbb]   STRU  _print_banner  L=4 N=2 saved=4 sim=1.00
+      redeploy/cli/commands/bump_fix.py:340-343  (_print_banner)
+      redeploy/cli/commands/plan_apply_shared.py:141-144  (print_heal_banner)
   [cd12ee27f7030458]   EXAC  reset  L=3 N=2 saved=3 sim=1.00
       redeploy/heal/loop_detector.py:55-57  (reset)
       redeploy/heal.py:271-273  (reset)
 
-REFACTOR[13] (ranked by priority):
-  [1] ◐ extract_function   → redeploy/utils/parse_probe_output.py
-      WHY: 2 occurrences of 32-line block across 2 files — saves 32 lines
-      FILES: redeploy/discovery/probe_parse.py, redeploy/discovery_probe.py
-  [2] ○ extract_function   → redeploy/cli/commands/version/utils/_resolve_package_release_git_config.py
+REFACTOR[11] (ranked by priority):
+  [1] ○ extract_function   → redeploy/cli/commands/version/utils/_resolve_package_release_git_config.py
       WHY: 2 occurrences of 22-line block across 2 files — saves 22 lines
       FILES: redeploy/cli/commands/version/helpers.py, redeploy/cli/commands/version/release.py
-  [3] ○ extract_function   → redeploy/cli/commands/version/utils/utils/resolve_package_release_changelog_config.py
+  [2] ○ extract_function   → redeploy/cli/commands/version/utils/utils/resolve_package_release_changelog_config.py
       WHY: 2 occurrences of 21-line block across 2 files — saves 21 lines
       FILES: redeploy/cli/commands/version/utils/changelog_config.py, redeploy/cli/commands/version/utils/git_config.py
-  [4] ○ extract_function   → redeploy/cli/commands/version/utils/_resolve_package_release_changelog_config.py
+  [3] ○ extract_function   → redeploy/cli/commands/version/utils/_resolve_package_release_changelog_config.py
       WHY: 2 occurrences of 16-line block across 2 files — saves 16 lines
       FILES: redeploy/cli/commands/version/helpers.py, redeploy/cli/commands/version/release.py
-  [5] ○ extract_function   → redeploy/hardware/utils/fix_enable_i2c.py
+  [4] ○ extract_function   → redeploy/hardware/utils/fix_enable_i2c.py
       WHY: 2 occurrences of 13-line block across 1 files — saves 13 lines
       FILES: redeploy/hardware/fixes.py
-  [6] ○ extract_function   → examples/redeploy_iac_parsers/utils/can_parse.py
+  [5] ○ extract_function   → examples/redeploy_iac_parsers/utils/can_parse.py
       WHY: 2 occurrences of 10-line block across 1 files — saves 10 lines
       FILES: examples/redeploy_iac_parsers/argocd_flux.py
-  [7] ○ extract_function   → redeploy/cli/commands/utils/_load_dotenv.py
+  [6] ○ extract_function   → redeploy/cli/commands/utils/_load_dotenv.py
       WHY: 2 occurrences of 9-line block across 2 files — saves 9 lines
-      FILES: redeploy/cli/commands/bump_fix.py, redeploy/cli/commands/plan_apply.py
-  [8] ○ extract_function   → redeploy/utils/infer_strategy.py
-      WHY: 2 occurrences of 8-line block across 2 files — saves 8 lines
-      FILES: redeploy/discovery/probe_parse.py, redeploy/discovery_probe.py
-  [9] ○ extract_function   → redeploy/utils/collect_diagnostics.py
+      FILES: redeploy/cli/commands/bump_fix.py, redeploy/cli/commands/plan_apply_shared.py
+  [7] ○ extract_function   → redeploy/utils/collect_diagnostics.py
       WHY: 2 occurrences of 8-line block across 2 files — saves 8 lines
       FILES: redeploy/heal.py, redeploy/heal/hint_provider.py
-  [10] ○ extract_function   → redeploy/apply/utils/run_docker_build.py
+  [8] ○ extract_function   → redeploy/apply/utils/run_docker_build.py
       WHY: 2 occurrences of 8-line block across 1 files — saves 8 lines
       FILES: redeploy/apply/handlers.py
-  [11] ○ extract_function   → redeploy/utils/run_shell.py
-      WHY: 2 occurrences of 8-line block across 2 files — saves 8 lines
-      FILES: redeploy/discovery.py, redeploy/discovery/helpers.py
-  [12] ○ extract_function   → redeploy/utils/_ssh.py
+  [9] ○ extract_function   → redeploy/utils/_ssh.py
       WHY: 2 occurrences of 7-line block across 2 files — saves 7 lines
       FILES: redeploy/heal.py, redeploy/heal/hint_provider.py
-  [13] ○ extract_class      → redeploy/utils/reset.py
+  [10] ○ extract_function   → redeploy/cli/commands/utils/_print_banner.py
+      WHY: 2 occurrences of 4-line block across 2 files — saves 4 lines
+      FILES: redeploy/cli/commands/bump_fix.py, redeploy/cli/commands/plan_apply_shared.py
+  [11] ○ extract_class      → redeploy/utils/reset.py
       WHY: 2 occurrences of 3-line block across 2 files — saves 3 lines
       FILES: redeploy/heal.py, redeploy/heal/loop_detector.py
 
-QUICK_WINS[11] (low risk, high savings — do first):
-  [2] extract_function   saved=22L  → redeploy/cli/commands/version/utils/_resolve_package_release_git_config.py
+QUICK_WINS[9] (low risk, high savings — do first):
+  [1] extract_function   saved=22L  → redeploy/cli/commands/version/utils/_resolve_package_release_git_config.py
       FILES: helpers.py, release.py
-  [3] extract_function   saved=21L  → redeploy/cli/commands/version/utils/utils/resolve_package_release_changelog_config.py
+  [2] extract_function   saved=21L  → redeploy/cli/commands/version/utils/utils/resolve_package_release_changelog_config.py
       FILES: changelog_config.py, git_config.py
-  [4] extract_function   saved=16L  → redeploy/cli/commands/version/utils/_resolve_package_release_changelog_config.py
+  [3] extract_function   saved=16L  → redeploy/cli/commands/version/utils/_resolve_package_release_changelog_config.py
       FILES: helpers.py, release.py
-  [5] extract_function   saved=13L  → redeploy/hardware/utils/fix_enable_i2c.py
+  [4] extract_function   saved=13L  → redeploy/hardware/utils/fix_enable_i2c.py
       FILES: fixes.py
-  [6] extract_function   saved=10L  → examples/redeploy_iac_parsers/utils/can_parse.py
+  [5] extract_function   saved=10L  → examples/redeploy_iac_parsers/utils/can_parse.py
       FILES: argocd_flux.py
-  [7] extract_function   saved=9L  → redeploy/cli/commands/utils/_load_dotenv.py
-      FILES: bump_fix.py, plan_apply.py
-  [8] extract_function   saved=8L  → redeploy/utils/infer_strategy.py
-      FILES: probe_parse.py, discovery_probe.py
-  [9] extract_function   saved=8L  → redeploy/utils/collect_diagnostics.py
+  [6] extract_function   saved=9L  → redeploy/cli/commands/utils/_load_dotenv.py
+      FILES: bump_fix.py, plan_apply_shared.py
+  [7] extract_function   saved=8L  → redeploy/utils/collect_diagnostics.py
       FILES: heal.py, hint_provider.py
-  [10] extract_function   saved=8L  → redeploy/apply/utils/run_docker_build.py
+  [8] extract_function   saved=8L  → redeploy/apply/utils/run_docker_build.py
       FILES: handlers.py
-  [11] extract_function   saved=8L  → redeploy/utils/run_shell.py
-      FILES: discovery.py, helpers.py
+  [9] extract_function   saved=7L  → redeploy/utils/_ssh.py
+      FILES: heal.py, hint_provider.py
 
-EFFORT_ESTIMATE (total ≈ 6.0h):
-  hard   parse_probe_output                  saved=32L  ~96min
+EFFORT_ESTIMATE (total ≈ 4.0h):
   medium _resolve_package_release_git_config saved=22L  ~44min
   medium resolve_package_release_changelog_config saved=21L  ~42min
   medium _resolve_package_release_changelog_config saved=16L  ~32min
   easy   fix_enable_i2c                      saved=13L  ~26min
   easy   can_parse                           saved=10L  ~20min
   easy   _load_dotenv                        saved=9L  ~18min
-  easy   infer_strategy                      saved=8L  ~16min
   easy   collect_diagnostics                 saved=8L  ~16min
   easy   run_docker_build                    saved=8L  ~16min
-  ... +3 more (~36min)
+  easy   _ssh                                saved=7L  ~14min
+  easy   _print_banner                       saved=4L  ~8min
+  ... +1 more (~6min)
 
 METRICS-TARGET:
-  dup_groups:  13 → 0
-  saved_lines: 165 lines recoverable
+  dup_groups:  11 → 0
+  saved_lines: 121 lines recoverable

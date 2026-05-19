@@ -24,12 +24,12 @@ Infrastructure migration toolkit: detect → plan → apply
 ## Metadata
 
 - **name**: `redeploy`
-- **version**: `0.2.76`
+- **version**: `0.2.77`
 - **python_requires**: `>=3.11`
 - **license**: Apache-2.0
 - **ai_model**: `openrouter/qwen/qwen3-coder-next`
 - **ecosystem**: SUMD + DOQL + testql + taskfile
-- **generated_from**: pyproject.toml, Makefile, testql(2), app.doql.less, pyqual.yaml, goal.yaml, .env.example, src(16 mod), project/(2 analysis files)
+- **generated_from**: pyproject.toml, Makefile, testql(2), app.doql.less, pyqual.yaml, goal.yaml, .env.example, src(13 mod), project/(2 analysis files)
 
 ## Architecture
 
@@ -45,7 +45,7 @@ SUMD (description) → DOQL/source (code) → taskfile (automation) → testql (
 
 app {
   name: redeploy;
-  version: 0.2.76;
+  version: 0.2.77;
 }
 
 interface[type="cli"] {
@@ -105,9 +105,6 @@ environment[name="local"] {
 
 - `redeploy.cli`
 - `redeploy.data_sync`
-- `redeploy.discovery`
-- `redeploy.discovery_probe`
-- `redeploy.discovery_registry`
 - `redeploy.fleet`
 - `redeploy.heal`
 - `redeploy.mcp_server`
@@ -217,7 +214,7 @@ pipeline:
 ```yaml
 project:
   name: redeploy
-  version: 0.2.76
+  version: 0.2.77
   env: local
 ```
 
@@ -319,13 +316,13 @@ pip install -e .[dev]
 ### `project/map.toon.yaml`
 
 ```toon markpact:analysis path=project/map.toon.yaml
-# redeploy | 286f 45546L | python:283,shell:2,less:1 | 2026-05-20
-# stats: 862 func | 391 cls | 286 mod | CC̄=4.8 | critical:97 | cycles:0
-# alerts[5]: CC probe=26; CC version_init=26; CC _bump_single=25; CC _build_manifest=25; CC extract_blueprint=22
-# hotspots[5]: run fan=32; fix_cmd fan=29; hardware fan=28; device_map_cmd fan=27; version_init fan=26
+# redeploy | 297f 45323L | python:294,shell:2,less:1 | 2026-05-20
+# stats: 862 func | 391 cls | 297 mod | CC̄=4.7 | critical:96 | cycles:0
+# alerts[5]: CC version_init=26; CC _bump_single=25; CC _build_manifest=25; CC extract_blueprint=22; CC render_rich=22
+# hotspots[5]: run fan=31; fix_cmd fan=29; hardware fan=28; version_init fan=26; import_cmd fan=25
 # evolution: baseline
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
-M[286]:
+M[297]:
   app.doql.less,60
   examples/redeploy_iac_parsers/argocd_flux.py,130
   examples/redeploy_iac_parsers/gitops_ci.py,138
@@ -376,13 +373,16 @@ M[286]:
   redeploy/blueprint/sources/migration.py,35
   redeploy/cli/__init__.py,127
   redeploy/cli/commands/__init__.py,45
+  redeploy/cli/commands/apply_cmd.py,52
   redeploy/cli/commands/audit.py,127
   redeploy/cli/commands/blueprint.py,340
   redeploy/cli/commands/bump_fix.py,349
   redeploy/cli/commands/detect.py,138
-  redeploy/cli/commands/device_map.py,300
+  redeploy/cli/commands/device_map.py,79
+  redeploy/cli/commands/device_map_actions.py,175
   redeploy/cli/commands/device_map_renderers.py,171
-  redeploy/cli/commands/devices.py,227
+  redeploy/cli/commands/devices.py,193
+  redeploy/cli/commands/devices_display.py,62
   redeploy/cli/commands/diagnose.py,48
   redeploy/cli/commands/diff.py,34
   redeploy/cli/commands/exec_.py,241
@@ -394,14 +394,19 @@ M[286]:
   redeploy/cli/commands/inspect.py,74
   redeploy/cli/commands/lint.py,87
   redeploy/cli/commands/mcp_cmd.py,55
+  redeploy/cli/commands/migrate_cmd.py,76
   redeploy/cli/commands/patterns.py,105
-  redeploy/cli/commands/plan_apply.py,687
+  redeploy/cli/commands/plan_apply.py,10
   redeploy/cli/commands/plan_apply_report.py,297
   redeploy/cli/commands/plan_apply_run.py,105
+  redeploy/cli/commands/plan_apply_shared.py,236
+  redeploy/cli/commands/plan_cmd.py,79
   redeploy/cli/commands/plugin.py,80
-  redeploy/cli/commands/probe.py,145
+  redeploy/cli/commands/probe.py,92
+  redeploy/cli/commands/probe_display.py,78
   redeploy/cli/commands/prompt_cmd.py,344
   redeploy/cli/commands/push.py,111
+  redeploy/cli/commands/run_cmd.py,169
   redeploy/cli/commands/state.py,119
   redeploy/cli/commands/status.py,56
   redeploy/cli/commands/target.py,98
@@ -434,13 +439,14 @@ M[286]:
   redeploy/detect/remote.py,5
   redeploy/detect/templates.py,420
   redeploy/detect/workflow.py,419
+  redeploy/discovery/__init__.py,32
+  redeploy/discovery/auto_probe.py,187
   redeploy/discovery/helpers.py,33
   redeploy/discovery/probe_parse.py,46
   redeploy/discovery/registry.py,65
+  redeploy/discovery/scanners.py,255
+  redeploy/discovery/ssh_credentials.py,112
   redeploy/discovery/types.py,39
-  redeploy/discovery.py,694
-  redeploy/discovery_probe.py,46
-  redeploy/discovery_registry.py,67
   redeploy/dsl/__init__.py,31
   redeploy/dsl/loader.py,404
   redeploy/dsl/parser.py,262
@@ -528,6 +534,7 @@ M[286]:
   redeploy/tests/test_audit.py,245
   redeploy/tests/test_cli.py,329
   redeploy/tests/test_data_sync.py,118
+  redeploy/tests/test_devices_display.py,34
   redeploy/tests/test_discovery.py,232
   redeploy/tests/test_discovery_probe.py,46
   redeploy/tests/test_dsl.py,355
@@ -549,6 +556,7 @@ M[286]:
   redeploy/tests/test_parse.py,269
   redeploy/tests/test_patterns.py,288
   redeploy/tests/test_plan_apply_report.py,92
+  redeploy/tests/test_plan_apply_shared.py,22
   redeploy/tests/test_planner_edge.py,351
   redeploy/tests/test_plugins.py,411
   redeploy/tests/test_probes.py,347
@@ -810,6 +818,9 @@ D:
     cli(ctx;verbose)
     _resolve_device(console;device_id)
   redeploy/cli/commands/__init__.py:
+  redeploy/cli/commands/apply_cmd.py:
+    e: apply
+    apply(ctx;plan_file;dry_run;step;output)
   redeploy/cli/commands/audit.py:
     e: audit
     audit(last;host;app;only_failed;only_ok;log;as_json;show_report;do_clear)
@@ -841,12 +852,15 @@ D:
     e: detect
     detect(ctx;host;app;domain;output;run_workflow;scan_subnet;no_deep;save_yaml;output_fmt)
   redeploy/cli/commands/device_map.py:
-    e: device_map_cmd,_execute_query_device_map,_render,_print_list,_diff
+    e: device_map_cmd
     device_map_cmd(host;name;tags;save;out_path;output_fmt;no_infra;list_saved;show_file;diff_files;ssh_key;apply_config;query_expr)
-    _execute_query_device_map(console;dm;query_expr;output_fmt)
-    _render(console;dm;fmt)
-    _print_list(console)
-    _diff(console;a;b)
+  redeploy/cli/commands/device_map_actions.py:
+    e: print_saved_maps,print_device_map_diff,probe_device_map,execute_query_device_map,emit_device_map
+    print_saved_maps(console)
+    print_device_map_diff(console;path_a;path_b)
+    probe_device_map(console;host)
+    execute_query_device_map(console;dm;query_expr;output_fmt)
+    emit_device_map(dm;output_fmt)
   redeploy/cli/commands/device_map_renderers.py:
     e: render_yaml,render_json,_build_header_panel,_build_drm_table,_build_services_table,_build_issues_table,render_rich
     render_yaml(dm)
@@ -862,6 +876,10 @@ D:
     scan(subnet;ssh_users;ssh_port;ping;no_mdns;timeout;no_save)
     device_add(host;device_id;name;tags;strategy;app;ssh_port;ssh_key)
     device_rm(device_id)
+  redeploy/cli/commands/devices_display.py:
+    e: filter_devices,render_devices_table
+    filter_devices(devices)
+    render_devices_table(console;devices)
   redeploy/cli/commands/diagnose.py:
     e: diagnose
     diagnose(ctx;spec;host;ssh_key;output_fmt;exit_on_fail)
@@ -937,24 +955,13 @@ D:
   redeploy/cli/commands/mcp_cmd.py:
     e: mcp_cmd
     mcp_cmd(transport;host;port)
+  redeploy/cli/commands/migrate_cmd.py:
+    e: migrate
+    migrate(ctx;host;app;domain;target;strategy;target_version;compose;env_file;dry_run;infra_out;plan_out)
   redeploy/cli/commands/patterns.py:
     e: patterns
     patterns(name)
   redeploy/cli/commands/plan_apply.py:
-    e: plan,apply,migrate,run,_apply_manifest_to_spec,_print_spec_summary,_perform_live_detect,_run_apply,_load_dotenv,_detect_project_version,_print_heal_banner,_ensure_redeployignore,_inject_project_sync_step
-    plan(ctx;infra;target;strategy;domain;target_version;compose;env_file;output)
-    apply(ctx;plan_file;dry_run;step;output)
-    migrate(ctx;host;app;domain;target;strategy;target_version;compose;env_file;dry_run;infra_out;plan_out)
-    run(ctx;spec_file;dry_run;plan_only;do_detect;plan_out;output;report;report_file;sync_project;env_name;progress_yaml;resume;from_step;state_file;no_state;heal;fix_hint;max_heal_retries;lint;preflight;preflight_schema_out;preflight_remote;strict_preflight)
-    _apply_manifest_to_spec(console;manifest;spec;env_name)
-    _print_spec_summary(console;spec)
-    _perform_live_detect(console;spec)
-    _run_apply(console;migration;dry_run;output;ssh_key;progress_yaml;resume;from_step;state_file;no_state;spec_path)
-    _load_dotenv()
-    _detect_project_version(spec_path)
-    _print_heal_banner(console;fix_hint)
-    _ensure_redeployignore(project_root;console)
-    _inject_project_sync_step(migration;spec;project_root;console)
   redeploy/cli/commands/plan_apply_report.py:
     e: default_report_path,resolve_audit_entry,step_command_block,_skipped_checksum,build_checksum_verification,_run_rsync_checksum,_parse_rsync_output,_render_checksum_section,render_markdown_report,write_markdown_report
     default_report_path(spec_path)
@@ -972,12 +979,32 @@ D:
     setup_run_logging(resolved_spec)
     run_lint_phase(console;resolved_spec;lint;file_handler_id)
     run_preflight_phase(console)
+  redeploy/cli/commands/plan_apply_shared.py:
+    e: apply_manifest_to_spec,print_spec_summary,perform_live_detect,run_apply,load_dotenv_for_heal,detect_project_version,print_heal_banner,ensure_redeployignore,inject_project_sync_step,load_spec_for_run
+    apply_manifest_to_spec(console;manifest;spec;env_name)
+    print_spec_summary(console;spec)
+    perform_live_detect(console;spec)
+    run_apply(console;migration;dry_run;output)
+    load_dotenv_for_heal()
+    detect_project_version(spec_path)
+    print_heal_banner(console;fix_hint)
+    ensure_redeployignore(project_root;console)
+    inject_project_sync_step(migration;spec;project_root;console)
+    load_spec_for_run(console;spec_file;manifest)
+  redeploy/cli/commands/plan_cmd.py:
+    e: plan
+    plan(ctx;infra;target;strategy;domain;target_version;compose;env_file;output)
   redeploy/cli/commands/plugin.py:
     e: plugin_cmd
     plugin_cmd(ctx;subcommand;name)
   redeploy/cli/commands/probe.py:
     e: probe
     probe(hosts;subnet;users;ssh_port;app_hint;timeout;no_save;as_json)
+  redeploy/cli/commands/probe_display.py:
+    e: collect_probe_hosts,print_probe_line,print_reachable_devices_table
+    collect_probe_hosts(hosts;subnet;console)
+    print_probe_line(console;ip;result)
+    print_reachable_devices_table(console;results)
   redeploy/cli/commands/prompt_cmd.py:
     e: _call_llm,_parse_llm_response,prompt_cmd,_find_redeploy_bin
     _call_llm(schema;user_prompt)
@@ -987,6 +1014,9 @@ D:
   redeploy/cli/commands/push.py:
     e: push
     push(host;files;dry_run;ssh_key)
+  redeploy/cli/commands/run_cmd.py:
+    e: run
+    run(ctx;spec_file;dry_run;plan_only;do_detect;plan_out;output;report;report_file;sync_project;env_name;progress_yaml;resume;from_step;state_file;no_state;heal;fix_hint;max_heal_retries;lint;preflight;preflight_schema_out;preflight_remote;strict_preflight)
   redeploy/cli/commands/state.py:
     e: _get_state_path,_list_checkpoints,_show_checkpoint,state_cmd
     _get_state_path(spec_file;host;state_file;console)
@@ -1172,6 +1202,18 @@ D:
     HostDetectionResult: strategy(0),environment(0),confidence(0),template_name(0),spec_template(0),env_block(0),notes(0)  # Full detection result for a single host.
     WorkflowResult: reachable(0),unreachable(0),by_env(0),summary(0),generated_redeploy_yaml(0),generated_migration_yaml(1)  # Aggregated result across all probed hosts.
     DetectionWorkflow: __init__(3),_collect_hosts(4),_probe_ssh(1),_deep_detect(1),_score_template(2),run(5)  # Multi-host detection workflow with template scoring.
+  redeploy/discovery/__init__.py:
+  redeploy/discovery/auto_probe.py:
+    e: parse_probe_input,build_probe_command,build_ssh_command,run_ssh_probe,detect_strategy_remote,detect_app_from_services,_update_existing_from_probe,_new_device_from_probe,auto_probe
+    parse_probe_input(ip_or_host;users)
+    build_probe_command()
+    build_ssh_command(host;port;timeout;key_opts;probe_cmd)
+    run_ssh_probe(cmd;timeout)
+    detect_strategy_remote(host;key;port;timeout)
+    detect_app_from_services(services;app_hint)
+    _update_existing_from_probe(existing;result;ssh_user;ssh_key;ip;host_str;port;now)
+    _new_device_from_probe(result;ssh_user;ssh_key;ip;host_str;port;now)
+    auto_probe(ip_or_host;users;port;timeout;app_hint;save)
   redeploy/discovery/helpers.py:
     e: is_raspberry_pi_mac,run_shell,is_ip
     is_raspberry_pi_mac(mac)
@@ -1186,46 +1228,25 @@ D:
     update_registry(hosts;registry;save)
     _update_existing_device(existing;host;now)
     _new_discovered_device(device_id;host;now)
+  redeploy/discovery/scanners.py:
+    e: scan_known_hosts,scan_arp_cache,scan_mdns,ping_sweep,probe_ssh_batch,detect_local_subnet,merge_hosts,discover
+    scan_known_hosts(ssh_user)
+    scan_arp_cache()
+    scan_mdns(timeout)
+    ping_sweep(subnet;timeout)
+    probe_ssh_batch(hosts;users;port;timeout;max_workers)
+    detect_local_subnet()
+    merge_hosts(hosts)
+    discover(subnet;ssh_users;ssh_port;ping;mdns;probe_ssh;timeout)
+  redeploy/discovery/ssh_credentials.py:
+    e: collect_ssh_keys,tcp_reachable,try_ssh_credentials
+    collect_ssh_keys()
+    tcp_reachable(ip;port;timeout)
+    try_ssh_credentials(ip;users;keys;port;timeout)
   redeploy/discovery/types.py:
     e: DiscoveredHost,ProbeResult
     DiscoveredHost:
     ProbeResult:  # Full autonomous probe result for a single host.
-  redeploy/discovery.py:
-    e: _is_raspberry_pi_mac,_scan_known_hosts,_scan_arp_cache,_scan_mdns,_ping_sweep,_probe_ssh,_detect_local_subnet,_merge,discover,_run,_is_ip,_collect_ssh_keys,_tcp_reachable,_try_ssh_credentials,_detect_strategy_remote,_build_probe_command,_build_ssh_command,_run_ssh_probe,_parse_probe_input,_detect_app_from_services,_update_existing_device,_create_new_device,auto_probe,DiscoveredHost,ProbeResult
-    DiscoveredHost:
-    ProbeResult:  # Full autonomous probe result for a single host.
-    _is_raspberry_pi_mac(mac)
-    _scan_known_hosts(ssh_user)
-    _scan_arp_cache()
-    _scan_mdns(timeout)
-    _ping_sweep(subnet;timeout)
-    _probe_ssh(hosts;users;port;timeout;max_workers)
-    _detect_local_subnet()
-    _merge(hosts)
-    discover(subnet;ssh_users;ssh_port;ping;mdns;probe_ssh;timeout)
-    _run(cmd;timeout)
-    _is_ip(s)
-    _collect_ssh_keys()
-    _tcp_reachable(ip;port;timeout)
-    _try_ssh_credentials(ip;users;keys;port;timeout)
-    _detect_strategy_remote(host;key;port;timeout)
-    _build_probe_command()
-    _build_ssh_command(host;port;timeout;key_opts;probe_cmd)
-    _run_ssh_probe(cmd;timeout)
-    _parse_probe_input(ip_or_host;users)
-    _detect_app_from_services(services;app_hint)
-    _update_existing_device(existing;result;ssh_user;ssh_key;ip;host_str;port;now)
-    _create_new_device(result;ssh_user;ssh_key;ip;host_str;port;now)
-    auto_probe(ip_or_host;users;port;timeout;app_hint;save)
-  redeploy/discovery_probe.py:
-    e: parse_probe_output,infer_strategy
-    parse_probe_output(out)
-    infer_strategy(info;services)
-  redeploy/discovery_registry.py:
-    e: update_registry,_update_existing_device,_new_discovered_device
-    update_registry(hosts;registry;save)
-    _update_existing_device(existing;host;now)
-    _new_discovered_device(device_id;host;now)
   redeploy/dsl/__init__.py:
   redeploy/dsl/loader.py:
     e: _build_condition,load_css,load_css_text,_build_from_nodes,_build_manifest,_build_templates,_build_workflows,manifest_to_css,_condition_key,templates_to_css,WorkflowStep,WorkflowDef,LoadResult
@@ -1667,6 +1688,10 @@ D:
     e: TestCollectSqliteCounts,TestRsyncTimeoutForPath
     TestCollectSqliteCounts: _db(3),test_basic_counts(1),test_missing_db_skipped(1),test_missing_table_skipped(1),test_empty_table(1),test_multiple_dbs(1),test_empty_specs(1),test_large_row_count(1)
     TestRsyncTimeoutForPath: _file(2),test_minimum_respected(1),test_scales_with_size(1),test_custom_minimum(1),test_custom_per_mb(1),test_base_added(1),test_returns_int(1)
+  redeploy/tests/test_devices_display.py:
+    e: _device,TestFilterDevices
+    TestFilterDevices: test_filter_by_tag(0),test_filter_rpi(0)
+    _device()
   redeploy/tests/test_discovery.py:
     e: TestIsIp,TestMerge,TestScanKnownHosts,TestUpdateRegistry
     TestIsIp: test_valid_ipv4(0),test_hostname_not_ip(0),test_partial_ip_not_ip(0),test_empty_string(0),test_ipv6_not_matched(0)
@@ -1864,6 +1889,9 @@ D:
     TestRenderMarkdownReport: test_includes_step_logs(0)
     TestStepCommandBlock: test_rsync(0)
     _migration_with_sync()
+  redeploy/tests/test_plan_apply_shared.py:
+    e: TestEnsureRedeployignore
+    TestEnsureRedeployignore: test_creates_file_when_missing(1),test_does_not_overwrite_existing(1)
   redeploy/tests/test_planner_edge.py:
     e: _state,_target,_infra_spec,_plan,TestStepOrdering,TestInsertBefore,TestRiskEscalation,TestVerifySteps,TestK3sConflictFixes,TestPodmanQuadletPlanning,TestNotesAndMetadata,TestPlannerFromSpec
     TestStepOrdering: test_first_step_is_not_verify(0),test_last_steps_are_verify(0),test_wait_appears_before_health_check(0),test_sync_env_before_docker_build(0)
@@ -2508,36 +2536,6 @@ class RemoteExecutor:  # Thin wrapper kept for deploy.core compatibility.
     def scp_opts()  # CC=1
 ```
 
-### `redeploy.discovery` (`redeploy/discovery.py`)
-
-```python
-def _is_raspberry_pi_mac(mac)  # CC=2, fan=1
-def _scan_known_hosts(ssh_user)  # CC=10, fan=15 ⚠
-def _scan_arp_cache()  # CC=10, fan=12 ⚠
-def _scan_mdns(timeout)  # CC=7, fan=10
-def _ping_sweep(subnet, timeout)  # CC=6, fan=14
-def _probe_ssh(hosts, users, port, timeout, max_workers)  # CC=1, fan=6
-def _detect_local_subnet()  # CC=9, fan=11
-def _merge(hosts)  # CC=11, fan=2 ⚠
-def discover(subnet, ssh_users, ssh_port, ping, mdns, probe_ssh, timeout)  # CC=14, fan=16 ⚠
-def _run(cmd, timeout)  # CC=2, fan=1
-def _is_ip(s)  # CC=1, fan=2
-def _collect_ssh_keys()  # CC=14, fan=11 ⚠
-def _tcp_reachable(ip, port, timeout)  # CC=2, fan=1
-def _try_ssh_credentials(ip, users, keys, port, timeout)  # CC=14, fan=12 ⚠
-def _detect_strategy_remote(host, key, port, timeout)  # CC=3, fan=5
-def _build_probe_command()  # CC=1, fan=0
-def _build_ssh_command(host, port, timeout, key_opts, probe_cmd)  # CC=1, fan=1
-def _run_ssh_probe(cmd, timeout)  # CC=3, fan=1
-def _parse_probe_input(ip_or_host, users)  # CC=4, fan=1
-def _detect_app_from_services(services, app_hint)  # CC=5, fan=1
-def _update_existing_device(existing, result, ssh_user, ssh_key, ip, host_str, port, now)  # CC=5, fan=0
-def _create_new_device(result, ssh_user, ssh_key, ip, host_str, port, now)  # CC=2, fan=1
-def auto_probe(ip_or_host, users, port, timeout, app_hint, save)  # CC=7, fan=19
-class DiscoveredHost:
-class ProbeResult:  # Full autonomous probe result for a single host.
-```
-
 ### `redeploy.heal` (`redeploy/heal.py`)
 
 ```python
@@ -2565,9 +2563,29 @@ class HealRunner:  # Wraps Executor with self-healing loop.
     def run()  # CC=8
 ```
 
+### `redeploy.mcp_server` (`redeploy/mcp_server.py`)
+
+```python
+def _redeploy_bin()  # CC=5, fan=4
+def _run()  # CC=4, fan=4
+def _validate_exec_ssh_inputs(host, command)  # CC=5, fan=3
+def schema(directory)  # CC=1, fan=5
+def plan_spec(spec, cwd)  # CC=1, fan=2
+def run_spec(spec, force, dry_run, heal, fix_hint, cwd)  # CC=5, fan=3
+def fix_spec(spec_or_dir, hint, bump, retries, dry_run, cwd)  # CC=4, fan=4
+def bump_version(spec_or_dir, level, cwd)  # CC=3, fan=3
+def diagnose(host)  # CC=1, fan=2
+def list_specs(directory)  # CC=1, fan=6
+def exec_ssh(host, command)  # CC=4, fan=4
+def nlp_command(instruction, dry_run, cwd)  # CC=2, fan=2
+def get_spec_content(path)  # CC=3, fan=5
+def get_workspace()  # CC=1, fan=3
+def serve(transport, host, port)  # CC=4, fan=4
+```
+
 ## Call Graph
 
-*433 nodes · 400 edges · 111 modules · CC̄=5.0*
+*438 nodes · 406 edges · 118 modules · CC̄=5.0*
 
 ### Hubs (by degree)
 
@@ -2580,12 +2598,12 @@ class HealRunner:  # Wraps Executor with self-healing loop.
 | `_heal_step` *(in redeploy.heal.runner.HealRunner)* | 14 ⚠ | 0 | 40 | **40** |
 | `exec_cmd` *(in redeploy.cli.commands.exec_)* | 9 | 0 | 40 | **40** |
 | `_bump_single` *(in redeploy.cli.commands.version.helpers)* | 25 ⚠ | 4 | 35 | **39** |
-| `_parse_k8s_yaml` *(in redeploy.iac.config_hints.ConfigHintsParser)* | 26 ⚠ | 0 | 38 | **38** |
+| `version_list` *(in redeploy.cli.commands.version.commands)* | 13 ⚠ | 0 | 38 | **38** |
 
 ```toon markpact:analysis path=project/calls.toon.yaml
 # code2llm call graph | /home/tom/github/maskservice/redeploy
-# generated in 0.19s
-# nodes: 433 | edges: 400 | modules: 111
+# generated in 0.22s
+# nodes: 438 | edges: 406 | modules: 118
 # CC̄=5.0
 
 HUBS[20]:
@@ -2603,16 +2621,16 @@ HUBS[20]:
     CC=9  in:0  out:40  total:40
   redeploy.cli.commands.version.helpers._bump_single
     CC=25  in:4  out:35  total:39
+  redeploy.cli.commands.version.commands.version_list
+    CC=13  in:0  out:38  total:38
   redeploy.iac.config_hints.ConfigHintsParser._parse_k8s_yaml
     CC=26  in:0  out:38  total:38
   redeploy.cli.commands.plugin.plugin_cmd
     CC=13  in:0  out:38  total:38
-  redeploy.cli.commands.version.commands.version_list
-    CC=13  in:0  out:38  total:38
-  redeploy.discovery.auto_probe
-    CC=7  in:4  out:33  total:37
   redeploy.cli.commands.prompt_cmd.prompt_cmd
     CC=15  in:0  out:37  total:37
+  redeploy.discovery.auto_probe.auto_probe
+    CC=7  in:4  out:33  total:37
   redeploy.blueprint.sources.compose._merge_compose
     CC=21  in:1  out:33  total:34
   redeploy.plugins.builtin.hardware_diagnostic._analyze_hardware
@@ -2625,10 +2643,10 @@ HUBS[20]:
     CC=9  in:0  out:30  total:30
   examples.redeploy_iac_parsers.helm_kustomize.HelmTemplatesParser.parse
     CC=17  in:0  out:27  total:27
-  redeploy.apply.state_apply.HardwareStateHandler.apply
-    CC=18  in:0  out:27  total:27
   redeploy.apply.executor.Executor._execute_step
     CC=4  in:0  out:27  total:27
+  redeploy.apply.state_apply.HardwareStateHandler.apply
+    CC=18  in:0  out:27  total:27
 
 MODULES:
   examples.redeploy_iac_parsers.gitops_ci  [2 funcs]
@@ -2746,17 +2764,20 @@ MODULES:
     _update_migration_header  CC=2  out:7
     _update_quadlet_service_version  CC=6  out:9
     bump_cmd  CC=6  out:23
-  redeploy.cli.commands.device_map  [2 funcs]
-    _execute_query_device_map  CC=1  out:1
-    _render  CC=3  out:3
-  redeploy.cli.commands.device_map_renderers  [7 funcs]
+  redeploy.cli.commands.device_map_actions  [2 funcs]
+    execute_query_device_map  CC=1  out:1
+    probe_device_map  CC=9  out:15
+  redeploy.cli.commands.device_map_renderers  [5 funcs]
     _build_drm_table  CC=9  out:8
     _build_header_panel  CC=4  out:3
     _build_issues_table  CC=3  out:12
     _build_services_table  CC=7  out:9
-    render_json  CC=1  out:3
     render_rich  CC=22  out:22
-    render_yaml  CC=1  out:2
+  redeploy.cli.commands.devices  [1 funcs]
+    devices  CC=4  out:14
+  redeploy.cli.commands.devices_display  [2 funcs]
+    filter_devices  CC=13  out:0
+    render_devices_table  CC=7  out:16
   redeploy.cli.commands.diagnose  [1 funcs]
     diagnose  CC=5  out:19
   redeploy.cli.commands.exec_  [3 funcs]
@@ -2796,8 +2817,6 @@ MODULES:
     lint  CC=19  out:44
   redeploy.cli.commands.mcp_cmd  [1 funcs]
     mcp_cmd  CC=1  out:6
-  redeploy.cli.commands.plan_apply  [1 funcs]
-    _apply_manifest_to_spec  CC=8  out:9
   redeploy.cli.commands.plan_apply_report  [10 funcs]
     _parse_rsync_output  CC=13  out:8
     _render_checksum_section  CC=7  out:13
@@ -2811,8 +2830,13 @@ MODULES:
     write_markdown_report  CC=2  out:7
   redeploy.cli.commands.plan_apply_run  [1 funcs]
     run_preflight_phase  CC=8  out:19
+  redeploy.cli.commands.plan_apply_shared  [2 funcs]
+    apply_manifest_to_spec  CC=8  out:9
+    load_spec_for_run  CC=4  out:6
   redeploy.cli.commands.plugin  [1 funcs]
     plugin_cmd  CC=13  out:38
+  redeploy.cli.commands.probe_display  [1 funcs]
+    collect_probe_hosts  CC=6  out:8
   redeploy.cli.commands.prompt_cmd  [1 funcs]
     prompt_cmd  CC=15  out:37
   redeploy.cli.commands.state  [4 funcs]
@@ -2913,21 +2937,36 @@ MODULES:
   redeploy.detect.workflow  [2 funcs]
     _collect_hosts  CC=18  out:14
     _probe_ssh  CC=3  out:3
-  redeploy.discovery  [19 funcs]
-    _build_probe_command  CC=1  out:0
-    _build_ssh_command  CC=1  out:1
-    _collect_ssh_keys  CC=14  out:18
-    _detect_local_subnet  CC=9  out:11
-    _detect_strategy_remote  CC=3  out:5
-    _is_ip  CC=1  out:2
-    _merge  CC=11  out:2
-    _parse_probe_input  CC=4  out:1
-    _ping_sweep  CC=6  out:20
-    _probe_ssh  CC=1  out:6
-  redeploy.discovery_registry  [3 funcs]
+  redeploy.discovery.auto_probe  [6 funcs]
+    auto_probe  CC=7  out:33
+    build_probe_command  CC=1  out:0
+    build_ssh_command  CC=1  out:1
+    detect_strategy_remote  CC=3  out:5
+    parse_probe_input  CC=4  out:1
+    run_ssh_probe  CC=3  out:1
+  redeploy.discovery.helpers  [2 funcs]
+    is_ip  CC=1  out:2
+    run_shell  CC=2  out:1
+  redeploy.discovery.registry  [3 funcs]
     _new_discovered_device  CC=3  out:2
     _update_existing_device  CC=7  out:1
     update_registry  CC=9  out:9
+  redeploy.discovery.scanners  [8 funcs]
+    detect_local_subnet  CC=9  out:11
+    discover  CC=14  out:22
+    merge_hosts  CC=11  out:2
+    ping_sweep  CC=6  out:20
+    probe_ssh_batch  CC=1  out:6
+    scan_arp_cache  CC=10  out:23
+    scan_known_hosts  CC=10  out:18
+    scan_mdns  CC=6  out:11
+  redeploy.discovery.ssh_credentials  [3 funcs]
+    collect_ssh_keys  CC=14  out:16
+    tcp_reachable  CC=2  out:1
+    try_ssh_credentials  CC=14  out:15
+  redeploy.discovery_probe  [2 funcs]
+    infer_strategy  CC=8  out:5
+    parse_probe_output  CC=16  out:20
   redeploy.dsl.loader  [9 funcs]
     _build_from_nodes  CC=1  out:4
     _build_manifest  CC=25  out:23

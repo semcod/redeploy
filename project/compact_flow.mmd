@@ -5,11 +5,11 @@ flowchart TD
     redeploy__apply["redeploy.apply<br/>75 funcs"]
     redeploy__audit["redeploy.audit<br/>33 funcs"]
     redeploy__blueprint["redeploy.blueprint<br/>14 funcs"]
-    redeploy__cli["redeploy.cli<br/>219 funcs"]
+    redeploy__cli["redeploy.cli<br/>226 funcs"]
     redeploy__config_apply["redeploy.config_apply<br/>6 funcs"]
     redeploy__detect["redeploy.detect<br/>43 funcs"]
     redeploy__discovery["redeploy.discovery<br/>26 funcs"]
-    redeploy__discovery_registry["redeploy.discovery_registry<br/>3 funcs"]
+    redeploy__discovery_probe["redeploy.discovery_probe<br/>2 funcs"]
     redeploy__dsl["redeploy.dsl<br/>20 funcs"]
     redeploy__dsl_python["redeploy.dsl_python<br/>33 funcs"]
     redeploy__fleet["redeploy.fleet<br/>23 funcs"]
@@ -33,8 +33,8 @@ flowchart TD
     redeploy__cli ==>|7| redeploy__dsl
     redeploy__cli ==>|7| redeploy__apply
     redeploy__iac ==>|7| redeploy__steps
+    redeploy__cli ==>|6| redeploy__discovery
     redeploy__analyze ==>|5| redeploy__markpact
-    redeploy__cli ==>|5| redeploy__discovery
     redeploy__models ==>|4| redeploy__steps
     redeploy__cli ==>|4| redeploy__config_apply
     redeploy__fleet -->|3| redeploy__steps
@@ -43,6 +43,7 @@ flowchart TD
     redeploy__analyze -->|3| redeploy__steps
     redeploy__cli -->|3| redeploy__plugins
     redeploy__cli -->|3| redeploy__blueprint
+    redeploy__cli -->|3| redeploy__analyze
     redeploy__dsl_python -->|3| redeploy__steps
     redeploy__apply -->|3| redeploy__hardware
     redeploy__discovery -->|3| redeploy__steps
@@ -57,14 +58,13 @@ flowchart TD
     redeploy__markpact -->|2| redeploy__models
     redeploy__apply -->|2| redeploy__steps
     redeploy__blueprint -->|2| redeploy__steps
-    redeploy__cli -->|2| redeploy__analyze
+    redeploy__discovery -->|2| redeploy__discovery_probe
     redeploy__observe -->|1| redeploy__steps
     redeploy__patterns -->|1| redeploy__steps
     redeploy__detect -->|1| redeploy__integrations
     redeploy__config_apply -->|1| redeploy__apply
     redeploy__models -->|1| redeploy__dsl
     redeploy__cli -->|1| redeploy__spec_loader
-    redeploy__cli -->|1| redeploy__discovery_registry
     redeploy__cli -->|1| redeploy__markpact
     redeploy__cli -->|1| redeploy__integrations
     redeploy__cli -->|1| redeploy__fleet

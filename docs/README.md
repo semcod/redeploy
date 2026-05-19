@@ -1,7 +1,7 @@
 <!-- code2docs:start --># redeploy
 
-![version](https://img.shields.io/badge/version-0.1.0-blue) ![python](https://img.shields.io/badge/python-%3E%3D3.11-blue) ![coverage](https://img.shields.io/badge/coverage-unknown-lightgrey) ![functions](https://img.shields.io/badge/functions-986-green)
-> **986** functions | **181** classes | **308** files | CC̄ = 5.0
+![version](https://img.shields.io/badge/version-0.1.0-blue) ![python](https://img.shields.io/badge/python-%3E%3D3.11-blue) ![coverage](https://img.shields.io/badge/coverage-unknown-lightgrey) ![functions](https://img.shields.io/badge/functions-985-green)
+> **985** functions | **179** classes | **317** files | CC̄ = 5.0
 
 > Auto-generated project documentation from source code analysis.
 
@@ -104,14 +104,11 @@ redeploy/
     ├── heal/
 ├── redeploy/
     ├── parse
-    ├── discovery_probe
     ├── fleet
     ├── verify
     ├── spec_loader
     ├── ssh
     ├── patterns
-    ├── discovery
-    ├── discovery_registry
     ├── mcp_server
         ├── process_control_template
         ├── detector
@@ -139,8 +136,14 @@ redeploy/
         ├── podman
         ├── transfer
         ├── generic
+        ├── ssh_credentials
         ├── helpers
+        ├── registry
+        ├── auto_probe
+    ├── discovery/
+    ├── discovery_probe
         ├── types
+        ├── scanners
     ├── analyze/
         ├── spec_analyzer
         ├── models
@@ -193,18 +196,26 @@ redeploy/
             ├── plan_apply
         ├── commands/
             ├── detect
+            ├── migrate_cmd
             ├── gh_workflow
             ├── device_map
             ├── hardware
+            ├── run_cmd
             ├── lint
+            ├── devices_display
             ├── prompt_cmd
             ├── diff
             ├── plan_apply_run
             ├── workflow
+            ├── plan_apply_shared
             ├── push
             ├── patterns
+            ├── plan_cmd
             ├── diagnose
             ├── audit
+            ├── probe_display
+            ├── apply_cmd
+            ├── device_map_actions
                 ├── monorepo
                 ├── commands
                 ├── helpers
@@ -372,8 +383,6 @@ redeploy/
     ├── hardware-109
             ├── toon
             ├── toon
-        ├── registry
-        ├── probe_parse
 ```
 
 ## API Overview
@@ -402,8 +411,6 @@ redeploy/
 - **`BlueGreenPattern`** — Zero-downtime blue/green deploy via Traefik (or any label-based proxy).
 - **`CanaryPattern`** — Gradual canary rollout: deploy new version, scale up in stages.
 - **`RollbackOnFailurePattern`** — Capture pre-deploy image tag, roll back automatically on failure.
-- **`DiscoveredHost`** — —
-- **`ProbeResult`** — Full autonomous probe result for a single host.
 - **`Detector`** — Probe infrastructure and produce InfraState.
 - **`Condition`** — A single scoreable condition.
 - **`DetectionTemplate`** — Named template for a device+environment+strategy combination.
@@ -577,15 +584,10 @@ redeploy/
 - `parse_system_info(output)` — Parse KEY:VALUE system info lines (HOSTNAME, UPTIME, DISK, MEM, LOAD) into a dict.
 - `parse_diagnostics(output)` — Parse multi-section SSH diagnostics output into structured dict.
 - `parse_health_info(output)` — Parse health-check SSH output (HOSTNAME, UPTIME, HEALTH, DISK, LOAD) into a dict.
-- `parse_probe_output(out)` — —
-- `infer_strategy(info, services)` — —
 - `verify_data_integrity(ctx, local_counts, remote_counts)` — Compare local vs remote SQLite row counts and record results in *ctx*.
 - `load_migration_spec(path)` — Load a deployment spec from disk.
 - `get_pattern(name)` — Return pattern class by name, or None if not found.
 - `list_patterns()` — Return all registered pattern names.
-- `discover(subnet, ssh_users, ssh_port, ping)` — Discover SSH-accessible hosts in the local network.
-- `auto_probe(ip_or_host, users, port, timeout)` — Autonomously probe a host — try all available SSH keys and users.
-- `update_registry(hosts, registry, save)` — Merge discovered hosts into DeviceRegistry and optionally save.
 - `schema(directory)` — Discover the workspace: find migration specs, read version, git branch.
 - `plan_spec(spec, cwd)` — Preview a migration spec: show all steps without executing anything.
 - `run_spec(spec, force, dry_run, heal)` — Apply a migration spec.
@@ -617,9 +619,30 @@ redeploy/
 - `apply_fix_to_spec(spec_path, failed_step, llm_response)` — Extract YAML block from LLM response and patch it into the spec file.
 - `parse_failed_step(executor_summary, executor)` — Extract (step_id, step_output) from executor state or summary string.
 - `write_repair_log(spec_path, version, repairs)` — Append an entry to *REPAIR_LOG.md* adjacent to the spec file.
+- `collect_ssh_keys()` — —
+- `tcp_reachable(ip, port, timeout)` — —
+- `try_ssh_credentials(ip, users, keys, port)` — —
 - `is_raspberry_pi_mac(mac)` — —
 - `run_shell(cmd, timeout)` — —
 - `is_ip(value)` — —
+- `update_registry(hosts, registry, save)` — Merge discovered hosts into DeviceRegistry and optionally save.
+- `parse_probe_input(ip_or_host, users)` — —
+- `build_probe_command()` — —
+- `build_ssh_command(host, port, timeout, key_opts)` — —
+- `run_ssh_probe(cmd, timeout)` — —
+- `detect_strategy_remote(host, key, port, timeout)` — —
+- `detect_app_from_services(services, app_hint)` — —
+- `auto_probe(ip_or_host, users, port, timeout)` — —
+- `parse_probe_output(out)` — —
+- `infer_strategy(info, services)` — —
+- `scan_known_hosts(ssh_user)` — —
+- `scan_arp_cache()` — —
+- `scan_mdns(timeout)` — —
+- `ping_sweep(subnet, timeout)` — —
+- `probe_ssh_batch(hosts, users, port, timeout)` — —
+- `detect_local_subnet()` — —
+- `merge_hosts(hosts)` — —
+- `discover(subnet, ssh_users, ssh_port, ping)` — —
 - `ensure_redeployignore(base_dir)` — Create .redeployignore with sensible defaults if it doesn't exist.
 - `generate_preflight_schema()` — —
 - `save_preflight_schema(schema, output_path)` — —
@@ -693,28 +716,48 @@ redeploy/
 - `mcp_cmd(transport, host, port)` — Start the redeploy MCP server.
 - `plugin_cmd(ctx, subcommand, name)` — List or inspect registered redeploy plugins.
 - `import_cmd(source, output, target_host, target_strategy)` — Parse an IaC/CI-CD file and produce a migration.yaml scaffold.
-- `plan(ctx, infra, target, strategy)` — Generate migration-plan.yaml from infra.yaml + target config.
-- `apply(ctx, plan_file, dry_run, step)` — Execute a migration plan.
-- `migrate(ctx, host, app, domain)` — Full pipeline: detect → plan → apply.
-- `run(ctx, spec_file, dry_run, plan_only)` — Execute migration from a single YAML spec (source + target in one file).
 - `detect(ctx, host, app, domain)` — Probe infrastructure and produce infra.yaml.
+- `migrate(ctx, host, app, domain)` — Full pipeline: detect → plan → apply.
 - `gh_workflow_cmd()` — Inspect and run GitHub Actions workflows on demand.
 - `gh_workflow_list(repo_root)` — List workflow files and whether they are dispatchable.
 - `gh_workflow_analyze(workflow, repo_root)` — Analyze one workflow (or all workflows) for triggers/jobs/dispatch readiness.
 - `gh_workflow_run(workflow, repo_root, ref, fields)` — Trigger a GitHub Actions workflow_dispatch run on demand via gh CLI.
 - `device_map_cmd(host, name, tags, save)` — Generate a full standardized device snapshot (hardware + infra + diagnostics).
 - `hardware(host, output_fmt, show_fix, apply_fix_component)` — Probe and diagnose hardware on a remote host.
+- `run(ctx, spec_file, dry_run, plan_only)` — Execute migration from a single YAML spec (source + target in one file).
 - `lint(ctx, spec_file, env_name, as_json)` — Static analysis of a migration spec (YAML or markpact .md).
+- `filter_devices(devices)` — —
+- `render_devices_table(console, devices)` — —
 - `prompt_cmd(instruction, schema_only, dry_run, yes)` — Natural-language → redeploy command via LLM.
 - `diff(ci_file, host, from_src, to_src)` — Compare IaC file vs live host (drift detection).  [Phase 3 — coming soon]
 - `setup_run_logging(resolved_spec)` — Attach file logging; return (handler_id, log_file, started_at).
 - `run_lint_phase(console, resolved_spec, lint, file_handler_id)` — Run static lint when enabled; exit process on hard failures.
 - `run_preflight_phase(console)` — Generate preflight schema and optionally abort on blockers.
 - `workflow_cmd(ctx, name, css_file, dry_run)` — Run a named workflow from redeploy.css.
+- `apply_manifest_to_spec(console, manifest, spec, env_name)` — —
+- `print_spec_summary(console, spec)` — —
+- `perform_live_detect(console, spec)` — —
+- `run_apply(console, migration, dry_run, output)` — —
+- `load_dotenv_for_heal()` — —
+- `detect_project_version(spec_path)` — —
+- `print_heal_banner(console, fix_hint)` — —
+- `ensure_redeployignore(project_root, console)` — —
+- `inject_project_sync_step(migration, spec, project_root, console)` — —
+- `load_spec_for_run(console, spec_file, manifest)` — —
 - `push(host, files, dry_run, ssh_key)` — Apply desired-state YAML/JSON file(s) to a remote host.
 - `patterns(name)` — List available deploy patterns or show detail for one.
+- `plan(ctx, infra, target, strategy)` — Generate migration-plan.yaml from infra.yaml + target config.
 - `diagnose(ctx, spec, host, ssh_key)` — Compare a migration spec against the live target host.
 - `audit(last, host, app, only_failed)` — Show deploy audit log from ~/.config/redeploy/audit.jsonl.
+- `collect_probe_hosts(hosts, subnet, console)` — —
+- `print_probe_line(console, ip, result)` — —
+- `print_reachable_devices_table(console, results)` — —
+- `apply(ctx, plan_file, dry_run, step)` — Execute a migration plan.
+- `print_saved_maps(console)` — —
+- `print_device_map_diff(console, path_a, path_b)` — —
+- `probe_device_map(console, host)` — —
+- `execute_query_device_map(console, dm, query_expr, output_fmt)` — —
+- `emit_device_map(dm, output_fmt)` — —
 - `version_cmd()` — Declarative version management: bump, verify, diff.
 - `version_current(manifest, package_name, all_packages)` — Show current version from manifest.
 - `version_list(manifest, package_name, all_packages)` — List all version sources and their values.
@@ -829,9 +872,6 @@ redeploy/
 - `parse_file(path)` — Parse a single file with auto-detected format.
 - `parse_dir(root, recursive, skip_errors)` — Parse all recognised files under *root*.
 - `parse_json_file(path)` — Tiny helper for plugin authors; currently unused by built-ins.
-- `update_registry(hosts, registry, save)` — Merge discovered hosts into DeviceRegistry and optionally save.
-- `parse_probe_output(out)` — —
-- `infer_strategy(info, services)` — —
 
 
 ## Project Structure
@@ -965,13 +1005,16 @@ redeploy/
 📄 `redeploy.blueprint.sources.migration` (1 functions)
 📦 `redeploy.cli` (3 functions)
 📦 `redeploy.cli.commands`
+📄 `redeploy.cli.commands.apply_cmd` (1 functions)
 📄 `redeploy.cli.commands.audit` (1 functions)
 📄 `redeploy.cli.commands.blueprint` (8 functions)
 📄 `redeploy.cli.commands.bump_fix` (12 functions)
 📄 `redeploy.cli.commands.detect` (1 functions)
-📄 `redeploy.cli.commands.device_map` (5 functions)
+📄 `redeploy.cli.commands.device_map` (1 functions)
+📄 `redeploy.cli.commands.device_map_actions` (5 functions)
 📄 `redeploy.cli.commands.device_map_renderers` (7 functions)
 📄 `redeploy.cli.commands.devices` (4 functions)
+📄 `redeploy.cli.commands.devices_display` (2 functions)
 📄 `redeploy.cli.commands.diagnose` (1 functions)
 📄 `redeploy.cli.commands.diff` (1 functions)
 📄 `redeploy.cli.commands.exec_` (6 functions)
@@ -983,14 +1026,19 @@ redeploy/
 📄 `redeploy.cli.commands.inspect` (2 functions)
 📄 `redeploy.cli.commands.lint` (1 functions)
 📄 `redeploy.cli.commands.mcp_cmd` (1 functions)
+📄 `redeploy.cli.commands.migrate_cmd` (1 functions)
 📄 `redeploy.cli.commands.patterns` (1 functions)
-📄 `redeploy.cli.commands.plan_apply` (13 functions)
+📄 `redeploy.cli.commands.plan_apply`
 📄 `redeploy.cli.commands.plan_apply_report` (10 functions)
 📄 `redeploy.cli.commands.plan_apply_run` (3 functions)
+📄 `redeploy.cli.commands.plan_apply_shared` (10 functions)
+📄 `redeploy.cli.commands.plan_cmd` (1 functions)
 📄 `redeploy.cli.commands.plugin` (1 functions)
 📄 `redeploy.cli.commands.probe` (1 functions)
+📄 `redeploy.cli.commands.probe_display` (3 functions)
 📄 `redeploy.cli.commands.prompt_cmd` (4 functions)
 📄 `redeploy.cli.commands.push` (1 functions)
+📄 `redeploy.cli.commands.run_cmd` (1 functions)
 📄 `redeploy.cli.commands.state` (4 functions)
 📄 `redeploy.cli.commands.status` (1 functions)
 📄 `redeploy.cli.commands.target` (1 functions)
@@ -1023,13 +1071,14 @@ redeploy/
 📄 `redeploy.detect.remote`
 📄 `redeploy.detect.templates` (13 functions, 6 classes)
 📄 `redeploy.detect.workflow` (12 functions, 3 classes)
-📄 `redeploy.discovery` (23 functions, 2 classes)
+📦 `redeploy.discovery`
+📄 `redeploy.discovery.auto_probe` (9 functions)
 📄 `redeploy.discovery.helpers` (3 functions)
-📄 `redeploy.discovery.probe_parse` (2 functions)
 📄 `redeploy.discovery.registry` (3 functions)
+📄 `redeploy.discovery.scanners` (8 functions)
+📄 `redeploy.discovery.ssh_credentials` (3 functions)
 📄 `redeploy.discovery.types` (2 classes)
 📄 `redeploy.discovery_probe` (2 functions)
-📄 `redeploy.discovery_registry` (3 functions)
 📦 `redeploy.dsl`
 📄 `redeploy.dsl.loader` (12 functions, 3 classes)
 📄 `redeploy.dsl.parser` (8 functions, 2 classes)

@@ -1,262 +1,24 @@
 project: /home/tom/github/maskservice/redeploy
 generated_from: code2llm call graph analysis
 stats:
-  total_nodes: 433
-  total_edges: 400
-  modules_count: 111
+  total_nodes: 438
+  total_edges: 406
+  modules_count: 118
 nodes:
-  redeploy.markpact.parser.parse_markpact_file:
-    name: parse_markpact_file
-    module: redeploy.markpact.parser
-    line: 14
-    cyclomatic_complexity: 1
-    calls_out: 3
-    calls_in: 2
-  redeploy.version.manifest.VersionManifest.list_packages:
-    name: list_packages
-    module: redeploy.version.manifest
-    line: 155
-    cyclomatic_complexity: 2
-    calls_out: 2
-    calls_in: 0
-  redeploy.markpact.parser.resolve_script_ref:
-    name: resolve_script_ref
-    module: redeploy.markpact.parser
-    line: 283
-    cyclomatic_complexity: 6
-    calls_out: 5
-    calls_in: 5
-  redeploy.cli._resolve_device:
-    name: _resolve_device
-    module: redeploy.cli
-    line: 103
-    cyclomatic_complexity: 5
-    calls_out: 12
-    calls_in: 0
-  redeploy.heal.runner.HealRunner.run:
-    name: run
-    module: redeploy.heal.runner
-    line: 209
-    cyclomatic_complexity: 10
-    calls_out: 24
-    calls_in: 0
-  redeploy.cli.commands.version.scanner._derive_scanned_package_name:
-    name: _derive_scanned_package_name
-    module: redeploy.cli.commands.version.scanner
-    line: 217
-    cyclomatic_complexity: 4
-    calls_out: 5
-    calls_in: 1
-  redeploy.cli.display.print_import_spec:
-    name: print_import_spec
-    module: redeploy.cli.display
-    line: 377
-    cyclomatic_complexity: 2
-    calls_out: 4
-    calls_in: 0
-  redeploy.cli.commands.blueprint.show:
-    name: show
-    module: redeploy.cli.commands.blueprint
-    line: 203
-    cyclomatic_complexity: 4
-    calls_out: 18
-    calls_in: 0
-  redeploy.mcp_server.bump_version:
-    name: bump_version
-    module: redeploy.mcp_server
-    line: 200
-    cyclomatic_complexity: 3
-    calls_out: 4
-    calls_in: 1
-  redeploy.heal.loop_detector.HealLoopDetector.observe:
-    name: observe
-    module: redeploy.heal.loop_detector
-    line: 36
-    cyclomatic_complexity: 5
-    calls_out: 4
-    calls_in: 0
-  redeploy.analyze.checkers.compose._check_volumes:
-    name: _check_volumes
-    module: redeploy.analyze.checkers.compose
-    line: 71
-    cyclomatic_complexity: 11
-    calls_out: 12
-    calls_in: 1
-  redeploy.cli.display.print_inspect_workflows:
-    name: print_inspect_workflows
-    module: redeploy.cli.display
-    line: 169
-    cyclomatic_complexity: 4
-    calls_out: 6
-    calls_in: 1
-  redeploy.cli.commands.gh_workflow._trigger_list:
-    name: _trigger_list
-    module: redeploy.cli.commands.gh_workflow
-    line: 55
-    cyclomatic_complexity: 6
-    calls_out: 6
-    calls_in: 1
-  redeploy.analyze.checkers.compose.scan_compose_file:
-    name: scan_compose_file
-    module: redeploy.analyze.checkers.compose
-    line: 99
-    cyclomatic_complexity: 6
-    calls_out: 9
-    calls_in: 1
-  redeploy.discovery._probe_ssh:
-    name: _probe_ssh
-    module: redeploy.discovery
-    line: 203
-    cyclomatic_complexity: 1
-    calls_out: 6
-    calls_in: 1
-  redeploy.apply.handlers.run_docker_health_wait:
-    name: run_docker_health_wait
-    module: redeploy.apply.handlers
-    line: 139
-    cyclomatic_complexity: 10
-    calls_out: 11
-    calls_in: 1
-  redeploy.apply.handlers._all_containers_healthy:
-    name: _all_containers_healthy
-    module: redeploy.apply.handlers
-    line: 194
-    cyclomatic_complexity: 5
-    calls_out: 2
-    calls_in: 1
-  redeploy.cli.commands.version.helpers._resolve_monorepo_targets:
-    name: _resolve_monorepo_targets
-    module: redeploy.cli.commands.version.helpers
-    line: 10
-    cyclomatic_complexity: 8
-    calls_out: 11
-    calls_in: 5
-  redeploy.plugins.builtin.notify.notify:
-    name: notify
-    module: redeploy.plugins.builtin.notify
-    line: 53
-    cyclomatic_complexity: 4
-    calls_out: 5
-    calls_in: 0
-  redeploy.heal.runner.HealRunner._heal_step:
-    name: _heal_step
-    module: redeploy.heal.runner
-    line: 102
-    cyclomatic_complexity: 14
-    calls_out: 40
-    calls_in: 0
-  redeploy.cli.commands.mcp_cmd.mcp_cmd:
-    name: mcp_cmd
-    module: redeploy.cli.commands.mcp_cmd
-    line: 27
-    cyclomatic_complexity: 1
-    calls_out: 6
-    calls_in: 0
-  redeploy.hardware.fixes.fix_enable_i2c:
-    name: fix_enable_i2c
-    module: redeploy.hardware.fixes
-    line: 137
+  redeploy.fleet.Fleet.__init__:
+    name: __init__
+    module: redeploy.fleet
+    line: 291
     cyclomatic_complexity: 1
     calls_out: 1
     calls_in: 0
-  redeploy.plugins.builtin.hardware_diagnostic._analyze_hardware:
-    name: _analyze_hardware
-    module: redeploy.plugins.builtin.hardware_diagnostic
-    line: 171
-    cyclomatic_complexity: 14
-    calls_out: 32
-    calls_in: 1
-  redeploy.apply.state.ResumeState.reset:
-    name: reset
-    module: redeploy.apply.state
-    line: 137
-    cyclomatic_complexity: 1
-    calls_out: 2
-    calls_in: 0
-  redeploy.spec_loader.load_migration_spec:
-    name: load_migration_spec
-    module: redeploy.spec_loader
-    line: 23
-    cyclomatic_complexity: 4
-    calls_out: 8
-    calls_in: 4
-  redeploy.analyze.checkers.compose.ComposeChecker.check:
-    name: check
-    module: redeploy.analyze.checkers.compose
-    line: 122
-    cyclomatic_complexity: 7
-    calls_out: 7
-    calls_in: 0
-  redeploy.apply.handlers.run_ensure_config_line:
-    name: run_ensure_config_line
-    module: redeploy.apply.handlers
-    line: 384
-    cyclomatic_complexity: 7
-    calls_out: 9
-    calls_in: 2
-  redeploy.blueprint.sources.infra.infer_app_url:
-    name: infer_app_url
-    module: redeploy.blueprint.sources.infra
-    line: 29
-    cyclomatic_complexity: 8
-    calls_out: 1
-    calls_in: 1
-  redeploy.cli.display.print_inspect_app_metadata:
-    name: print_inspect_app_metadata
-    module: redeploy.cli.display
-    line: 81
-    cyclomatic_complexity: 3
-    calls_out: 1
-    calls_in: 1
-  redeploy.blueprint.sources.hardware.build_hw_requirements:
-    name: build_hw_requirements
-    module: redeploy.blueprint.sources.hardware
-    line: 9
-    cyclomatic_complexity: 13
-    calls_out: 15
-    calls_in: 1
-  redeploy.blueprint.extractor.extract_blueprint:
-    name: extract_blueprint
-    module: redeploy.blueprint.extractor
-    line: 26
-    cyclomatic_complexity: 22
-    calls_out: 23
-    calls_in: 1
-  redeploy.discovery_registry.update_registry:
-    name: update_registry
-    module: redeploy.discovery_registry
-    line: 13
-    cyclomatic_complexity: 9
-    calls_out: 9
-    calls_in: 1
-  redeploy.analyze.ignore.IgnoreList.is_ignored:
-    name: is_ignored
-    module: redeploy.analyze.ignore
-    line: 63
-    cyclomatic_complexity: 9
-    calls_out: 10
-    calls_in: 0
-  redeploy.cli.commands.version.scanner._summarize_version_scan_group:
-    name: _summarize_version_scan_group
-    module: redeploy.cli.commands.version.scanner
-    line: 152
+  redeploy.dsl.loader.templates_to_css:
+    name: templates_to_css
+    module: redeploy.dsl.loader
+    line: 383
     cyclomatic_complexity: 6
-    calls_out: 7
+    calls_out: 13
     calls_in: 2
-  redeploy.cli.commands.hardware._apply_transform:
-    name: _apply_transform
-    module: redeploy.cli.commands.hardware
-    line: 187
-    cyclomatic_complexity: 4
-    calls_out: 4
-    calls_in: 1
-  redeploy.hardware.raspi_config.build_raspi_config_command:
-    name: build_raspi_config_command
-    module: redeploy.hardware.raspi_config
-    line: 5
-    cyclomatic_complexity: 3
-    calls_out: 2
-    calls_in: 1
   redeploy.detect.workflow.DetectionWorkflow._collect_hosts:
     name: _collect_hosts
     module: redeploy.detect.workflow
@@ -264,194 +26,110 @@ nodes:
     cyclomatic_complexity: 18
     calls_out: 14
     calls_in: 0
-  redeploy.analyze.checkers.binary.extract_binaries:
-    name: extract_binaries
-    module: redeploy.analyze.checkers.binary
-    line: 19
-    cyclomatic_complexity: 14
-    calls_out: 8
-    calls_in: 1
-  redeploy.patterns._step:
-    name: _step
-    module: redeploy.patterns
-    line: 63
-    cyclomatic_complexity: 1
+  redeploy.cli.commands.version.scanner._iter_version_scan_groups:
+    name: _iter_version_scan_groups
+    module: redeploy.cli.commands.version.scanner
+    line: 183
+    cyclomatic_complexity: 4
     calls_out: 1
-    calls_in: 17
-  redeploy.models.manifest.ProjectManifest.find_css:
-    name: find_css
-    module: redeploy.models.manifest
-    line: 58
+    calls_in: 1
+  redeploy.cli.commands.mcp_cmd.mcp_cmd:
+    name: mcp_cmd
+    module: redeploy.cli.commands.mcp_cmd
+    line: 27
+    cyclomatic_complexity: 1
+    calls_out: 6
+    calls_in: 0
+  redeploy.mcp_server._run:
+    name: _run
+    module: redeploy.mcp_server
+    line: 75
     cyclomatic_complexity: 4
     calls_out: 4
-    calls_in: 0
-  redeploy.version.read_remote_version:
-    name: read_remote_version
-    module: redeploy.version
-    line: 49
-    cyclomatic_complexity: 4
-    calls_out: 3
-    calls_in: 1
-  redeploy.patterns.BlueGreenPattern.expand:
-    name: expand
-    module: redeploy.patterns
-    line: 104
-    cyclomatic_complexity: 2
-    calls_out: 14
-    calls_in: 0
-  redeploy.detect.workflow.DetectionWorkflow._probe_ssh:
-    name: _probe_ssh
-    module: redeploy.detect.workflow
-    line: 295
-    cyclomatic_complexity: 3
-    calls_out: 3
-    calls_in: 0
-  redeploy.plugins.builtin.hardware_diagnostic._get_usb_devices:
-    name: _get_usb_devices
-    module: redeploy.plugins.builtin.hardware_diagnostic
-    line: 135
-    cyclomatic_complexity: 4
-    calls_out: 5
-    calls_in: 1
-  redeploy.apply.rollback.rollback_steps:
-    name: rollback_steps
-    module: redeploy.apply.rollback
-    line: 14
-    cyclomatic_complexity: 8
-    calls_out: 8
-    calls_in: 1
-  redeploy.parse.parse_container_line:
-    name: parse_container_line
-    module: redeploy.parse
-    line: 34
-    cyclomatic_complexity: 3
-    calls_out: 3
-    calls_in: 1
-  redeploy.cli.commands.plan_apply_report._parse_rsync_output:
-    name: _parse_rsync_output
-    module: redeploy.cli.commands.plan_apply_report
-    line: 163
-    cyclomatic_complexity: 13
-    calls_out: 8
-    calls_in: 1
-  redeploy.patterns.RollbackOnFailurePattern.expand:
-    name: expand
-    module: redeploy.patterns
-    line: 336
-    cyclomatic_complexity: 1
-    calls_out: 8
-    calls_in: 0
-  redeploy.mcp_server.fix_spec:
-    name: fix_spec
-    module: redeploy.mcp_server
-    line: 175
-    cyclomatic_complexity: 4
-    calls_out: 5
-    calls_in: 0
-  redeploy.observe.DeployAuditLog.record:
-    name: record
-    module: redeploy.observe
-    line: 133
-    cyclomatic_complexity: 11
-    calls_out: 20
-    calls_in: 0
-  redeploy.cli.commands.gh_workflow._on_section:
-    name: _on_section
+    calls_in: 6
+  redeploy.cli.commands.gh_workflow._collect_workflow_meta:
+    name: _collect_workflow_meta
     module: redeploy.cli.commands.gh_workflow
-    line: 50
-    cyclomatic_complexity: 1
-    calls_out: 2
-    calls_in: 1
-  redeploy.iac.docker_compose.DockerComposeParser._parse_service_volumes:
-    name: _parse_service_volumes
-    module: redeploy.iac.docker_compose
-    line: 329
-    cyclomatic_complexity: 4
-    calls_out: 3
-    calls_in: 0
-  redeploy.cli.display._print_services_table:
-    name: _print_services_table
-    module: redeploy.cli.display
-    line: 342
-    cyclomatic_complexity: 9
-    calls_out: 14
-    calls_in: 1
-  redeploy.discovery._detect_local_subnet:
-    name: _detect_local_subnet
-    module: redeploy.discovery
-    line: 241
-    cyclomatic_complexity: 9
-    calls_out: 11
-    calls_in: 1
-  redeploy.cli.commands.lint.lint:
-    name: lint
-    module: redeploy.cli.commands.lint
-    line: 20
-    cyclomatic_complexity: 19
-    calls_out: 44
-    calls_in: 0
-  redeploy.fleet.Fleet.merge:
-    name: merge
-    module: redeploy.fleet
-    line: 376
+    line: 75
     cyclomatic_complexity: 3
+    calls_out: 10
+    calls_in: 4
+  redeploy.cli.commands.version.scanner._print_version_scan_group:
+    name: _print_version_scan_group
+    module: redeploy.cli.commands.version.scanner
+    line: 170
+    cyclomatic_complexity: 3
+    calls_out: 4
+    calls_in: 2
+  redeploy.cli.commands.bump_fix._detect_version:
+    name: _detect_version
+    module: redeploy.cli.commands.bump_fix
+    line: 346
+    cyclomatic_complexity: 2
     calls_out: 3
-    calls_in: 0
-  redeploy.analyze.checkers.compose._check_build_section:
-    name: _check_build_section
-    module: redeploy.analyze.checkers.compose
-    line: 21
-    cyclomatic_complexity: 7
+    calls_in: 1
+  redeploy.cli.commands.import_._copy_plugin_template:
+    name: _copy_plugin_template
+    module: redeploy.cli.commands.import_
+    line: 264
+    cyclomatic_complexity: 3
     calls_out: 12
     calls_in: 1
-  redeploy.dsl.loader._build_templates:
-    name: _build_templates
-    module: redeploy.dsl.loader
-    line: 223
-    cyclomatic_complexity: 14
-    calls_out: 24
-    calls_in: 1
-  redeploy.cli.display._get_status_color:
-    name: _get_status_color
-    module: redeploy.cli.display
-    line: 337
-    cyclomatic_complexity: 3
-    calls_out: 0
-    calls_in: 1
-  redeploy.blueprint.sources.compose._merge_compose:
-    name: _merge_compose
-    module: redeploy.blueprint.sources.compose
-    line: 23
-    cyclomatic_complexity: 21
-    calls_out: 33
-    calls_in: 1
-  redeploy.cli.commands.device_map_renderers.render_rich:
-    name: render_rich
-    module: redeploy.cli.commands.device_map_renderers
-    line: 116
-    cyclomatic_complexity: 22
-    calls_out: 22
-    calls_in: 1
-  redeploy.iac.docker_compose._resolve_var:
-    name: _resolve_var
+  redeploy.iac.docker_compose.DockerComposeParser._resolve_image_and_build:
+    name: _resolve_image_and_build
     module: redeploy.iac.docker_compose
-    line: 37
-    cyclomatic_complexity: 1
-    calls_out: 7
-    calls_in: 3
-  redeploy.cli.commands.plan_apply._apply_manifest_to_spec:
-    name: _apply_manifest_to_spec
-    module: redeploy.cli.commands.plan_apply
-    line: 451
+    line: 294
+    cyclomatic_complexity: 7
+    calls_out: 8
+    calls_in: 0
+  redeploy.cli.commands.hardware._apply_fix:
+    name: _apply_fix
+    module: redeploy.cli.commands.hardware
+    line: 204
     cyclomatic_complexity: 8
-    calls_out: 9
+    calls_out: 18
     calls_in: 1
-  redeploy.cli.display.print_workflow_host_details:
-    name: print_workflow_host_details
-    module: redeploy.cli.display
-    line: 285
+  redeploy.detect.probes.probe_ports:
+    name: probe_ports
+    module: redeploy.detect.probes
+    line: 48
+    cyclomatic_complexity: 6
+    calls_out: 11
+    calls_in: 1
+  redeploy.analyze.checkers.docker_build.match_local_src:
+    name: match_local_src
+    module: redeploy.analyze.checkers.docker_build
+    line: 59
+    cyclomatic_complexity: 5
+    calls_out: 3
+    calls_in: 1
+  redeploy.blueprint.sources.infra.infer_app_url:
+    name: infer_app_url
+    module: redeploy.blueprint.sources.infra
+    line: 29
+    cyclomatic_complexity: 8
+    calls_out: 1
+    calls_in: 1
+  redeploy.config_apply.applier._normalize_hardware:
+    name: _normalize_hardware
+    module: redeploy.config_apply.applier
+    line: 13
+    cyclomatic_complexity: 4
+    calls_out: 2
+    calls_in: 1
+  redeploy.cli.commands.version.scanner._read_detected_source_versions:
+    name: _read_detected_source_versions
+    module: redeploy.cli.commands.version.scanner
+    line: 91
     cyclomatic_complexity: 3
     calls_out: 3
+    calls_in: 3
+  redeploy.cli.commands.device_map_actions.probe_device_map:
+    name: probe_device_map
+    module: redeploy.cli.commands.device_map_actions
+    line: 100
+    cyclomatic_complexity: 9
+    calls_out: 15
     calls_in: 1
   redeploy.hardware.fixes.generate_fix_plan:
     name: generate_fix_plan
@@ -460,26 +138,173 @@ nodes:
     cyclomatic_complexity: 7
     calls_out: 3
     calls_in: 1
-  redeploy.markpact.compiler._deep_merge:
-    name: _deep_merge
-    module: redeploy.markpact.compiler
-    line: 177
-    cyclomatic_complexity: 5
-    calls_out: 4
+  redeploy.cli.commands.bump_fix._bump_patch:
+    name: _bump_patch
+    module: redeploy.cli.commands.bump_fix
+    line: 96
+    cyclomatic_complexity: 2
+    calls_out: 7
     calls_in: 3
-  redeploy.cli.commands.inspect._find_css_path:
-    name: _find_css_path
-    module: redeploy.cli.commands.inspect
-    line: 20
+  redeploy.dsl_python.steps.ssh:
+    name: ssh
+    module: redeploy.dsl_python.steps
+    line: 11
     cyclomatic_complexity: 4
     calls_out: 4
     calls_in: 1
-  redeploy.plugins.builtin.browser_reload.browser_reload:
-    name: browser_reload
-    module: redeploy.plugins.builtin.browser_reload
-    line: 33
-    cyclomatic_complexity: 16
-    calls_out: 26
+  redeploy.dsl.loader._build_workflows:
+    name: _build_workflows
+    module: redeploy.dsl.loader
+    line: 298
+    cyclomatic_complexity: 8
+    calls_out: 16
+    calls_in: 1
+  redeploy.audit.paths.normalize_path:
+    name: normalize_path
+    module: redeploy.audit.paths
+    line: 23
+    cyclomatic_complexity: 3
+    calls_out: 5
+    calls_in: 3
+  redeploy.cli.commands.devices_display.filter_devices:
+    name: filter_devices
+    module: redeploy.cli.commands.devices_display
+    line: 10
+    cyclomatic_complexity: 13
+    calls_out: 0
+    calls_in: 1
+  redeploy.detect.templates._build_templates:
+    name: _build_templates
+    module: redeploy.detect.templates
+    line: 307
+    cyclomatic_complexity: 1
+    calls_out: 1
+    calls_in: 0
+  redeploy.iac.docker_compose.DockerComposeParser._parse_service_volumes:
+    name: _parse_service_volumes
+    module: redeploy.iac.docker_compose
+    line: 329
+    cyclomatic_complexity: 4
+    calls_out: 3
+    calls_in: 0
+  redeploy.mcp_server.get_workspace:
+    name: get_workspace
+    module: redeploy.mcp_server
+    line: 321
+    cyclomatic_complexity: 1
+    calls_out: 3
+    calls_in: 0
+  redeploy.blueprint.sources.compose._parse_compose_env:
+    name: _parse_compose_env
+    module: redeploy.blueprint.sources.compose
+    line: 127
+    cyclomatic_complexity: 7
+    calls_out: 8
+    calls_in: 1
+  redeploy.detect.detector.Detector.probe_hardware:
+    name: probe_hardware
+    module: redeploy.detect.detector
+    line: 99
+    cyclomatic_complexity: 2
+    calls_out: 4
+    calls_in: 3
+  redeploy.cli.commands.gh_workflow._resolve_workflow_identifier:
+    name: _resolve_workflow_identifier
+    module: redeploy.cli.commands.gh_workflow
+    line: 89
+    cyclomatic_complexity: 10
+    calls_out: 11
+    calls_in: 2
+  redeploy.analyze.checkers.compose.scan_compose_file:
+    name: scan_compose_file
+    module: redeploy.analyze.checkers.compose
+    line: 99
+    cyclomatic_complexity: 6
+    calls_out: 9
+    calls_in: 1
+  redeploy.cli.display.generate_workflow_output_css:
+    name: generate_workflow_output_css
+    module: redeploy.cli.display
+    line: 296
+    cyclomatic_complexity: 8
+    calls_out: 9
+    calls_in: 1
+  redeploy.analyze.checkers.docker_build.resolve_local_dockerfile:
+    name: resolve_local_dockerfile
+    module: redeploy.analyze.checkers.docker_build
+    line: 71
+    cyclomatic_complexity: 3
+    calls_out: 6
+    calls_in: 1
+  redeploy.cli.commands.gh_workflow._has_workflow_dispatch:
+    name: _has_workflow_dispatch
+    module: redeploy.cli.commands.gh_workflow
+    line: 65
+    cyclomatic_complexity: 4
+    calls_out: 3
+    calls_in: 1
+  redeploy.analyze.ignore.IgnoreList.is_ignored:
+    name: is_ignored
+    module: redeploy.analyze.ignore
+    line: 63
+    cyclomatic_complexity: 9
+    calls_out: 10
+    calls_in: 0
+  redeploy.cli.commands.version.helpers._bump_single:
+    name: _bump_single
+    module: redeploy.cli.commands.version.helpers
+    line: 230
+    cyclomatic_complexity: 25
+    calls_out: 35
+    calls_in: 4
+  redeploy.patterns.BlueGreenPattern.expand:
+    name: expand
+    module: redeploy.patterns
+    line: 104
+    cyclomatic_complexity: 2
+    calls_out: 14
+    calls_in: 0
+  redeploy.analyze.checkers.docker_build.DockerBuildChecker.check:
+    name: check
+    module: redeploy.analyze.checkers.docker_build
+    line: 83
+    cyclomatic_complexity: 4
+    calls_out: 8
+    calls_in: 0
+  redeploy.version.bump.bump_all_packages:
+    name: bump_all_packages
+    module: redeploy.version.bump
+    line: 241
+    cyclomatic_complexity: 3
+    calls_out: 5
+    calls_in: 0
+  redeploy.apply.handlers.run_rsync:
+    name: run_rsync
+    module: redeploy.apply.handlers
+    line: 73
+    cyclomatic_complexity: 6
+    calls_out: 8
+    calls_in: 1
+  redeploy.audit.audit_spec:
+    name: audit_spec
+    module: redeploy.audit
+    line: 31
+    cyclomatic_complexity: 1
+    calls_out: 3
+    calls_in: 1
+  redeploy.plugins.builtin.hardware_diagnostic._check_gpio:
+    name: _check_gpio
+    module: redeploy.plugins.builtin.hardware_diagnostic
+    line: 129
+    cyclomatic_complexity: 2
+    calls_out: 2
+    calls_in: 1
+  redeploy.hardware.kiosk.browsers.BrowserKioskProfile.build_launch_cmd:
+    name: build_launch_cmd
+    module: redeploy.hardware.kiosk.browsers
+    line: 39
+    cyclomatic_complexity: 5
+    calls_out: 3
     calls_in: 0
   redeploy.markpact.compiler._load_block_payload:
     name: _load_block_payload
@@ -488,130 +313,179 @@ nodes:
     cyclomatic_complexity: 8
     calls_out: 7
     calls_in: 1
-  redeploy.mcp_server._redeploy_bin:
-    name: _redeploy_bin
-    module: redeploy.mcp_server
-    line: 63
-    cyclomatic_complexity: 5
-    calls_out: 4
+  redeploy.analyze.preflight_schema._collect_remote_checks:
+    name: _collect_remote_checks
+    module: redeploy.analyze.preflight_schema
+    line: 233
+    cyclomatic_complexity: 8
+    calls_out: 14
     calls_in: 1
-  redeploy.detect.probes.probe_iptables_dnat:
-    name: probe_iptables_dnat
-    module: redeploy.detect.probes
-    line: 71
+  redeploy.heal.runner.HealRunner._heal_step:
+    name: _heal_step
+    module: redeploy.heal.runner
+    line: 102
+    cyclomatic_complexity: 14
+    calls_out: 40
+    calls_in: 0
+  redeploy.cli.core.resolve_device:
+    name: resolve_device
+    module: redeploy.cli.core
+    line: 35
+    cyclomatic_complexity: 5
+    calls_out: 12
+    calls_in: 1
+  redeploy.iac.docker_compose._env_dict:
+    name: _env_dict
+    module: redeploy.iac.docker_compose
+    line: 108
     cyclomatic_complexity: 7
+    calls_out: 6
+    calls_in: 1
+  redeploy.blueprint.sources.hardware.build_hw_requirements:
+    name: build_hw_requirements
+    module: redeploy.blueprint.sources.hardware
+    line: 9
+    cyclomatic_complexity: 13
+    calls_out: 15
+    calls_in: 1
+  redeploy.apply.handlers._format_step_output:
+    name: _format_step_output
+    module: redeploy.apply.handlers
+    line: 24
+    cyclomatic_complexity: 6
+    calls_out: 7
+    calls_in: 6
+  redeploy.steps.StepLibrary.all:
+    name: all
+    module: redeploy.steps
+    line: 80
+    cyclomatic_complexity: 2
+    calls_out: 2
+    calls_in: 5
+  redeploy.cli.commands.version.release._create_release_tags:
+    name: _create_release_tags
+    module: redeploy.cli.commands.version.release
+    line: 48
+    cyclomatic_complexity: 3
     calls_out: 5
     calls_in: 1
-  redeploy.detect.templates.build_context:
-    name: build_context
-    module: redeploy.detect.templates
-    line: 204
-    cyclomatic_complexity: 2
+  redeploy.cli.commands.version.release._format_release_tag:
+    name: _format_release_tag
+    module: redeploy.cli.commands.version.release
+    line: 8
+    cyclomatic_complexity: 1
+    calls_out: 1
+    calls_in: 4
+  redeploy.markpact.compiler._normalize_config_payload:
+    name: _normalize_config_payload
+    module: redeploy.markpact.compiler
+    line: 98
+    cyclomatic_complexity: 11
+    calls_out: 18
+    calls_in: 1
+  redeploy.markpact.parser.extract_script_from_markdown:
+    name: extract_script_from_markdown
+    module: redeploy.markpact.parser
+    line: 182
+    cyclomatic_complexity: 10
+    calls_out: 10
+    calls_in: 2
+  redeploy.cli.commands.blueprint._execute_query_blueprint:
+    name: _execute_query_blueprint
+    module: redeploy.cli.commands.blueprint
+    line: 98
+    cyclomatic_complexity: 1
     calls_out: 1
     calls_in: 1
-  examples.redeploy_iac_parsers.helm_kustomize.HelmTemplatesParser.parse:
-    name: parse
-    module: examples.redeploy_iac_parsers.helm_kustomize
-    line: 40
-    cyclomatic_complexity: 17
-    calls_out: 27
-    calls_in: 0
-  redeploy.mcp_server.list_specs:
-    name: list_specs
-    module: redeploy.mcp_server
-    line: 230
+  redeploy.patterns.get_pattern:
+    name: get_pattern
+    module: redeploy.patterns
+    line: 400
     cyclomatic_complexity: 1
+    calls_out: 1
+    calls_in: 1
+  redeploy.mcp_server.bump_version:
+    name: bump_version
+    module: redeploy.mcp_server
+    line: 200
+    cyclomatic_complexity: 3
+    calls_out: 4
+    calls_in: 1
+  redeploy.version.commits.parse_conventional:
+    name: parse_conventional
+    module: redeploy.version.commits
+    line: 41
+    cyclomatic_complexity: 4
     calls_out: 6
-    calls_in: 0
-  redeploy.iac.docker_compose.DockerComposeParser._load_merged:
-    name: _load_merged
-    module: redeploy.iac.docker_compose
-    line: 246
+    calls_in: 2
+  redeploy.plugins.builtin.notify._http_post:
+    name: _http_post
+    module: redeploy.plugins.builtin.notify
+    line: 122
+    cyclomatic_complexity: 5
+    calls_out: 10
+    calls_in: 2
+  redeploy.analyze.checkers.command_ref.CommandRefChecker._check_external_ref:
+    name: _check_external_ref
+    module: redeploy.analyze.checkers.command_ref
+    line: 42
     cyclomatic_complexity: 6
+    calls_out: 8
+    calls_in: 0
+  redeploy.markpact.parser.resolve_script_ref:
+    name: resolve_script_ref
+    module: redeploy.markpact.parser
+    line: 283
+    cyclomatic_complexity: 6
+    calls_out: 5
+    calls_in: 5
+  redeploy.mcp_server.serve:
+    name: serve
+    module: redeploy.mcp_server
+    line: 332
+    cyclomatic_complexity: 4
+    calls_out: 6
+    calls_in: 1
+  redeploy.cli.commands.plan_apply_report._skipped_checksum:
+    name: _skipped_checksum
+    module: redeploy.cli.commands.plan_apply_report
+    line: 72
+    cyclomatic_complexity: 1
+    calls_out: 1
+    calls_in: 2
+  redeploy.iac.docker_compose._parse_volume:
+    name: _parse_volume
+    module: redeploy.iac.docker_compose
+    line: 86
+    cyclomatic_complexity: 5
+    calls_out: 14
+    calls_in: 1
+  redeploy.plugins.PluginRegistry._ensure_builtins:
+    name: _ensure_builtins
+    module: redeploy.plugins
+    line: 106
+    cyclomatic_complexity: 2
+    calls_out: 1
+    calls_in: 0
+  redeploy.analyze.preflight_schema._collect_local_artifacts:
+    name: _collect_local_artifacts
+    module: redeploy.analyze.preflight_schema
+    line: 194
+    cyclomatic_complexity: 6
+    calls_out: 16
+    calls_in: 1
+  redeploy.audit.extractor.Extractor._from_target:
+    name: _from_target
+    module: redeploy.audit.extractor
+    line: 42
+    cyclomatic_complexity: 7
     calls_out: 9
     calls_in: 0
-  redeploy.blueprint.sources.compose._parse_compose_ports:
-    name: _parse_compose_ports
-    module: redeploy.blueprint.sources.compose
-    line: 85
-    cyclomatic_complexity: 7
-    calls_out: 21
-    calls_in: 1
-  redeploy.fleet.Fleet.get:
-    name: get
-    module: redeploy.fleet
-    line: 338
+  redeploy.detect.workflow.DetectionWorkflow._probe_ssh:
+    name: _probe_ssh
+    module: redeploy.detect.workflow
+    line: 295
     cyclomatic_complexity: 3
-    calls_out: 1
-    calls_in: 1
-  redeploy.cli.core.run_detect_workflow:
-    name: run_detect_workflow
-    module: redeploy.cli.core
-    line: 138
-    cyclomatic_complexity: 4
-    calls_out: 8
-    calls_in: 1
-  redeploy.discovery._build_probe_command:
-    name: _build_probe_command
-    module: redeploy.discovery
-    line: 534
-    cyclomatic_complexity: 1
-    calls_out: 0
-    calls_in: 1
-  redeploy.blueprint.sources.compose._parse_compose_env:
-    name: _parse_compose_env
-    module: redeploy.blueprint.sources.compose
-    line: 127
-    cyclomatic_complexity: 7
-    calls_out: 8
-    calls_in: 1
-  redeploy.cli.commands.bump_fix.bump_cmd:
-    name: bump_cmd
-    module: redeploy.cli.commands.bump_fix
-    line: 184
-    cyclomatic_complexity: 6
-    calls_out: 23
-    calls_in: 0
-  redeploy.iac.docker_compose._parse_port:
-    name: _parse_port
-    module: redeploy.iac.docker_compose
-    line: 48
-    cyclomatic_complexity: 10
-    calls_out: 21
-    calls_in: 2
-  redeploy.apply.executor.Executor.__init__:
-    name: __init__
-    module: redeploy.apply.executor
-    line: 29
-    cyclomatic_complexity: 14
-    calls_out: 8
-    calls_in: 0
-  redeploy.iac.config_hints.ConfigHintsParser._parse_k8s_yaml:
-    name: _parse_k8s_yaml
-    module: redeploy.iac.config_hints
-    line: 141
-    cyclomatic_complexity: 26
-    calls_out: 38
-    calls_in: 0
-  redeploy.hardware.panels.infer_from_hardware:
-    name: infer_from_hardware
-    module: redeploy.hardware.panels
-    line: 48
-    cyclomatic_complexity: 1
-    calls_out: 0
-    calls_in: 1
-  redeploy.cli.commands.version.monorepo._create_version_set_git:
-    name: _create_version_set_git
-    module: redeploy.cli.commands.version.monorepo
-    line: 87
-    cyclomatic_complexity: 6
-    calls_out: 3
-    calls_in: 1
-  redeploy.detect.templates.TemplateEngine.detect:
-    name: detect
-    module: redeploy.detect.templates
-    line: 408
-    cyclomatic_complexity: 2
     calls_out: 3
     calls_in: 0
   redeploy.heal.HealRunner._record_repair:
@@ -621,363 +495,69 @@ nodes:
     cyclomatic_complexity: 1
     calls_out: 2
     calls_in: 0
-  redeploy.analyze.checkers.docker_build.resolve_local_dockerfile:
-    name: resolve_local_dockerfile
-    module: redeploy.analyze.checkers.docker_build
-    line: 71
-    cyclomatic_complexity: 3
-    calls_out: 6
-    calls_in: 1
-  redeploy.dsl_python.runner.PythonMigrationRunner.list_migrations:
-    name: list_migrations
-    module: redeploy.dsl_python.runner
-    line: 124
-    cyclomatic_complexity: 5
-    calls_out: 13
-    calls_in: 0
-  redeploy.cli.commands.gh_workflow.gh_workflow_list:
-    name: gh_workflow_list
-    module: redeploy.cli.commands.gh_workflow
-    line: 133
-    cyclomatic_complexity: 5
-    calls_out: 21
-    calls_in: 0
-  redeploy.config_apply.handlers.display.apply_display_transform:
-    name: apply_display_transform
-    module: redeploy.config_apply.handlers.display
-    line: 35
-    cyclomatic_complexity: 7
-    calls_out: 25
-    calls_in: 1
-  redeploy.hardware.fixes._step:
-    name: _step
-    module: redeploy.hardware.fixes
-    line: 10
-    cyclomatic_complexity: 1
-    calls_out: 1
-    calls_in: 10
-  redeploy.heal.hint_provider.apply_fix_to_spec:
-    name: apply_fix_to_spec
-    module: redeploy.heal.hint_provider
-    line: 245
-    cyclomatic_complexity: 16
-    calls_out: 30
-    calls_in: 0
-  redeploy.heal.parse_failed_step:
-    name: parse_failed_step
-    module: redeploy.heal
-    line: 224
-    cyclomatic_complexity: 8
-    calls_out: 11
-    calls_in: 2
-  redeploy.cli.commands.blueprint._execute_query_blueprint:
-    name: _execute_query_blueprint
-    module: redeploy.cli.commands.blueprint
-    line: 98
-    cyclomatic_complexity: 1
-    calls_out: 1
-    calls_in: 1
-  redeploy.version.bump.bump_version:
-    name: bump_version
-    module: redeploy.version.bump
-    line: 15
-    cyclomatic_complexity: 6
-    calls_out: 9
-    calls_in: 0
-  redeploy.cli.commands.bump_fix._find_version_file:
-    name: _find_version_file
-    module: redeploy.cli.commands.bump_fix
-    line: 86
-    cyclomatic_complexity: 3
-    calls_out: 2
-    calls_in: 3
-  redeploy.analyze.checkers.path.CommandPathChecker.check:
-    name: check
-    module: redeploy.analyze.checkers.path
-    line: 71
-    cyclomatic_complexity: 9
-    calls_out: 13
-    calls_in: 0
-  redeploy.discovery._tcp_reachable:
-    name: _tcp_reachable
-    module: redeploy.discovery
-    line: 429
-    cyclomatic_complexity: 2
-    calls_out: 1
-    calls_in: 1
-  redeploy.version.bump.bump_all_packages:
-    name: bump_all_packages
-    module: redeploy.version.bump
-    line: 241
-    cyclomatic_complexity: 3
-    calls_out: 5
-    calls_in: 0
-  redeploy.blueprint.generators.docker_compose._build_service:
-    name: _build_service
-    module: redeploy.blueprint.generators.docker_compose
-    line: 114
-    cyclomatic_complexity: 20
-    calls_out: 8
-    calls_in: 1
-  redeploy.hardware.fixes._detect_port:
-    name: _detect_port
-    module: redeploy.hardware.fixes
-    line: 20
-    cyclomatic_complexity: 6
-    calls_out: 0
-    calls_in: 1
-  redeploy.cli.commands.bump_fix._update_quadlet_service_version:
-    name: _update_quadlet_service_version
-    module: redeploy.cli.commands.bump_fix
-    line: 135
-    cyclomatic_complexity: 6
-    calls_out: 9
-    calls_in: 1
-  redeploy.blueprint.generators.docker_compose.generate_twin:
-    name: generate_twin
-    module: redeploy.blueprint.generators.docker_compose
-    line: 27
-    cyclomatic_complexity: 11
-    calls_out: 3
-    calls_in: 1
-  redeploy.dsl_python.steps.version_check:
-    name: version_check
-    module: redeploy.dsl_python.steps
-    line: 247
-    cyclomatic_complexity: 7
-    calls_out: 10
-    calls_in: 0
-  redeploy.plugins.load_user_plugins:
-    name: load_user_plugins
-    module: redeploy.plugins
-    line: 161
-    cyclomatic_complexity: 3
-    calls_out: 4
-    calls_in: 3
-  redeploy.version.changelog.ChangelogManager._categorize_commits:
-    name: _categorize_commits
-    module: redeploy.version.changelog
-    line: 123
-    cyclomatic_complexity: 3
-    calls_out: 3
-    calls_in: 0
-  redeploy.heal.write_repair_log:
-    name: write_repair_log
-    module: redeploy.heal
-    line: 195
-    cyclomatic_complexity: 6
-    calls_out: 15
-    calls_in: 9
-  redeploy.iac.docker_compose._env_dict:
-    name: _env_dict
-    module: redeploy.iac.docker_compose
-    line: 108
-    cyclomatic_complexity: 7
-    calls_out: 6
-    calls_in: 1
-  redeploy.cli.commands.version.scanner._detect_version_sources_in_dir:
-    name: _detect_version_sources_in_dir
-    module: redeploy.cli.commands.version.scanner
-    line: 49
-    cyclomatic_complexity: 13
-    calls_out: 17
-    calls_in: 4
-  redeploy.cli.query.execute_query:
-    name: execute_query
-    module: redeploy.cli.query
-    line: 18
-    cyclomatic_complexity: 5
-    calls_out: 9
-    calls_in: 3
-  redeploy.schema._read_version:
-    name: _read_version
-    module: redeploy.schema
-    line: 229
-    cyclomatic_complexity: 3
-    calls_out: 4
-    calls_in: 1
-  redeploy.detect.hardware._wrap_remote_probe:
-    name: _wrap_remote_probe
-    module: redeploy.detect.hardware
-    line: 40
-    cyclomatic_complexity: 1
-    calls_out: 2
-    calls_in: 1
-  redeploy.discovery.discover:
-    name: discover
-    module: redeploy.discovery
-    line: 294
-    cyclomatic_complexity: 14
-    calls_out: 22
-    calls_in: 3
-  redeploy.cli.commands.gh_workflow.gh_workflow_run:
-    name: gh_workflow_run
-    module: redeploy.cli.commands.gh_workflow
-    line: 207
-    cyclomatic_complexity: 19
-    calls_out: 49
-    calls_in: 0
-  redeploy.plugins.builtin.hardware_diagnostic._check_gpio:
-    name: _check_gpio
-    module: redeploy.plugins.builtin.hardware_diagnostic
-    line: 129
-    cyclomatic_complexity: 2
-    calls_out: 2
-    calls_in: 1
-  redeploy.plugins.builtin.hardware_diagnostic._get_audio_devices:
-    name: _get_audio_devices
-    module: redeploy.plugins.builtin.hardware_diagnostic
-    line: 147
-    cyclomatic_complexity: 3
-    calls_out: 5
-    calls_in: 1
-  examples.redeploy_iac_parsers.gitops_ci._is_gitops_command:
-    name: _is_gitops_command
-    module: examples.redeploy_iac_parsers.gitops_ci
-    line: 31
-    cyclomatic_complexity: 2
-    calls_out: 2
-    calls_in: 4
-  redeploy.cli.commands.version.monorepo._create_version_set_taggers:
-    name: _create_version_set_taggers
-    module: redeploy.cli.commands.version.monorepo
-    line: 105
-    cyclomatic_complexity: 2
-    calls_out: 2
-    calls_in: 1
-  redeploy.cli.display._print_template_match:
-    name: _print_template_match
-    module: redeploy.cli.display
-    line: 259
-    cyclomatic_complexity: 5
-    calls_out: 7
-    calls_in: 1
-  redeploy.analyze.checkers.binary.BinaryChecker.check:
-    name: check
-    module: redeploy.analyze.checkers.binary
-    line: 57
-    cyclomatic_complexity: 7
-    calls_out: 8
-    calls_in: 0
-  redeploy.blueprint.sources.compose.merge_compose_files:
-    name: merge_compose_files
-    module: redeploy.blueprint.sources.compose
-    line: 13
-    cyclomatic_complexity: 2
-    calls_out: 1
-    calls_in: 1
-  redeploy.cli.commands.plan_apply_report._render_checksum_section:
-    name: _render_checksum_section
+  redeploy.cli.commands.plan_apply_report.render_markdown_report:
+    name: render_markdown_report
     module: redeploy.cli.commands.plan_apply_report
-    line: 190
-    cyclomatic_complexity: 7
+    line: 221
+    cyclomatic_complexity: 12
     calls_out: 13
     calls_in: 1
-  redeploy.cli.commands.version.scanner._regex_version_scan_specs:
-    name: _regex_version_scan_specs
-    module: redeploy.cli.commands.version.scanner
-    line: 21
-    cyclomatic_complexity: 1
-    calls_out: 0
-    calls_in: 1
-  redeploy.analyze.checkers.docker_build.DockerBuildChecker._check_remote_context:
-    name: _check_remote_context
-    module: redeploy.analyze.checkers.docker_build
-    line: 120
-    cyclomatic_complexity: 12
-    calls_out: 12
-    calls_in: 0
-  redeploy.cli.display._get_plugin_hint:
-    name: _get_plugin_hint
-    module: redeploy.cli.display
-    line: 137
+  redeploy.cli.commands.bump_fix._prompt_choose_spec:
+    name: _prompt_choose_spec
+    module: redeploy.cli.commands.bump_fix
+    line: 66
     cyclomatic_complexity: 5
-    calls_out: 1
-    calls_in: 1
-  redeploy.plugins.builtin.notify._resolve_env:
-    name: _resolve_env
-    module: redeploy.plugins.builtin.notify
-    line: 157
-    cyclomatic_complexity: 1
-    calls_out: 1
-    calls_in: 3
-  redeploy.analyze.spec_analyzer.SpecAnalyzer.analyze_file:
-    name: analyze_file
-    module: redeploy.analyze.spec_analyzer
-    line: 68
-    cyclomatic_complexity: 7
-    calls_out: 10
+    calls_out: 9
+    calls_in: 2
+  redeploy.dsl.parser.DSLNode.__repr__:
+    name: __repr__
+    module: redeploy.dsl.parser
+    line: 64
+    cyclomatic_complexity: 2
+    calls_out: 4
     calls_in: 0
-  redeploy.cli.commands.gh_workflow._collect_workflow_meta:
-    name: _collect_workflow_meta
-    module: redeploy.cli.commands.gh_workflow
-    line: 75
-    cyclomatic_complexity: 3
-    calls_out: 10
-    calls_in: 4
-  redeploy.parse._apply_network_line:
-    name: _apply_network_line
-    module: redeploy.parse
-    line: 140
-    cyclomatic_complexity: 3
-    calls_out: 2
-    calls_in: 1
-  redeploy.discovery._scan_arp_cache:
-    name: _scan_arp_cache
-    module: redeploy.discovery
-    line: 101
-    cyclomatic_complexity: 10
-    calls_out: 23
-    calls_in: 1
-  redeploy.apply.state_apply.HardwareStateHandler.apply:
-    name: apply
-    module: redeploy.apply.state_apply
-    line: 65
-    cyclomatic_complexity: 18
-    calls_out: 27
-    calls_in: 0
-  redeploy.mcp_server.serve:
-    name: serve
-    module: redeploy.mcp_server
-    line: 332
-    cyclomatic_complexity: 4
-    calls_out: 6
-    calls_in: 1
-  redeploy.hardware.kiosk.autostart.ensure_autostart_entry:
-    name: ensure_autostart_entry
-    module: redeploy.hardware.kiosk.autostart
-    line: 37
-    cyclomatic_complexity: 6
-    calls_out: 6
-    calls_in: 1
-  redeploy.models.spec.MigrationSpec.from_file:
-    name: from_file
+  redeploy.models.spec._migrate_legacy_post_deploy:
+    name: _migrate_legacy_post_deploy
     module: redeploy.models.spec
-    line: 135
-    cyclomatic_complexity: 2
-    calls_out: 5
-    calls_in: 0
-  redeploy.analyze.ignore.ensure_redeployignore:
-    name: ensure_redeployignore
-    module: redeploy.analyze.ignore
-    line: 40
-    cyclomatic_complexity: 2
-    calls_out: 2
+    line: 70
+    cyclomatic_complexity: 5
+    calls_out: 20
+    calls_in: 3
+  redeploy.discovery.ssh_credentials.collect_ssh_keys:
+    name: collect_ssh_keys
+    module: redeploy.discovery.ssh_credentials
+    line: 16
+    cyclomatic_complexity: 14
+    calls_out: 16
     calls_in: 1
-  redeploy.apply.state_apply._update_kanshi:
-    name: _update_kanshi
-    module: redeploy.apply.state_apply
-    line: 131
-    cyclomatic_complexity: 9
-    calls_out: 17
-    calls_in: 1
-  redeploy.version.bump._calculate_bump:
-    name: _calculate_bump
-    module: redeploy.version.bump
-    line: 258
+  redeploy.parse._apply_system_line:
+    name: _apply_system_line
+    module: redeploy.parse
+    line: 106
     cyclomatic_complexity: 8
     calls_out: 10
-    calls_in: 4
+    calls_in: 1
+  redeploy.version.transaction.VersionBumpTransaction._stage_one:
+    name: _stage_one
+    module: redeploy.version.transaction
+    line: 63
+    cyclomatic_complexity: 6
+    calls_out: 7
+    calls_in: 0
+  redeploy.heal.HealLoopDetector.observe:
+    name: observe
+    module: redeploy.heal
+    line: 252
+    cyclomatic_complexity: 5
+    calls_out: 4
+    calls_in: 0
+  redeploy.models.manifest.ProjectManifest.find_css:
+    name: find_css
+    module: redeploy.models.manifest
+    line: 58
+    cyclomatic_complexity: 4
+    calls_out: 4
+    calls_in: 0
   redeploy.markpact.compiler.compile_markpact_document_to_data:
     name: compile_markpact_document_to_data
     module: redeploy.markpact.compiler
@@ -985,116 +565,165 @@ nodes:
     cyclomatic_complexity: 6
     calls_out: 8
     calls_in: 1
-  redeploy.detect.templates._load_templates_from_yaml:
-    name: _load_templates_from_yaml
-    module: redeploy.detect.templates
-    line: 227
-    cyclomatic_complexity: 9
-    calls_out: 22
-    calls_in: 1
-  redeploy.analyze.checkers.path.resolve_local_path:
-    name: resolve_local_path
-    module: redeploy.analyze.checkers.path
-    line: 12
-    cyclomatic_complexity: 3
+  redeploy.cli.commands.version.helpers._print_source_drift_status:
+    name: _print_source_drift_status
+    module: redeploy.cli.commands.version.helpers
+    line: 122
+    cyclomatic_complexity: 7
     calls_out: 6
-    calls_in: 3
-  redeploy.hardware.kiosk.browsers.BrowserKioskProfile.build_launch_cmd:
-    name: build_launch_cmd
-    module: redeploy.hardware.kiosk.browsers
-    line: 39
-    cyclomatic_complexity: 5
-    calls_out: 3
+    calls_in: 1
+  redeploy.cli.display.print_import_spec:
+    name: print_import_spec
+    module: redeploy.cli.display
+    line: 377
+    cyclomatic_complexity: 2
+    calls_out: 4
     calls_in: 0
-  redeploy.apply.executor.Executor._rollback:
-    name: _rollback
-    module: redeploy.apply.executor
-    line: 332
+  redeploy.cli.commands.prompt_cmd.prompt_cmd:
+    name: prompt_cmd
+    module: redeploy.cli.commands.prompt_cmd
+    line: 244
+    cyclomatic_complexity: 15
+    calls_out: 37
+    calls_in: 0
+  redeploy.cli.commands.version.scanner._detect_source_version:
+    name: _detect_source_version
+    module: redeploy.cli.commands.version.scanner
+    line: 85
+    cyclomatic_complexity: 2
+    calls_out: 1
+    calls_in: 3
+  redeploy.apply.handlers.run_inline_script:
+    name: run_inline_script
+    module: redeploy.apply.handlers
+    line: 308
+    cyclomatic_complexity: 6
+    calls_out: 7
+    calls_in: 1
+  redeploy.discovery.auto_probe.auto_probe:
+    name: auto_probe
+    module: redeploy.discovery.auto_probe
+    line: 135
+    cyclomatic_complexity: 7
+    calls_out: 33
+    calls_in: 4
+  redeploy.hardware.fixes._step:
+    name: _step
+    module: redeploy.hardware.fixes
+    line: 10
     cyclomatic_complexity: 1
     calls_out: 1
+    calls_in: 10
+  redeploy.cli.commands.gh_workflow.gh_workflow_list:
+    name: gh_workflow_list
+    module: redeploy.cli.commands.gh_workflow
+    line: 133
+    cyclomatic_complexity: 5
+    calls_out: 21
     calls_in: 0
-  redeploy.cli.commands.version.release._update_release_changelog:
-    name: _update_release_changelog
-    module: redeploy.cli.commands.version.release
-    line: 13
-    cyclomatic_complexity: 7
-    calls_out: 7
+  redeploy.cli.commands.import_._plugin_templates:
+    name: _plugin_templates
+    module: redeploy.cli.commands.import_
+    line: 245
+    cyclomatic_complexity: 1
+    calls_out: 0
+    calls_in: 2
+  redeploy.cli.commands.workflow.workflow_cmd:
+    name: workflow_cmd
+    module: redeploy.cli.commands.workflow
+    line: 21
+    cyclomatic_complexity: 10
+    calls_out: 21
+    calls_in: 0
+  redeploy.iac.docker_compose._parse_port:
+    name: _parse_port
+    module: redeploy.iac.docker_compose
+    line: 48
+    cyclomatic_complexity: 10
+    calls_out: 21
+    calls_in: 2
+  redeploy.cli.display._print_spec_metadata:
+    name: _print_spec_metadata
+    module: redeploy.cli.display
+    line: 367
+    cyclomatic_complexity: 4
+    calls_out: 6
+    calls_in: 1
+  redeploy.plugins.load_user_plugins:
+    name: load_user_plugins
+    module: redeploy.plugins
+    line: 161
+    cyclomatic_complexity: 3
+    calls_out: 4
     calls_in: 3
-  redeploy.apply.handlers._parse_container_statuses:
-    name: _parse_container_statuses
-    module: redeploy.apply.handlers
-    line: 180
+  redeploy.plugins.builtin.notify.notify:
+    name: notify
+    module: redeploy.plugins.builtin.notify
+    line: 53
+    cyclomatic_complexity: 4
+    calls_out: 5
+    calls_in: 0
+  redeploy.heal.runner.HealRunner._reload_migration:
+    name: _reload_migration
+    module: redeploy.heal.runner
+    line: 93
+    cyclomatic_complexity: 1
+    calls_out: 4
+    calls_in: 0
+  redeploy.dsl.loader._build_manifest:
+    name: _build_manifest
+    module: redeploy.dsl.loader
+    line: 167
+    cyclomatic_complexity: 25
+    calls_out: 23
+    calls_in: 1
+  redeploy.version.bump.verify_sources:
+    name: verify_sources
+    module: redeploy.version.bump
+    line: 57
+    cyclomatic_complexity: 4
+    calls_out: 7
+    calls_in: 5
+  redeploy.plugins._load_builtin_plugins:
+    name: _load_builtin_plugins
+    module: redeploy.plugins
+    line: 145
     cyclomatic_complexity: 6
-    calls_out: 8
+    calls_out: 7
+    calls_in: 1
+  redeploy.discovery.helpers.is_ip:
+    name: is_ip
+    module: redeploy.discovery.helpers
+    line: 31
+    cyclomatic_complexity: 1
+    calls_out: 2
+    calls_in: 2
+  redeploy.plugins.builtin.hardware_diagnostic._detect_platform:
+    name: _detect_platform
+    module: redeploy.plugins.builtin.hardware_diagnostic
+    line: 54
+    cyclomatic_complexity: 10
+    calls_out: 6
+    calls_in: 1
+  examples.redeploy_iac_parsers.helm_kustomize.HelmTemplatesParser.parse:
+    name: parse
+    module: examples.redeploy_iac_parsers.helm_kustomize
+    line: 40
+    cyclomatic_complexity: 17
+    calls_out: 27
+    calls_in: 0
+  redeploy.detect.templates.build_context:
+    name: build_context
+    module: redeploy.detect.templates
+    line: 204
+    cyclomatic_complexity: 2
+    calls_out: 1
     calls_in: 1
   redeploy.cli.commands.export._export_to_css:
     name: _export_to_css
     module: redeploy.cli.commands.export
     line: 108
     cyclomatic_complexity: 2
-    calls_out: 2
-    calls_in: 1
-  redeploy.parse._apply_git_line:
-    name: _apply_git_line
-    module: redeploy.parse
-    line: 124
-    cyclomatic_complexity: 3
-    calls_out: 3
-    calls_in: 1
-  redeploy.cli.display._print_alternatives:
-    name: _print_alternatives
-    module: redeploy.cli.display
-    line: 274
-    cyclomatic_complexity: 5
-    calls_out: 2
-    calls_in: 1
-  redeploy.iac.parsers.compose.DockerComposeParser._parse_depends_on:
-    name: _parse_depends_on
-    module: redeploy.iac.parsers.compose
-    line: 268
-    cyclomatic_complexity: 5
-    calls_out: 6
-    calls_in: 0
-  redeploy.parse._parse_section_line:
-    name: _parse_section_line
-    module: redeploy.parse
-    line: 150
-    cyclomatic_complexity: 7
-    calls_out: 6
-    calls_in: 1
-  redeploy.cli.commands.version.commands.version_verify:
-    name: version_verify
-    module: redeploy.cli.commands.version.commands
-    line: 197
-    cyclomatic_complexity: 7
-    calls_out: 18
-    calls_in: 0
-  redeploy.cli.commands.exec_.exec_cmd:
-    name: exec_cmd
-    module: redeploy.cli.commands.exec_
-    line: 22
-    cyclomatic_complexity: 9
-    calls_out: 40
-    calls_in: 0
-  redeploy.apply.state_apply.apply_state:
-    name: apply_state
-    module: redeploy.apply.state_apply
-    line: 211
-    cyclomatic_complexity: 2
-    calls_out: 4
-    calls_in: 2
-  redeploy.analyze.spec_analyzer.SpecAnalyzer.__init__:
-    name: __init__
-    module: redeploy.analyze.spec_analyzer
-    line: 48
-    cyclomatic_complexity: 3
-    calls_out: 2
-    calls_in: 0
-  redeploy.config_apply.applier._normalize_hardware:
-    name: _normalize_hardware
-    module: redeploy.config_apply.applier
-    line: 13
-    cyclomatic_complexity: 4
     calls_out: 2
     calls_in: 1
   redeploy.cli.commands.version.helpers._build_package_version_manifest:
@@ -1104,167 +733,69 @@ nodes:
     cyclomatic_complexity: 2
     calls_out: 5
     calls_in: 5
-  redeploy.fleet.Fleet.from_registry:
-    name: from_registry
-    module: redeploy.fleet
-    line: 303
-    cyclomatic_complexity: 6
-    calls_out: 5
+  redeploy.iac.docker_compose.DockerComposeParser._parse_service_depends_on:
+    name: _parse_service_depends_on
+    module: redeploy.iac.docker_compose
+    line: 363
+    cyclomatic_complexity: 4
+    calls_out: 6
     calls_in: 0
-  redeploy.analyze.checkers.path.PathChecker._check_field:
-    name: _check_field
-    module: redeploy.analyze.checkers.path
-    line: 39
-    cyclomatic_complexity: 9
-    calls_out: 15
-    calls_in: 0
-  redeploy.models.spec.MigrationSpec.to_target_config:
-    name: to_target_config
-    module: redeploy.models.spec
-    line: 166
-    cyclomatic_complexity: 2
-    calls_out: 2
-    calls_in: 0
-  redeploy.dsl.parser.DSLNode.__repr__:
-    name: __repr__
-    module: redeploy.dsl.parser
-    line: 64
-    cyclomatic_complexity: 2
-    calls_out: 4
-    calls_in: 0
-  redeploy.cli.commands.version.scanner._scan_package_version_manifests:
-    name: _scan_package_version_manifests
+  redeploy.cli.commands.version.scanner._derive_scanned_package_name:
+    name: _derive_scanned_package_name
     module: redeploy.cli.commands.version.scanner
-    line: 231
-    cyclomatic_complexity: 11
-    calls_out: 14
-    calls_in: 2
-  redeploy.config_apply.loader.load_config_file:
-    name: load_config_file
-    module: redeploy.config_apply.loader
-    line: 10
-    cyclomatic_complexity: 3
-    calls_out: 4
+    line: 217
+    cyclomatic_complexity: 4
+    calls_out: 5
     calls_in: 1
-  redeploy.markpact.compiler.compile_markpact_document:
-    name: compile_markpact_document
-    module: redeploy.markpact.compiler
-    line: 28
-    cyclomatic_complexity: 2
-    calls_out: 4
-    calls_in: 2
-  redeploy.apply.state._slug:
-    name: _slug
-    module: redeploy.apply.state
-    line: 35
-    cyclomatic_complexity: 5
-    calls_out: 3
-    calls_in: 2
-  redeploy.cli.commands.import_._plugin_templates:
-    name: _plugin_templates
-    module: redeploy.cli.commands.import_
-    line: 245
-    cyclomatic_complexity: 1
-    calls_out: 0
-    calls_in: 2
-  redeploy.blueprint.sources.compose._parse_compose_healthcheck:
-    name: _parse_compose_healthcheck
-    module: redeploy.blueprint.sources.compose
-    line: 138
-    cyclomatic_complexity: 6
+  redeploy.parse._parse_section_line:
+    name: _parse_section_line
+    module: redeploy.parse
+    line: 150
+    cyclomatic_complexity: 7
     calls_out: 6
     calls_in: 1
-  redeploy.cli.commands.state._get_state_path:
-    name: _get_state_path
+  redeploy.cli.commands.state._list_checkpoints:
+    name: _list_checkpoints
     module: redeploy.cli.commands.state
-    line: 12
-    cyclomatic_complexity: 5
-    calls_out: 5
+    line: 27
+    cyclomatic_complexity: 7
+    calls_out: 17
     calls_in: 1
-  redeploy.plugins.register_plugin:
-    name: register_plugin
-    module: redeploy.plugins
-    line: 138
+  redeploy.discovery.auto_probe.build_ssh_command:
+    name: build_ssh_command
+    module: redeploy.discovery.auto_probe
+    line: 39
     cyclomatic_complexity: 1
     calls_out: 1
-    calls_in: 5
-  redeploy.cli.core.resolve_device:
-    name: resolve_device
-    module: redeploy.cli.core
-    line: 35
-    cyclomatic_complexity: 5
-    calls_out: 12
     calls_in: 1
-  redeploy.cli.commands.device_map_renderers.render_yaml:
-    name: render_yaml
-    module: redeploy.cli.commands.device_map_renderers
-    line: 21
-    cyclomatic_complexity: 1
-    calls_out: 2
-    calls_in: 1
-  redeploy.cli.commands.gh_workflow._resolve_repo_root:
-    name: _resolve_repo_root
-    module: redeploy.cli.commands.gh_workflow
-    line: 24
-    cyclomatic_complexity: 3
-    calls_out: 5
-    calls_in: 3
-  redeploy.markpact.parser._normalize_section_id:
-    name: _normalize_section_id
-    module: redeploy.markpact.parser
-    line: 234
-    cyclomatic_complexity: 1
-    calls_out: 3
-    calls_in: 1
-  redeploy.discovery._scan_mdns:
-    name: _scan_mdns
-    module: redeploy.discovery
-    line: 141
-    cyclomatic_complexity: 7
-    calls_out: 12
-    calls_in: 1
-  redeploy.cli.commands.plan_apply_report.default_report_path:
-    name: default_report_path
+  redeploy.cli.commands.plan_apply_report.resolve_audit_entry:
+    name: resolve_audit_entry
     module: redeploy.cli.commands.plan_apply_report
-    line: 13
-    cyclomatic_complexity: 1
-    calls_out: 0
-    calls_in: 1
-  redeploy.apply.handlers.run_raspi_config:
-    name: run_raspi_config
-    module: redeploy.apply.handlers
-    line: 422
-    cyclomatic_complexity: 5
-    calls_out: 6
-    calls_in: 2
-  redeploy.analyze.preflight_schema.generate_preflight_schema:
-    name: generate_preflight_schema
-    module: redeploy.analyze.preflight_schema
-    line: 33
-    cyclomatic_complexity: 14
-    calls_out: 25
-    calls_in: 1
-  redeploy.apply.state.default_state_path:
-    name: default_state_path
-    module: redeploy.apply.state
-    line: 47
-    cyclomatic_complexity: 2
-    calls_out: 2
-    calls_in: 2
-  redeploy.dsl.loader.load_css:
-    name: load_css
-    module: redeploy.dsl.loader
-    line: 133
-    cyclomatic_complexity: 1
-    calls_out: 4
-    calls_in: 4
-  redeploy.markpact.parser.extract_script_from_markdown:
-    name: extract_script_from_markdown
-    module: redeploy.markpact.parser
-    line: 182
+    line: 17
     cyclomatic_complexity: 10
-    calls_out: 10
-    calls_in: 2
+    calls_out: 16
+    calls_in: 1
+  redeploy.cli.commands.diagnose.diagnose:
+    name: diagnose
+    module: redeploy.cli.commands.diagnose
+    line: 17
+    cyclomatic_complexity: 5
+    calls_out: 19
+    calls_in: 0
+  redeploy.version.sources.get_adapter:
+    name: get_adapter
+    module: redeploy.version.sources
+    line: 44
+    cyclomatic_complexity: 2
+    calls_out: 1
+    calls_in: 3
+  redeploy.cli.commands.gh_workflow.gh_workflow_run:
+    name: gh_workflow_run
+    module: redeploy.cli.commands.gh_workflow
+    line: 207
+    cyclomatic_complexity: 19
+    calls_out: 49
+    calls_in: 0
   redeploy.patterns.list_patterns:
     name: list_patterns
     module: redeploy.patterns
@@ -1272,53 +803,95 @@ nodes:
     cyclomatic_complexity: 1
     calls_out: 2
     calls_in: 0
-  redeploy.plugins.builtin.notify._notify_webhook:
-    name: _notify_webhook
-    module: redeploy.plugins.builtin.notify
-    line: 94
-    cyclomatic_complexity: 6
-    calls_out: 16
+  redeploy.apply.handlers.run_docker_build:
+    name: run_docker_build
+    module: redeploy.apply.handlers
+    line: 119
+    cyclomatic_complexity: 1
+    calls_out: 1
     calls_in: 1
-  redeploy.cli.commands.version.scanner._detect_source_version:
-    name: _detect_source_version
-    module: redeploy.cli.commands.version.scanner
-    line: 85
-    cyclomatic_complexity: 2
-    calls_out: 1
-    calls_in: 3
-  redeploy.plugins.builtin.notify._fmt:
-    name: _fmt
-    module: redeploy.plugins.builtin.notify
-    line: 162
+  redeploy.dsl.loader.load_css:
+    name: load_css
+    module: redeploy.dsl.loader
+    line: 133
     cyclomatic_complexity: 1
-    calls_out: 3
-    calls_in: 2
-  redeploy.detect.templates._build_templates:
-    name: _build_templates
-    module: redeploy.detect.templates
-    line: 307
-    cyclomatic_complexity: 1
-    calls_out: 1
-    calls_in: 0
-  redeploy.cli.commands.device_map._render:
-    name: _render
-    module: redeploy.cli.commands.device_map
-    line: 207
+    calls_out: 4
+    calls_in: 4
+  redeploy.cli.commands.version.helpers._load_spec_version_diff:
+    name: _load_spec_version_diff
+    module: redeploy.cli.commands.version.helpers
+    line: 139
+    cyclomatic_complexity: 8
+    calls_out: 13
+    calls_in: 1
+  redeploy.heal._ssh:
+    name: _ssh
+    module: redeploy.heal
+    line: 78
     cyclomatic_complexity: 3
-    calls_out: 3
-    calls_in: 0
-  redeploy.analyze.checkers.path.is_inside:
-    name: is_inside
-    module: redeploy.analyze.checkers.path
-    line: 21
-    cyclomatic_complexity: 2
-    calls_out: 3
+    calls_out: 2
     calls_in: 1
-  redeploy.mcp_server._validate_exec_ssh_inputs:
-    name: _validate_exec_ssh_inputs
+  redeploy.apply.handlers._ensure_remote_parent_dir:
+    name: _ensure_remote_parent_dir
+    module: redeploy.apply.handlers
+    line: 102
+    cyclomatic_complexity: 7
+    calls_out: 6
+    calls_in: 2
+  redeploy.mcp_server.fix_spec:
+    name: fix_spec
     module: redeploy.mcp_server
-    line: 98
+    line: 175
+    cyclomatic_complexity: 4
+    calls_out: 5
+    calls_in: 0
+  redeploy.fleet.Fleet.from_registry:
+    name: from_registry
+    module: redeploy.fleet
+    line: 303
+    cyclomatic_complexity: 6
+    calls_out: 5
+    calls_in: 0
+  redeploy.cli.commands.device_map_renderers.render_rich:
+    name: render_rich
+    module: redeploy.cli.commands.device_map_renderers
+    line: 116
+    cyclomatic_complexity: 22
+    calls_out: 22
+    calls_in: 0
+  redeploy.discovery.auto_probe.run_ssh_probe:
+    name: run_ssh_probe
+    module: redeploy.discovery.auto_probe
+    line: 50
+    cyclomatic_complexity: 3
+    calls_out: 1
+    calls_in: 1
+  redeploy.cli.commands.version.release._update_monorepo_release_changelogs:
+    name: _update_monorepo_release_changelogs
+    module: redeploy.cli.commands.version.release
+    line: 64
     cyclomatic_complexity: 5
+    calls_out: 12
+    calls_in: 1
+  redeploy.apply.state_apply._update_kanshi:
+    name: _update_kanshi
+    module: redeploy.apply.state_apply
+    line: 131
+    cyclomatic_complexity: 9
+    calls_out: 17
+    calls_in: 1
+  redeploy.cli.commands.version.commands.version_verify:
+    name: version_verify
+    module: redeploy.cli.commands.version.commands
+    line: 197
+    cyclomatic_complexity: 7
+    calls_out: 18
+    calls_in: 0
+  redeploy.cli.commands.version.monorepo._create_version_set_git:
+    name: _create_version_set_git
+    module: redeploy.cli.commands.version.monorepo
+    line: 87
+    cyclomatic_complexity: 6
     calls_out: 3
     calls_in: 1
   redeploy.version.bump.bump_package:
@@ -1328,271 +901,33 @@ nodes:
     cyclomatic_complexity: 9
     calls_out: 13
     calls_in: 2
-  redeploy.heal.HealLoopDetector.observe:
-    name: observe
-    module: redeploy.heal
-    line: 252
-    cyclomatic_complexity: 5
-    calls_out: 4
-    calls_in: 0
-  redeploy.discovery_registry._update_existing_device:
-    name: _update_existing_device
-    module: redeploy.discovery_registry
-    line: 39
-    cyclomatic_complexity: 7
-    calls_out: 1
-    calls_in: 1
-  redeploy.analyze.checkers.command_ref.CommandRefChecker._check_external_ref:
-    name: _check_external_ref
-    module: redeploy.analyze.checkers.command_ref
-    line: 42
-    cyclomatic_complexity: 6
-    calls_out: 8
-    calls_in: 0
-  redeploy.detect.hardware_rules._hw_info_to_dict:
-    name: _hw_info_to_dict
-    module: redeploy.detect.hardware_rules
-    line: 21
-    cyclomatic_complexity: 2
-    calls_out: 2
-    calls_in: 1
-  redeploy.cli.commands.workflow.workflow_cmd:
-    name: workflow_cmd
-    module: redeploy.cli.commands.workflow
-    line: 21
-    cyclomatic_complexity: 10
-    calls_out: 21
-    calls_in: 0
-  redeploy.mcp_server.diagnose:
-    name: diagnose
-    module: redeploy.mcp_server
-    line: 219
-    cyclomatic_complexity: 1
-    calls_out: 2
-    calls_in: 0
-  redeploy.apply.handlers.run_rsync:
-    name: run_rsync
-    module: redeploy.apply.handlers
-    line: 73
-    cyclomatic_complexity: 6
-    calls_out: 8
-    calls_in: 1
-  redeploy.detect.detector.Detector.run:
-    name: run
-    module: redeploy.detect.detector
-    line: 29
-    cyclomatic_complexity: 9
-    calls_out: 30
-    calls_in: 0
-  redeploy.cli.commands.plugin.plugin_cmd:
-    name: plugin_cmd
-    module: redeploy.cli.commands.plugin
-    line: 17
-    cyclomatic_complexity: 13
-    calls_out: 38
-    calls_in: 0
-  redeploy.cli.commands.version.helpers._resolve_package_release_git_config:
-    name: _resolve_package_release_git_config
-    module: redeploy.cli.commands.version.helpers
-    line: 60
-    cyclomatic_complexity: 5
-    calls_out: 5
-    calls_in: 3
-  redeploy.apply.executor.Executor._execute_step:
-    name: _execute_step
-    module: redeploy.apply.executor
-    line: 290
+  redeploy.analyze.preflight_schema._resolve_local_path:
+    name: _resolve_local_path
+    module: redeploy.analyze.preflight_schema
+    line: 271
     cyclomatic_complexity: 4
-    calls_out: 27
-    calls_in: 0
-  redeploy.detect.probes.probe_ports:
-    name: probe_ports
-    module: redeploy.detect.probes
-    line: 48
-    cyclomatic_complexity: 6
-    calls_out: 11
+    calls_out: 7
     calls_in: 1
-  redeploy.plugins.builtin.hardware_diagnostic._run_command:
-    name: _run_command
-    module: redeploy.plugins.builtin.hardware_diagnostic
-    line: 44
-    cyclomatic_complexity: 2
-    calls_out: 3
-    calls_in: 8
-  redeploy.schema._discover_specs:
-    name: _discover_specs
-    module: redeploy.schema
-    line: 174
-    cyclomatic_complexity: 14
-    calls_out: 26
-    calls_in: 1
-  redeploy.mcp_server.get_workspace:
-    name: get_workspace
-    module: redeploy.mcp_server
-    line: 321
-    cyclomatic_complexity: 1
-    calls_out: 3
-    calls_in: 0
-  redeploy.markpact.parser.parse_markpact_file_with_refs:
-    name: parse_markpact_file_with_refs
-    module: redeploy.markpact.parser
-    line: 98
-    cyclomatic_complexity: 6
-    calls_out: 6
-    calls_in: 0
-  redeploy.markpact.parser.extract_script_by_ref:
-    name: extract_script_by_ref
-    module: redeploy.markpact.parser
-    line: 126
-    cyclomatic_complexity: 12
-    calls_out: 11
-    calls_in: 1
-  redeploy.plugins.builtin.notify._http_post:
-    name: _http_post
-    module: redeploy.plugins.builtin.notify
-    line: 122
-    cyclomatic_complexity: 5
-    calls_out: 10
-    calls_in: 2
-  redeploy.cli.commands.plan_apply_report.step_command_block:
-    name: step_command_block
+  redeploy.cli.commands.plan_apply_report.default_report_path:
+    name: default_report_path
     module: redeploy.cli.commands.plan_apply_report
-    line: 54
-    cyclomatic_complexity: 14
-    calls_out: 5
-    calls_in: 1
-  redeploy.cli.commands.hardware._probe_hardware:
-    name: _probe_hardware
-    module: redeploy.cli.commands.hardware
-    line: 39
-    cyclomatic_complexity: 4
-    calls_out: 6
-    calls_in: 1
-  redeploy.analyze.models.AnalysisResult.add:
-    name: add
-    module: redeploy.analyze.models
-    line: 29
-    cyclomatic_complexity: 2
-    calls_out: 2
-    calls_in: 2
-  redeploy.cli.display.generate_workflow_output_css:
-    name: generate_workflow_output_css
-    module: redeploy.cli.display
-    line: 296
-    cyclomatic_complexity: 8
-    calls_out: 9
-    calls_in: 1
-  redeploy.cli.commands.gh_workflow._find_repo_root:
-    name: _find_repo_root
-    module: redeploy.cli.commands.gh_workflow
-    line: 16
-    cyclomatic_complexity: 4
-    calls_out: 3
-    calls_in: 1
-  redeploy.cli.display._print_spec_metadata:
-    name: _print_spec_metadata
-    module: redeploy.cli.display
-    line: 367
-    cyclomatic_complexity: 4
-    calls_out: 6
-    calls_in: 1
-  redeploy.config_apply.applier.apply_config_dict:
-    name: apply_config_dict
-    module: redeploy.config_apply.applier
-    line: 28
+    line: 13
     cyclomatic_complexity: 1
-    calls_out: 2
-    calls_in: 1
-  redeploy.heal.hint_provider._extract_step_block:
-    name: _extract_step_block
-    module: redeploy.heal.hint_provider
-    line: 290
-    cyclomatic_complexity: 2
-    calls_out: 4
-    calls_in: 1
-  redeploy.cli.commands.version.scanner._default_keep_scanned_source:
-    name: _default_keep_scanned_source
-    module: redeploy.cli.commands.version.scanner
-    line: 147
-    cyclomatic_complexity: 2
     calls_out: 0
     calls_in: 1
-  redeploy.apply.handlers.run_scp:
-    name: run_scp
-    module: redeploy.apply.handlers
-    line: 51
-    cyclomatic_complexity: 7
-    calls_out: 12
-    calls_in: 1
-  redeploy.cli.commands.version.scanner._print_version_scan_group:
-    name: _print_version_scan_group
-    module: redeploy.cli.commands.version.scanner
-    line: 170
-    cyclomatic_complexity: 3
-    calls_out: 4
-    calls_in: 2
-  redeploy.cli.commands.device_map._execute_query_device_map:
-    name: _execute_query_device_map
-    module: redeploy.cli.commands.device_map
-    line: 198
+  redeploy.plugins.builtin.notify._resolve_env:
+    name: _resolve_env
+    module: redeploy.plugins.builtin.notify
+    line: 157
     cyclomatic_complexity: 1
     calls_out: 1
-    calls_in: 1
-  redeploy.cli.commands.plan_apply_report._skipped_checksum:
-    name: _skipped_checksum
-    module: redeploy.cli.commands.plan_apply_report
-    line: 72
+    calls_in: 3
+  redeploy.cli.commands.bump_fix._bump_version_file:
+    name: _bump_version_file
+    module: redeploy.cli.commands.bump_fix
+    line: 104
     cyclomatic_complexity: 1
-    calls_out: 1
-    calls_in: 2
-  redeploy.cli.commands.target.target:
-    name: target
-    module: redeploy.cli.commands.target
-    line: 26
-    cyclomatic_complexity: 10
-    calls_out: 31
-    calls_in: 1
-  redeploy.iac.docker_compose.DockerComposeParser._parse_service_env:
-    name: _parse_service_env
-    module: redeploy.iac.docker_compose
-    line: 337
-    cyclomatic_complexity: 2
-    calls_out: 4
-    calls_in: 0
-  redeploy.cli.commands.version.scanner._format_version_scan_source_status:
-    name: _format_version_scan_source_status
-    module: redeploy.cli.commands.version.scanner
-    line: 139
-    cyclomatic_complexity: 2
-    calls_out: 2
-    calls_in: 2
-  redeploy.heal.HealRunner.run:
-    name: run
-    module: redeploy.heal
-    line: 434
-    cyclomatic_complexity: 8
-    calls_out: 19
-    calls_in: 0
-  redeploy.cli.commands.hardware._execute_query:
-    name: _execute_query
-    module: redeploy.cli.commands.hardware
-    line: 198
-    cyclomatic_complexity: 1
-    calls_out: 2
-    calls_in: 1
-  redeploy.heal.HealRunner._ask_and_apply_fix:
-    name: _ask_and_apply_fix
-    module: redeploy.heal
-    line: 381
-    cyclomatic_complexity: 7
-    calls_out: 15
-    calls_in: 0
-  redeploy.plugins.PluginRegistry._ensure_builtins:
-    name: _ensure_builtins
-    module: redeploy.plugins
-    line: 106
-    cyclomatic_complexity: 2
-    calls_out: 1
+    calls_out: 5
     calls_in: 0
   redeploy.analyze.preflight_schema._resolve_command_refs:
     name: _resolve_command_refs
@@ -1601,832 +936,27 @@ nodes:
     cyclomatic_complexity: 11
     calls_out: 20
     calls_in: 1
-  redeploy.schema._git_branch:
-    name: _git_branch
-    module: redeploy.schema
-    line: 240
-    cyclomatic_complexity: 3
-    calls_out: 2
-    calls_in: 1
-  redeploy.plugins.builtin.process_control._find_pid_on_port:
-    name: _find_pid_on_port
-    module: redeploy.plugins.builtin.process_control
-    line: 29
-    cyclomatic_complexity: 11
-    calls_out: 14
-    calls_in: 2
-  redeploy.cli.commands.version.helpers._run_version_diff_for_manifest:
-    name: _run_version_diff_for_manifest
-    module: redeploy.cli.commands.version.helpers
-    line: 201
-    cyclomatic_complexity: 7
-    calls_out: 11
-    calls_in: 2
-  redeploy.discovery_registry._new_discovered_device:
-    name: _new_discovered_device
-    module: redeploy.discovery_registry
-    line: 51
-    cyclomatic_complexity: 3
-    calls_out: 2
-    calls_in: 1
-  redeploy.cli.commands.gh_workflow._has_workflow_dispatch:
-    name: _has_workflow_dispatch
-    module: redeploy.cli.commands.gh_workflow
-    line: 65
-    cyclomatic_complexity: 4
-    calls_out: 3
-    calls_in: 1
-  redeploy.version.commits.parse_conventional:
-    name: parse_conventional
-    module: redeploy.version.commits
-    line: 41
-    cyclomatic_complexity: 4
-    calls_out: 6
-    calls_in: 2
-  redeploy.cli.commands.plan_apply_report.resolve_audit_entry:
-    name: resolve_audit_entry
-    module: redeploy.cli.commands.plan_apply_report
-    line: 17
-    cyclomatic_complexity: 10
-    calls_out: 16
-    calls_in: 1
-  redeploy.apply.handlers.run_inline_script:
-    name: run_inline_script
-    module: redeploy.apply.handlers
-    line: 308
-    cyclomatic_complexity: 6
-    calls_out: 7
-    calls_in: 1
-  redeploy.version.diff.diff_manifest_vs_live:
-    name: diff_manifest_vs_live
-    module: redeploy.version.diff
-    line: 64
-    cyclomatic_complexity: 2
-    calls_out: 2
-    calls_in: 1
-  redeploy.heal.hint_provider._ssh:
-    name: _ssh
-    module: redeploy.heal.hint_provider
-    line: 73
-    cyclomatic_complexity: 3
-    calls_out: 2
-    calls_in: 1
-  redeploy.cli.commands.device_map_renderers._build_issues_table:
-    name: _build_issues_table
-    module: redeploy.cli.commands.device_map_renderers
-    line: 94
-    cyclomatic_complexity: 3
-    calls_out: 12
-    calls_in: 1
-  redeploy.discovery._run_ssh_probe:
-    name: _run_ssh_probe
-    module: redeploy.discovery
-    line: 557
-    cyclomatic_complexity: 3
-    calls_out: 1
-    calls_in: 1
-  redeploy.cli.commands.version.helpers._resolve_package_release_changelog_config:
-    name: _resolve_package_release_changelog_config
-    module: redeploy.cli.commands.version.helpers
-    line: 84
-    cyclomatic_complexity: 5
-    calls_out: 2
-    calls_in: 1
-  redeploy.cli.commands.plan_apply_report.build_checksum_verification:
-    name: build_checksum_verification
-    module: redeploy.cli.commands.plan_apply_report
-    line: 91
-    cyclomatic_complexity: 14
-    calls_out: 15
-    calls_in: 1
-  redeploy.cli.commands.version.helpers._print_verify_result:
-    name: _print_verify_result
-    module: redeploy.cli.commands.version.helpers
-    line: 102
-    cyclomatic_complexity: 6
-    calls_out: 5
-    calls_in: 2
-  redeploy.iac.parsers.compose.DockerComposeParser._parse_service_networks:
-    name: _parse_service_networks
-    module: redeploy.iac.parsers.compose
-    line: 132
-    cyclomatic_complexity: 2
-    calls_out: 2
-    calls_in: 0
-  redeploy.discovery._run:
-    name: _run
-    module: redeploy.discovery
-    line: 355
-    cyclomatic_complexity: 2
-    calls_out: 1
-    calls_in: 4
-  redeploy.analyze.preflight_schema._collect_remote_checks:
-    name: _collect_remote_checks
-    module: redeploy.analyze.preflight_schema
-    line: 233
-    cyclomatic_complexity: 8
-    calls_out: 14
-    calls_in: 1
-  redeploy.audit.paths.extract_port:
-    name: extract_port
-    module: redeploy.audit.paths
-    line: 9
-    cyclomatic_complexity: 5
-    calls_out: 6
-    calls_in: 2
-  redeploy.apply.state_apply.detect_handler:
-    name: detect_handler
-    module: redeploy.apply.state_apply
-    line: 203
-    cyclomatic_complexity: 3
-    calls_out: 1
-    calls_in: 2
-  redeploy.apply.handlers.run_podman_build:
-    name: run_podman_build
-    module: redeploy.apply.handlers
-    line: 129
-    cyclomatic_complexity: 1
-    calls_out: 1
-    calls_in: 1
-  redeploy.cli.commands.import_._copy_plugin_template:
-    name: _copy_plugin_template
-    module: redeploy.cli.commands.import_
-    line: 264
-    cyclomatic_complexity: 3
-    calls_out: 12
-    calls_in: 1
-  redeploy.cli.commands.export._load_manifest_from_css:
-    name: _load_manifest_from_css
-    module: redeploy.cli.commands.export
-    line: 90
-    cyclomatic_complexity: 1
-    calls_out: 1
-    calls_in: 1
-  redeploy.cli.display.print_workflow_summary_table:
-    name: print_workflow_summary_table
-    module: redeploy.cli.display
-    line: 217
-    cyclomatic_complexity: 5
-    calls_out: 18
-    calls_in: 1
-  redeploy.cli.commands.version.scanner._iter_version_scan_groups:
-    name: _iter_version_scan_groups
-    module: redeploy.cli.commands.version.scanner
-    line: 183
-    cyclomatic_complexity: 4
-    calls_out: 1
-    calls_in: 1
-  redeploy.analyze.checkers.docker_build.DockerBuildChecker.check:
-    name: check
-    module: redeploy.analyze.checkers.docker_build
-    line: 83
-    cyclomatic_complexity: 4
-    calls_out: 8
-    calls_in: 0
-  redeploy.models.manifest.ProjectManifest.find_and_load:
-    name: find_and_load
-    module: redeploy.models.manifest
-    line: 41
-    cyclomatic_complexity: 6
-    calls_out: 9
-    calls_in: 0
-  redeploy.cli.commands.gh_workflow._load_yaml:
-    name: _load_yaml
-    module: redeploy.cli.commands.gh_workflow
-    line: 40
-    cyclomatic_complexity: 4
-    calls_out: 5
-    calls_in: 1
-  redeploy.cli.core.find_manifest_path:
-    name: find_manifest_path
-    module: redeploy.cli.core
-    line: 26
-    cyclomatic_complexity: 3
-    calls_out: 5
-    calls_in: 2
-  redeploy.cli.commands.bump_fix._detect_version:
-    name: _detect_version
+  redeploy.cli.commands.bump_fix._find_version_file:
+    name: _find_version_file
     module: redeploy.cli.commands.bump_fix
-    line: 346
-    cyclomatic_complexity: 2
-    calls_out: 3
-    calls_in: 1
-  redeploy.cli.commands.version.monorepo._set_monorepo_version:
-    name: _set_monorepo_version
-    module: redeploy.cli.commands.version.monorepo
-    line: 16
-    cyclomatic_complexity: 8
-    calls_out: 13
-    calls_in: 1
-  redeploy.apply.handlers.run_ssh:
-    name: run_ssh
-    module: redeploy.apply.handlers
-    line: 38
-    cyclomatic_complexity: 4
-    calls_out: 5
-    calls_in: 8
-  redeploy.analyze.checkers.docker_build.match_local_src:
-    name: match_local_src
-    module: redeploy.analyze.checkers.docker_build
-    line: 59
-    cyclomatic_complexity: 5
-    calls_out: 3
-    calls_in: 1
-  redeploy.plugins.builtin.systemd_reload.systemd_reload:
-    name: systemd_reload
-    module: redeploy.plugins.builtin.systemd_reload
-    line: 35
-    cyclomatic_complexity: 12
-    calls_out: 23
-    calls_in: 0
-  redeploy.heal.hint_provider.collect_diagnostics:
-    name: collect_diagnostics
-    module: redeploy.heal.hint_provider
-    line: 82
-    cyclomatic_complexity: 2
-    calls_out: 4
-    calls_in: 0
-  redeploy.discovery._parse_probe_input:
-    name: _parse_probe_input
-    module: redeploy.discovery
-    line: 567
-    cyclomatic_complexity: 4
-    calls_out: 1
-    calls_in: 1
-  redeploy.schema._iac_info:
-    name: _iac_info
-    module: redeploy.schema
-    line: 253
-    cyclomatic_complexity: 2
-    calls_out: 0
-    calls_in: 1
-  redeploy.cli.commands.version.commands.version_list:
-    name: version_list
-    module: redeploy.cli.commands.version.commands
-    line: 111
-    cyclomatic_complexity: 13
-    calls_out: 38
-    calls_in: 0
-  redeploy.audit.paths.normalize_path:
-    name: normalize_path
-    module: redeploy.audit.paths
-    line: 23
-    cyclomatic_complexity: 3
-    calls_out: 5
-    calls_in: 3
-  redeploy.version.bump.bump_version_with_git:
-    name: bump_version_with_git
-    module: redeploy.version.bump
-    line: 99
-    cyclomatic_complexity: 13
-    calls_out: 14
-    calls_in: 1
-  redeploy.cli.commands.gh_workflow.gh_workflow_analyze:
-    name: gh_workflow_analyze
-    module: redeploy.cli.commands.gh_workflow
-    line: 163
-    cyclomatic_complexity: 7
-    calls_out: 20
-    calls_in: 0
-  redeploy.analyze.checkers.compose._is_ignored:
-    name: _is_ignored
-    module: redeploy.analyze.checkers.compose
-    line: 13
-    cyclomatic_complexity: 2
-    calls_out: 4
-    calls_in: 4
-  redeploy.mcp_server.plan_spec:
-    name: plan_spec
-    module: redeploy.mcp_server
-    line: 135
-    cyclomatic_complexity: 1
-    calls_out: 2
-    calls_in: 0
-  redeploy.config_apply.handlers.display._validate_display_inputs:
-    name: _validate_display_inputs
-    module: redeploy.config_apply.handlers.display
-    line: 26
-    cyclomatic_complexity: 3
-    calls_out: 4
-    calls_in: 1
-  redeploy.heal.apply_fix_to_spec:
-    name: apply_fix_to_spec
-    module: redeploy.heal
-    line: 170
-    cyclomatic_complexity: 6
-    calls_out: 15
-    calls_in: 2
-  redeploy.audit.audit_spec:
-    name: audit_spec
-    module: redeploy.audit
-    line: 31
-    cyclomatic_complexity: 1
-    calls_out: 3
-    calls_in: 1
-  redeploy.markpact.compiler._normalize_config_payload:
-    name: _normalize_config_payload
-    module: redeploy.markpact.compiler
-    line: 98
-    cyclomatic_complexity: 11
-    calls_out: 18
-    calls_in: 1
-  redeploy.dsl_python.steps.ssh:
-    name: ssh
-    module: redeploy.dsl_python.steps
-    line: 11
-    cyclomatic_complexity: 4
-    calls_out: 4
-    calls_in: 1
-  redeploy.heal.ask_llm:
-    name: ask_llm
-    module: redeploy.heal
-    line: 97
-    cyclomatic_complexity: 8
-    calls_out: 8
-    calls_in: 2
-  redeploy.models.spec._migrate_legacy_post_deploy:
-    name: _migrate_legacy_post_deploy
-    module: redeploy.models.spec
-    line: 70
-    cyclomatic_complexity: 5
-    calls_out: 20
-    calls_in: 3
-  redeploy.dsl.loader._build_workflows:
-    name: _build_workflows
-    module: redeploy.dsl.loader
-    line: 298
-    cyclomatic_complexity: 8
-    calls_out: 16
-    calls_in: 1
-  redeploy.iac.docker_compose._parse_volume:
-    name: _parse_volume
-    module: redeploy.iac.docker_compose
     line: 86
-    cyclomatic_complexity: 5
-    calls_out: 14
-    calls_in: 1
-  redeploy.markpact.compiler._extract_steps:
-    name: _extract_steps
-    module: redeploy.markpact.compiler
-    line: 134
-    cyclomatic_complexity: 9
-    calls_out: 20
-    calls_in: 1
-  redeploy.iac.docker_compose.DockerComposeParser._parse_service_ports:
-    name: _parse_service_ports
-    module: redeploy.iac.docker_compose
-    line: 311
-    cyclomatic_complexity: 5
-    calls_out: 6
-    calls_in: 0
-  redeploy.heal.HealRunner._collect_diag_with_hint:
-    name: _collect_diag_with_hint
-    module: redeploy.heal
-    line: 363
-    cyclomatic_complexity: 2
+    cyclomatic_complexity: 3
     calls_out: 2
-    calls_in: 0
-  redeploy.fleet.Fleet.__init__:
-    name: __init__
-    module: redeploy.fleet
-    line: 291
-    cyclomatic_complexity: 1
-    calls_out: 1
-    calls_in: 0
-  redeploy.apply.handlers.run_docker_build:
-    name: run_docker_build
-    module: redeploy.apply.handlers
-    line: 119
-    cyclomatic_complexity: 1
-    calls_out: 1
+    calls_in: 3
+  redeploy.discovery_probe.infer_strategy:
+    name: infer_strategy
+    module: redeploy.discovery_probe
+    line: 38
+    cyclomatic_complexity: 8
+    calls_out: 5
     calls_in: 1
-  redeploy.cli.commands.bump_fix._update_migration_header:
-    name: _update_migration_header
-    module: redeploy.cli.commands.bump_fix
-    line: 113
-    cyclomatic_complexity: 2
-    calls_out: 7
-    calls_in: 2
-  redeploy.plugins.PluginRegistry.names:
-    name: names
-    module: redeploy.plugins
-    line: 100
-    cyclomatic_complexity: 1
-    calls_out: 2
-    calls_in: 0
-  redeploy.cli.display._print_host_header:
-    name: _print_host_header
-    module: redeploy.cli.display
-    line: 252
-    cyclomatic_complexity: 1
-    calls_out: 1
-    calls_in: 1
-  redeploy.dsl.loader._build_manifest:
-    name: _build_manifest
-    module: redeploy.dsl.loader
-    line: 167
-    cyclomatic_complexity: 25
+  redeploy.discovery.scanners.scan_arp_cache:
+    name: scan_arp_cache
+    module: redeploy.discovery.scanners
+    line: 50
+    cyclomatic_complexity: 10
     calls_out: 23
     calls_in: 1
-  redeploy.detect.probes.detect_conflicts:
-    name: detect_conflicts
-    module: redeploy.detect.probes
-    line: 213
-    cyclomatic_complexity: 13
-    calls_out: 12
-    calls_in: 1
-  redeploy.cli.core.load_spec_or_exit:
-    name: load_spec_or_exit
-    module: redeploy.cli.core
-    line: 15
-    cyclomatic_complexity: 2
-    calls_out: 3
-    calls_in: 6
-  redeploy.cli.commands.plan_apply_report.render_markdown_report:
-    name: render_markdown_report
-    module: redeploy.cli.commands.plan_apply_report
-    line: 221
-    cyclomatic_complexity: 12
-    calls_out: 13
-    calls_in: 1
-  redeploy.version.commits.analyze_commits:
-    name: analyze_commits
-    module: redeploy.version.commits
-    line: 78
-    cyclomatic_complexity: 18
-    calls_out: 25
-    calls_in: 1
-  redeploy.analyze.preflight_schema._resolve_local_path:
-    name: _resolve_local_path
-    module: redeploy.analyze.preflight_schema
-    line: 271
-    cyclomatic_complexity: 4
-    calls_out: 7
-    calls_in: 1
-  redeploy.apply.handlers.run_ensure_autostart_entry:
-    name: run_ensure_autostart_entry
-    module: redeploy.apply.handlers
-    line: 525
-    cyclomatic_complexity: 16
-    calls_out: 21
-    calls_in: 1
-  redeploy.cli.commands.bump_fix._bump_version_file:
-    name: _bump_version_file
-    module: redeploy.cli.commands.bump_fix
-    line: 104
-    cyclomatic_complexity: 1
-    calls_out: 5
-    calls_in: 0
-  redeploy.cli.commands.version.scanner._print_version_scan_review:
-    name: _print_version_scan_review
-    module: redeploy.cli.commands.version.scanner
-    line: 115
-    cyclomatic_complexity: 6
-    calls_out: 5
-    calls_in: 2
-  redeploy.cli.commands.import_._examples_plugin_dir:
-    name: _examples_plugin_dir
-    module: redeploy.cli.commands.import_
-    line: 254
-    cyclomatic_complexity: 1
-    calls_out: 2
-    calls_in: 1
-  redeploy.analyze.preflight_schema._collect_local_artifacts:
-    name: _collect_local_artifacts
-    module: redeploy.analyze.preflight_schema
-    line: 194
-    cyclomatic_complexity: 6
-    calls_out: 16
-    calls_in: 1
-  redeploy.heal._ssh:
-    name: _ssh
-    module: redeploy.heal
-    line: 78
-    cyclomatic_complexity: 3
-    calls_out: 2
-    calls_in: 1
-  redeploy.steps.StepLibrary.list:
-    name: list
-    module: redeploy.steps
-    line: 75
-    cyclomatic_complexity: 1
-    calls_out: 2
-    calls_in: 51
-  redeploy.cli.display.print_inspect_environments:
-    name: print_inspect_environments
-    module: redeploy.cli.display
-    line: 91
-    cyclomatic_complexity: 8
-    calls_out: 11
-    calls_in: 1
-  redeploy.heal.hint_provider.ask_llm:
-    name: ask_llm
-    module: redeploy.heal.hint_provider
-    line: 92
-    cyclomatic_complexity: 12
-    calls_out: 22
-    calls_in: 0
-  redeploy.apply.state._now_iso:
-    name: _now_iso
-    module: redeploy.apply.state
-    line: 31
-    cyclomatic_complexity: 1
-    calls_out: 2
-    calls_in: 2
-  redeploy.mcp_server.nlp_command:
-    name: nlp_command
-    module: redeploy.mcp_server
-    line: 281
-    cyclomatic_complexity: 2
-    calls_out: 2
-    calls_in: 0
-  redeploy.mcp_server.schema:
-    name: schema
-    module: redeploy.mcp_server
-    line: 121
-    cyclomatic_complexity: 1
-    calls_out: 5
-    calls_in: 0
-  redeploy.cli.commands.version.scanner._is_scannable_version_path:
-    name: _is_scannable_version_path
-    module: redeploy.cli.commands.version.scanner
-    line: 34
-    cyclomatic_complexity: 2
-    calls_out: 1
-    calls_in: 3
-  redeploy.plugins.builtin.notify._notify_slack:
-    name: _notify_slack
-    module: redeploy.plugins.builtin.notify
-    line: 72
-    cyclomatic_complexity: 3
-    calls_out: 7
-    calls_in: 1
-  redeploy.cli.commands.diagnose.diagnose:
-    name: diagnose
-    module: redeploy.cli.commands.diagnose
-    line: 17
-    cyclomatic_complexity: 5
-    calls_out: 19
-    calls_in: 0
-  redeploy.apply.state.state_key:
-    name: state_key
-    module: redeploy.apply.state
-    line: 40
-    cyclomatic_complexity: 1
-    calls_out: 7
-    calls_in: 1
-  examples.redeploy_iac_parsers.gitops_ci.GitLabCIGitOpsParser.can_parse:
-    name: can_parse
-    module: examples.redeploy_iac_parsers.gitops_ci
-    line: 96
-    cyclomatic_complexity: 11
-    calls_out: 9
-    calls_in: 0
-  redeploy.version.bump.verify_sources:
-    name: verify_sources
-    module: redeploy.version.bump
-    line: 57
-    cyclomatic_complexity: 4
-    calls_out: 7
-    calls_in: 5
-  redeploy.hardware.fixes.fix_enable_spi:
-    name: fix_enable_spi
-    module: redeploy.hardware.fixes
-    line: 152
-    cyclomatic_complexity: 1
-    calls_out: 1
-    calls_in: 0
-  redeploy.cli.commands.device_map_renderers._build_services_table:
-    name: _build_services_table
-    module: redeploy.cli.commands.device_map_renderers
-    line: 73
-    cyclomatic_complexity: 7
-    calls_out: 9
-    calls_in: 1
-  redeploy.cli.commands.version.release._create_release_tags:
-    name: _create_release_tags
-    module: redeploy.cli.commands.version.release
-    line: 48
-    cyclomatic_complexity: 3
-    calls_out: 5
-    calls_in: 1
-  redeploy.cli.commands.version.helpers._print_source_drift_status:
-    name: _print_source_drift_status
-    module: redeploy.cli.commands.version.helpers
-    line: 122
-    cyclomatic_complexity: 7
-    calls_out: 6
-    calls_in: 1
-  redeploy.discovery._scan_known_hosts:
-    name: _scan_known_hosts
-    module: redeploy.discovery
-    line: 66
-    cyclomatic_complexity: 10
-    calls_out: 18
-    calls_in: 1
-  redeploy.cli.core.load_spec_with_manifest:
-    name: load_spec_with_manifest
-    module: redeploy.cli.core
-    line: 65
-    cyclomatic_complexity: 5
-    calls_out: 8
-    calls_in: 1
-  redeploy.dsl.loader._condition_key:
-    name: _condition_key
-    module: redeploy.dsl.loader
-    line: 371
-    cyclomatic_complexity: 4
-    calls_out: 5
-    calls_in: 2
-  redeploy.patterns.CanaryPattern.expand:
-    name: expand
-    module: redeploy.patterns
-    line: 229
-    cyclomatic_complexity: 5
-    calls_out: 13
-    calls_in: 0
-  redeploy.markpact.parser._check_heading:
-    name: _check_heading
-    module: redeploy.markpact.parser
-    line: 239
-    cyclomatic_complexity: 5
-    calls_out: 5
-    calls_in: 1
-  redeploy.discovery._ping_sweep:
-    name: _ping_sweep
-    module: redeploy.discovery
-    line: 168
-    cyclomatic_complexity: 6
-    calls_out: 20
-    calls_in: 1
-  redeploy.cli.commands.state.state_cmd:
-    name: state_cmd
-    module: redeploy.cli.commands.state
-    line: 90
-    cyclomatic_complexity: 4
-    calls_out: 16
-    calls_in: 0
-  redeploy.discovery._is_ip:
-    name: _is_ip
-    module: redeploy.discovery
-    line: 363
-    cyclomatic_complexity: 1
-    calls_out: 2
-    calls_in: 2
-  redeploy.plugins.builtin.hardware_diagnostic._get_memory_mb:
-    name: _get_memory_mb
-    module: redeploy.plugins.builtin.hardware_diagnostic
-    line: 103
-    cyclomatic_complexity: 3
-    calls_out: 5
-    calls_in: 1
-  redeploy.audit.extractor.Extractor._from_target:
-    name: _from_target
-    module: redeploy.audit.extractor
-    line: 42
-    cyclomatic_complexity: 7
-    calls_out: 9
-    calls_in: 0
-  redeploy.plan.planner.Planner._plan_pattern:
-    name: _plan_pattern
-    module: redeploy.plan.planner
-    line: 483
-    cyclomatic_complexity: 10
-    calls_out: 17
-    calls_in: 0
-  redeploy.heal.HealRunner._reload_migration:
-    name: _reload_migration
-    module: redeploy.heal
-    line: 348
-    cyclomatic_complexity: 1
-    calls_out: 4
-    calls_in: 0
-  redeploy.iac.docker_compose.DockerComposeParser._resolve_image_and_build:
-    name: _resolve_image_and_build
-    module: redeploy.iac.docker_compose
-    line: 294
-    cyclomatic_complexity: 7
-    calls_out: 8
-    calls_in: 0
-  redeploy.version.transaction.VersionBumpTransaction._stage_one:
-    name: _stage_one
-    module: redeploy.version.transaction
-    line: 63
-    cyclomatic_complexity: 6
-    calls_out: 7
-    calls_in: 0
-  redeploy.cli.commands.export._find_export_source:
-    name: _find_export_source
-    module: redeploy.cli.commands.export
-    line: 71
-    cyclomatic_complexity: 9
-    calls_out: 10
-    calls_in: 1
-  redeploy.dsl.loader.templates_to_css:
-    name: templates_to_css
-    module: redeploy.dsl.loader
-    line: 383
-    cyclomatic_complexity: 6
-    calls_out: 13
-    calls_in: 2
-  redeploy.hardware.config_txt.ensure_lines:
-    name: ensure_lines
-    module: redeploy.hardware.config_txt
-    line: 70
-    cyclomatic_complexity: 4
-    calls_out: 4
-    calls_in: 0
-  redeploy.detect.hardware_rules._op3_diag_to_hw_diag:
-    name: _op3_diag_to_hw_diag
-    module: redeploy.detect.hardware_rules
-    line: 31
-    cyclomatic_complexity: 1
-    calls_out: 5
-    calls_in: 1
-  redeploy.cli.display._print_workflow_step:
-    name: _print_workflow_step
-    module: redeploy.cli.display
-    line: 156
-    cyclomatic_complexity: 4
-    calls_out: 4
-    calls_in: 1
-  redeploy.discovery._build_ssh_command:
-    name: _build_ssh_command
-    module: redeploy.discovery
-    line: 548
-    cyclomatic_complexity: 1
-    calls_out: 1
-    calls_in: 1
-  redeploy.version.sources.get_adapter:
-    name: get_adapter
-    module: redeploy.version.sources
-    line: 44
-    cyclomatic_complexity: 2
-    calls_out: 1
-    calls_in: 3
-  redeploy.heal.runner.HealRunner._reload_migration:
-    name: _reload_migration
-    module: redeploy.heal.runner
-    line: 93
-    cyclomatic_complexity: 1
-    calls_out: 4
-    calls_in: 0
-  redeploy.cli.commands.plan_apply_report.write_markdown_report:
-    name: write_markdown_report
-    module: redeploy.cli.commands.plan_apply_report
-    line: 279
-    cyclomatic_complexity: 2
-    calls_out: 7
-    calls_in: 2
-  redeploy.cli.commands.version.scanner._version_scan_specs:
-    name: _version_scan_specs
-    module: redeploy.cli.commands.version.scanner
-    line: 12
-    cyclomatic_complexity: 1
-    calls_out: 0
-    calls_in: 1
-  redeploy.dsl.loader._build_from_nodes:
-    name: _build_from_nodes
-    module: redeploy.dsl.loader
-    line: 148
-    cyclomatic_complexity: 1
-    calls_out: 4
-    calls_in: 2
-  redeploy.plugins._load_builtin_plugins:
-    name: _load_builtin_plugins
-    module: redeploy.plugins
-    line: 145
-    cyclomatic_complexity: 6
-    calls_out: 7
-    calls_in: 1
-  redeploy.cli.commands.bump_fix._prompt_choose_spec:
-    name: _prompt_choose_spec
-    module: redeploy.cli.commands.bump_fix
-    line: 66
-    cyclomatic_complexity: 5
-    calls_out: 9
-    calls_in: 2
-  redeploy.cli.commands.workflow._execute_workflow:
-    name: _execute_workflow
-    module: redeploy.cli.commands.workflow
-    line: 69
-    cyclomatic_complexity: 6
-    calls_out: 8
-    calls_in: 1
-  redeploy.detect.hardware_rules.analyze:
-    name: analyze
-    module: redeploy.detect.hardware_rules
-    line: 44
-    cyclomatic_complexity: 3
-    calls_out: 4
-    calls_in: 0
-  redeploy.detect.hardware.probe_hardware:
-    name: probe_hardware
-    module: redeploy.detect.hardware
-    line: 53
-    cyclomatic_complexity: 4
-    calls_out: 10
-    calls_in: 0
   redeploy.integrations.op3_bridge.snapshot_to_device_map:
     name: snapshot_to_device_map
     module: redeploy.integrations.op3_bridge
@@ -2434,221 +964,74 @@ nodes:
     cyclomatic_complexity: 7
     calls_out: 10
     calls_in: 1
-  redeploy.dsl.parser.RedeployDSLParser.parse:
-    name: parse
-    module: redeploy.dsl.parser
-    line: 137
-    cyclomatic_complexity: 6
-    calls_out: 23
-    calls_in: 0
-  redeploy.cli.commands.gh_workflow._workflows_dir:
-    name: _workflows_dir
-    module: redeploy.cli.commands.gh_workflow
-    line: 33
-    cyclomatic_complexity: 2
-    calls_out: 2
-    calls_in: 3
-  redeploy.markpact.parser._parse_markpact_fence_info:
-    name: _parse_markpact_fence_info
-    module: redeploy.markpact.parser
-    line: 52
-    cyclomatic_complexity: 14
-    calls_out: 10
-    calls_in: 2
-  redeploy.cli._setup_logging:
-    name: _setup_logging
-    module: redeploy.cli
-    line: 12
-    cyclomatic_complexity: 2
-    calls_out: 2
-    calls_in: 1
-  redeploy.cli.commands.plan_apply_report._run_rsync_checksum:
-    name: _run_rsync_checksum
-    module: redeploy.cli.commands.plan_apply_report
-    line: 135
-    cyclomatic_complexity: 6
-    calls_out: 10
-    calls_in: 1
-  redeploy.cli.commands.state._show_checkpoint:
-    name: _show_checkpoint
-    module: redeploy.cli.commands.state
-    line: 62
+  redeploy.cli.commands.devices.devices:
+    name: devices
+    module: redeploy.cli.commands.devices
+    line: 18
     cyclomatic_complexity: 4
+    calls_out: 14
+    calls_in: 0
+  redeploy.blueprint.sources.compose._merge_compose:
+    name: _merge_compose
+    module: redeploy.blueprint.sources.compose
+    line: 23
+    cyclomatic_complexity: 21
+    calls_out: 33
+    calls_in: 1
+  redeploy.heal.hint_provider._parse_step_block:
+    name: _parse_step_block
+    module: redeploy.heal.hint_provider
+    line: 296
+    cyclomatic_complexity: 6
+    calls_out: 4
+    calls_in: 2
+  redeploy.cli.commands.version.monorepo._create_version_set_taggers:
+    name: _create_version_set_taggers
+    module: redeploy.cli.commands.version.monorepo
+    line: 105
+    cyclomatic_complexity: 2
+    calls_out: 2
+    calls_in: 1
+  redeploy.detect.hardware_rules._op3_diag_to_hw_diag:
+    name: _op3_diag_to_hw_diag
+    module: redeploy.detect.hardware_rules
+    line: 31
+    cyclomatic_complexity: 1
+    calls_out: 5
+    calls_in: 1
+  redeploy.iac.parsers.compose.DockerComposeParser._parse_depends_on:
+    name: _parse_depends_on
+    module: redeploy.iac.parsers.compose
+    line: 268
+    cyclomatic_complexity: 5
+    calls_out: 6
+    calls_in: 0
+  redeploy.discovery.scanners.scan_mdns:
+    name: scan_mdns
+    module: redeploy.discovery.scanners
+    line: 88
+    cyclomatic_complexity: 6
     calls_out: 11
     calls_in: 1
-  redeploy.apply.handlers._resolve_command_ref:
-    name: _resolve_command_ref
-    module: redeploy.apply.handlers
-    line: 345
-    cyclomatic_complexity: 6
-    calls_out: 10
-    calls_in: 1
-  redeploy.steps.StepLibrary.all:
-    name: all
-    module: redeploy.steps
-    line: 80
-    cyclomatic_complexity: 2
-    calls_out: 2
-    calls_in: 5
-  redeploy.cli.commands.version.helpers._bump_single:
-    name: _bump_single
-    module: redeploy.cli.commands.version.helpers
-    line: 230
-    cyclomatic_complexity: 25
-    calls_out: 35
-    calls_in: 4
-  redeploy.dsl.loader.load_css_text:
-    name: load_css_text
-    module: redeploy.dsl.loader
-    line: 140
-    cyclomatic_complexity: 2
-    calls_out: 4
-    calls_in: 0
-  redeploy.hardware.fixes.fix_dsi_not_enabled:
-    name: fix_dsi_not_enabled
-    module: redeploy.hardware.fixes
-    line: 33
-    cyclomatic_complexity: 6
-    calls_out: 20
-    calls_in: 1
-  redeploy.cli.commands.bump_fix._bump_patch:
-    name: _bump_patch
-    module: redeploy.cli.commands.bump_fix
-    line: 96
-    cyclomatic_complexity: 2
-    calls_out: 7
-    calls_in: 3
-  redeploy.analyze.checkers.compose._check_env_files:
-    name: _check_env_files
-    module: redeploy.analyze.checkers.compose
-    line: 51
-    cyclomatic_complexity: 6
-    calls_out: 8
-    calls_in: 1
-  redeploy.cli.commands.export.export_cmd:
-    name: export_cmd
-    module: redeploy.cli.commands.export
-    line: 25
-    cyclomatic_complexity: 7
-    calls_out: 23
-    calls_in: 0
-  redeploy.analyze.preflight_schema.save_preflight_schema:
-    name: save_preflight_schema
-    module: redeploy.analyze.preflight_schema
-    line: 121
-    cyclomatic_complexity: 1
-    calls_out: 3
-    calls_in: 1
-  redeploy.cli.commands.version.release._update_monorepo_release_changelogs:
-    name: _update_monorepo_release_changelogs
-    module: redeploy.cli.commands.version.release
-    line: 64
-    cyclomatic_complexity: 5
-    calls_out: 12
-    calls_in: 1
-  redeploy.mcp_server.exec_ssh:
-    name: exec_ssh
-    module: redeploy.mcp_server
-    line: 245
-    cyclomatic_complexity: 4
-    calls_out: 4
-    calls_in: 0
-  redeploy.version.commits.format_analysis_report:
-    name: format_analysis_report
-    module: redeploy.version.commits
-    line: 196
-    cyclomatic_complexity: 2
-    calls_out: 3
-    calls_in: 1
-  redeploy.cli.commands.version.monorepo._finalize_monorepo_version_set:
-    name: _finalize_monorepo_version_set
-    module: redeploy.cli.commands.version.monorepo
-    line: 115
-    cyclomatic_complexity: 11
-    calls_out: 8
-    calls_in: 1
-  redeploy.cli.commands.version.scanner._review_detected_sources_interactively:
-    name: _review_detected_sources_interactively
-    module: redeploy.cli.commands.version.scanner
-    line: 193
-    cyclomatic_complexity: 5
-    calls_out: 10
-    calls_in: 1
-  redeploy.detect.probes.probe_runtime:
-    name: probe_runtime
-    module: redeploy.detect.probes
-    line: 19
-    cyclomatic_complexity: 5
-    calls_out: 16
-    calls_in: 1
-  redeploy.plugins.builtin.hardware_diagnostic._detect_platform:
-    name: _detect_platform
-    module: redeploy.plugins.builtin.hardware_diagnostic
-    line: 54
-    cyclomatic_complexity: 10
-    calls_out: 6
-    calls_in: 1
-  redeploy.integrations.op3_bridge.snapshot_to_hardware_info:
-    name: snapshot_to_hardware_info
-    module: redeploy.integrations.op3_bridge
-    line: 126
-    cyclomatic_complexity: 10
-    calls_out: 49
-    calls_in: 2
-  redeploy.apply.utils.run_container_build.run_container_build:
-    name: run_container_build
-    module: redeploy.apply.utils.run_container_build
-    line: 18
-    cyclomatic_complexity: 10
-    calls_out: 21
-    calls_in: 2
-  redeploy.version.changelog.get_commits_since_tag:
-    name: get_commits_since_tag
-    module: redeploy.version.changelog
-    line: 188
-    cyclomatic_complexity: 5
-    calls_out: 3
-    calls_in: 1
-  redeploy.cli.display.generate_workflow_output_yaml:
-    name: generate_workflow_output_yaml
-    module: redeploy.cli.display
-    line: 325
-    cyclomatic_complexity: 2
-    calls_out: 6
-    calls_in: 1
-  redeploy.cli.commands.version.helpers._load_spec_version_diff:
-    name: _load_spec_version_diff
-    module: redeploy.cli.commands.version.helpers
-    line: 139
-    cyclomatic_complexity: 8
-    calls_out: 13
-    calls_in: 1
-  redeploy.dsl.loader.manifest_to_css:
-    name: manifest_to_css
-    module: redeploy.dsl.loader
-    line: 330
-    cyclomatic_complexity: 14
-    calls_out: 17
-    calls_in: 2
-  redeploy.config_apply.applier.apply_config_file:
-    name: apply_config_file
-    module: redeploy.config_apply.applier
-    line: 38
-    cyclomatic_complexity: 4
-    calls_out: 6
-    calls_in: 3
-  redeploy.integrations.op3_bridge.snapshot_to_infra_state:
-    name: snapshot_to_infra_state
-    module: redeploy.integrations.op3_bridge
-    line: 103
+  redeploy.discovery.auto_probe.detect_strategy_remote:
+    name: detect_strategy_remote
+    module: redeploy.discovery.auto_probe
+    line: 60
     cyclomatic_complexity: 3
-    calls_out: 2
-    calls_in: 2
-  redeploy.cli.commands.hardware._apply_fix:
-    name: _apply_fix
-    module: redeploy.cli.commands.hardware
-    line: 204
-    cyclomatic_complexity: 8
+    calls_out: 5
+    calls_in: 1
+  redeploy.heal.HealRunner._ask_and_apply_fix:
+    name: _ask_and_apply_fix
+    module: redeploy.heal
+    line: 381
+    cyclomatic_complexity: 7
+    calls_out: 15
+    calls_in: 0
+  redeploy.cli.display.print_workflow_summary_table:
+    name: print_workflow_summary_table
+    module: redeploy.cli.display
+    line: 217
+    cyclomatic_complexity: 5
     calls_out: 18
     calls_in: 1
   redeploy.parse.parse_diagnostics:
@@ -2658,12 +1041,152 @@ nodes:
     cyclomatic_complexity: 5
     calls_out: 4
     calls_in: 0
-  redeploy.discovery._detect_strategy_remote:
-    name: _detect_strategy_remote
-    module: redeploy.discovery
-    line: 515
-    cyclomatic_complexity: 3
+  redeploy.markpact.compiler.compile_markpact_document:
+    name: compile_markpact_document
+    module: redeploy.markpact.compiler
+    line: 28
+    cyclomatic_complexity: 2
+    calls_out: 4
+    calls_in: 2
+  redeploy.models.spec.MigrationSpec.from_file:
+    name: from_file
+    module: redeploy.models.spec
+    line: 135
+    cyclomatic_complexity: 2
     calls_out: 5
+    calls_in: 0
+  redeploy.iac.docker_compose.DockerComposeParser._load_merged:
+    name: _load_merged
+    module: redeploy.iac.docker_compose
+    line: 246
+    cyclomatic_complexity: 6
+    calls_out: 9
+    calls_in: 0
+  redeploy.config_apply.applier.apply_config_dict:
+    name: apply_config_dict
+    module: redeploy.config_apply.applier
+    line: 28
+    cyclomatic_complexity: 1
+    calls_out: 2
+    calls_in: 1
+  redeploy.blueprint.generators.docker_compose.generate_twin:
+    name: generate_twin
+    module: redeploy.blueprint.generators.docker_compose
+    line: 27
+    cyclomatic_complexity: 11
+    calls_out: 3
+    calls_in: 1
+  redeploy.cli.commands.version.helpers._resolve_package_release_changelog_config:
+    name: _resolve_package_release_changelog_config
+    module: redeploy.cli.commands.version.helpers
+    line: 84
+    cyclomatic_complexity: 5
+    calls_out: 2
+    calls_in: 1
+  redeploy.cli.display._print_workflow_step:
+    name: _print_workflow_step
+    module: redeploy.cli.display
+    line: 156
+    cyclomatic_complexity: 4
+    calls_out: 4
+    calls_in: 1
+  redeploy.heal.write_repair_log:
+    name: write_repair_log
+    module: redeploy.heal
+    line: 195
+    cyclomatic_complexity: 6
+    calls_out: 15
+    calls_in: 9
+  redeploy.cli.query.execute_query:
+    name: execute_query
+    module: redeploy.cli.query
+    line: 18
+    cyclomatic_complexity: 5
+    calls_out: 9
+    calls_in: 3
+  redeploy.cli._resolve_device:
+    name: _resolve_device
+    module: redeploy.cli
+    line: 103
+    cyclomatic_complexity: 5
+    calls_out: 12
+    calls_in: 0
+  redeploy.markpact.parser._parse_markpact_fence_info:
+    name: _parse_markpact_fence_info
+    module: redeploy.markpact.parser
+    line: 52
+    cyclomatic_complexity: 14
+    calls_out: 10
+    calls_in: 2
+  redeploy.mcp_server.schema:
+    name: schema
+    module: redeploy.mcp_server
+    line: 121
+    cyclomatic_complexity: 1
+    calls_out: 5
+    calls_in: 0
+  redeploy.cli.commands.hardware._execute_query:
+    name: _execute_query
+    module: redeploy.cli.commands.hardware
+    line: 198
+    cyclomatic_complexity: 1
+    calls_out: 2
+    calls_in: 1
+  redeploy.apply.executor.Executor._rollback:
+    name: _rollback
+    module: redeploy.apply.executor
+    line: 332
+    cyclomatic_complexity: 1
+    calls_out: 1
+    calls_in: 0
+  redeploy.apply.handlers.run_docker_health_wait:
+    name: run_docker_health_wait
+    module: redeploy.apply.handlers
+    line: 139
+    cyclomatic_complexity: 10
+    calls_out: 11
+    calls_in: 1
+  redeploy.analyze.checkers.path.is_inside:
+    name: is_inside
+    module: redeploy.analyze.checkers.path
+    line: 21
+    cyclomatic_complexity: 2
+    calls_out: 3
+    calls_in: 1
+  redeploy.hardware.raspi_config.build_raspi_config_command:
+    name: build_raspi_config_command
+    module: redeploy.hardware.raspi_config
+    line: 5
+    cyclomatic_complexity: 3
+    calls_out: 2
+    calls_in: 1
+  redeploy.cli.display.print_inspect_templates:
+    name: print_inspect_templates
+    module: redeploy.cli.display
+    line: 114
+    cyclomatic_complexity: 8
+    calls_out: 8
+    calls_in: 1
+  redeploy.cli.commands.version.scanner._regex_version_scan_specs:
+    name: _regex_version_scan_specs
+    module: redeploy.cli.commands.version.scanner
+    line: 21
+    cyclomatic_complexity: 1
+    calls_out: 0
+    calls_in: 1
+  redeploy.hardware.fixes.fix_dsi_not_enabled:
+    name: fix_dsi_not_enabled
+    module: redeploy.hardware.fixes
+    line: 33
+    cyclomatic_complexity: 6
+    calls_out: 20
+    calls_in: 1
+  redeploy.hardware.fixes._detect_port:
+    name: _detect_port
+    module: redeploy.hardware.fixes
+    line: 20
+    cyclomatic_complexity: 6
+    calls_out: 0
     calls_in: 1
   redeploy.cli.commands.inspect.inspect:
     name: inspect
@@ -2672,82 +1195,33 @@ nodes:
     cyclomatic_complexity: 4
     calls_out: 22
     calls_in: 0
-  redeploy.hardware.config_txt.ensure_line:
-    name: ensure_line
-    module: redeploy.hardware.config_txt
-    line: 17
-    cyclomatic_complexity: 14
-    calls_out: 20
-    calls_in: 2
-  redeploy.cli.commands.version.monorepo._print_monorepo_set_dry_run:
-    name: _print_monorepo_set_dry_run
-    module: redeploy.cli.commands.version.monorepo
-    line: 77
-    cyclomatic_complexity: 3
-    calls_out: 5
-    calls_in: 1
-  redeploy.mcp_server._run:
-    name: _run
-    module: redeploy.mcp_server
-    line: 75
-    cyclomatic_complexity: 4
-    calls_out: 4
-    calls_in: 6
-  redeploy.cli.display.print_inspect_templates:
-    name: print_inspect_templates
-    module: redeploy.cli.display
-    line: 114
-    cyclomatic_complexity: 8
-    calls_out: 8
-    calls_in: 1
-  redeploy.plugins.builtin.hardware_diagnostic.hardware_diagnostic:
-    name: hardware_diagnostic
-    module: redeploy.plugins.builtin.hardware_diagnostic
-    line: 239
-    cyclomatic_complexity: 8
-    calls_out: 22
-    calls_in: 0
-  redeploy.cli.cli:
-    name: cli
-    module: redeploy.cli
-    line: 26
-    cyclomatic_complexity: 1
-    calls_out: 5
-    calls_in: 0
-  redeploy.iac.docker_compose.DockerComposeParser._parse_service_depends_on:
-    name: _parse_service_depends_on
-    module: redeploy.iac.docker_compose
-    line: 363
-    cyclomatic_complexity: 4
-    calls_out: 6
-    calls_in: 0
-  redeploy.detect.detector.Detector.probe_hardware:
-    name: probe_hardware
-    module: redeploy.detect.detector
-    line: 99
-    cyclomatic_complexity: 2
-    calls_out: 4
-    calls_in: 3
-  redeploy.apply.state.ResumeState.save:
-    name: save
-    module: redeploy.apply.state
-    line: 93
-    cyclomatic_complexity: 5
-    calls_out: 11
-    calls_in: 0
-  redeploy.cli.display._format_workflow_header:
-    name: _format_workflow_header
-    module: redeploy.cli.display
-    line: 145
-    cyclomatic_complexity: 2
-    calls_out: 1
-    calls_in: 1
-  redeploy.discovery._collect_ssh_keys:
-    name: _collect_ssh_keys
-    module: redeploy.discovery
-    line: 402
-    cyclomatic_complexity: 14
+  redeploy.discovery.scanners.scan_known_hosts:
+    name: scan_known_hosts
+    module: redeploy.discovery.scanners
+    line: 19
+    cyclomatic_complexity: 10
     calls_out: 18
+    calls_in: 1
+  redeploy.hardware.config_txt.ensure_lines:
+    name: ensure_lines
+    module: redeploy.hardware.config_txt
+    line: 70
+    cyclomatic_complexity: 4
+    calls_out: 4
+    calls_in: 0
+  redeploy.plugins.register_plugin:
+    name: register_plugin
+    module: redeploy.plugins
+    line: 138
+    cyclomatic_complexity: 1
+    calls_out: 1
+    calls_in: 5
+  redeploy.plugins.builtin.hardware_diagnostic._analyze_hardware:
+    name: _analyze_hardware
+    module: redeploy.plugins.builtin.hardware_diagnostic
+    line: 171
+    cyclomatic_complexity: 14
+    calls_out: 32
     calls_in: 1
   redeploy.plugins.builtin.hardware_diagnostic._get_network_interfaces:
     name: _get_network_interfaces
@@ -2756,159 +1230,26 @@ nodes:
     cyclomatic_complexity: 5
     calls_out: 6
     calls_in: 1
-  redeploy.cli.commands.bump_fix._find_spec:
-    name: _find_spec
-    module: redeploy.cli.commands.bump_fix
-    line: 14
-    cyclomatic_complexity: 15
-    calls_out: 22
-    calls_in: 2
-  redeploy.cli.commands.device_map_renderers.render_json:
-    name: render_json
-    module: redeploy.cli.commands.device_map_renderers
-    line: 26
-    cyclomatic_complexity: 1
-    calls_out: 3
-    calls_in: 1
-  redeploy.patterns.get_pattern:
-    name: get_pattern
-    module: redeploy.patterns
-    line: 400
-    cyclomatic_complexity: 1
-    calls_out: 1
-    calls_in: 1
-  redeploy.plugins.builtin.hardware_diagnostic._get_cpu_info:
-    name: _get_cpu_info
-    module: redeploy.plugins.builtin.hardware_diagnostic
-    line: 86
-    cyclomatic_complexity: 5
-    calls_out: 10
-    calls_in: 1
-  redeploy.cli.commands.gh_workflow._resolve_workflow_identifier:
-    name: _resolve_workflow_identifier
+  redeploy.cli.commands.gh_workflow._on_section:
+    name: _on_section
     module: redeploy.cli.commands.gh_workflow
-    line: 89
-    cyclomatic_complexity: 10
-    calls_out: 11
-    calls_in: 2
-  redeploy.heal.hint_provider._parse_step_block:
-    name: _parse_step_block
-    module: redeploy.heal.hint_provider
-    line: 296
-    cyclomatic_complexity: 6
-    calls_out: 4
-    calls_in: 2
-  redeploy.cli.commands.exec_._extract_all_scripts:
-    name: _extract_all_scripts
-    module: redeploy.cli.commands.exec_
-    line: 182
-    cyclomatic_complexity: 3
-    calls_out: 7
-    calls_in: 1
-  redeploy.cli.commands.exec_._extract_script_for_ref:
-    name: _extract_script_for_ref
-    module: redeploy.cli.commands.exec_
-    line: 199
-    cyclomatic_complexity: 2
-    calls_out: 1
-    calls_in: 2
-  redeploy.analyze.checkers.docker_build.parse_docker_build:
-    name: parse_docker_build
-    module: redeploy.analyze.checkers.docker_build
-    line: 33
-    cyclomatic_complexity: 9
-    calls_out: 7
-    calls_in: 1
-  redeploy.iac.docker_compose.DockerComposeParser._parse_service_networks:
-    name: _parse_service_networks
-    module: redeploy.iac.docker_compose
-    line: 355
-    cyclomatic_complexity: 4
-    calls_out: 6
-    calls_in: 0
-  redeploy.cli.commands.version.release._format_release_tag:
-    name: _format_release_tag
-    module: redeploy.cli.commands.version.release
-    line: 8
+    line: 50
     cyclomatic_complexity: 1
-    calls_out: 1
-    calls_in: 4
-  redeploy.cli.commands.version.scanner._classify_version_scan_source_confidence:
-    name: _classify_version_scan_source_confidence
-    module: redeploy.cli.commands.version.scanner
-    line: 130
+    calls_out: 2
+    calls_in: 1
+  redeploy.cli.display._get_status_color:
+    name: _get_status_color
+    module: redeploy.cli.display
+    line: 337
     cyclomatic_complexity: 3
     calls_out: 0
     calls_in: 1
-  redeploy.cli.commands.state._list_checkpoints:
-    name: _list_checkpoints
-    module: redeploy.cli.commands.state
-    line: 27
-    cyclomatic_complexity: 7
-    calls_out: 17
-    calls_in: 1
-  redeploy.version.diff.diff_manifest_vs_spec:
-    name: diff_manifest_vs_spec
-    module: redeploy.version.diff
-    line: 24
-    cyclomatic_complexity: 4
-    calls_out: 7
-    calls_in: 1
-  redeploy.apply.handlers._ensure_remote_parent_dir:
-    name: _ensure_remote_parent_dir
-    module: redeploy.apply.handlers
-    line: 102
-    cyclomatic_complexity: 7
-    calls_out: 6
-    calls_in: 2
-  redeploy.dsl.parser._strip_comments:
-    name: _strip_comments
-    module: redeploy.dsl.parser
-    line: 107
+  redeploy.hardware.panels.infer_from_hardware:
+    name: infer_from_hardware
+    module: redeploy.hardware.panels
+    line: 48
     cyclomatic_complexity: 1
-    calls_out: 3
-    calls_in: 1
-  redeploy.plugins.builtin.process_control.process_control:
-    name: process_control
-    module: redeploy.plugins.builtin.process_control
-    line: 76
-    cyclomatic_complexity: 9
-    calls_out: 19
-    calls_in: 0
-  redeploy.cli.commands.plan_apply_run.run_preflight_phase:
-    name: run_preflight_phase
-    module: redeploy.cli.commands.plan_apply_run
-    line: 59
-    cyclomatic_complexity: 8
-    calls_out: 19
-    calls_in: 1
-  redeploy.cli.commands.version.helpers._load_live_version_diff:
-    name: _load_live_version_diff
-    module: redeploy.cli.commands.version.helpers
-    line: 178
-    cyclomatic_complexity: 3
-    calls_out: 4
-    calls_in: 1
-  redeploy.cli.commands.version.release._resolve_package_release_changelog_config:
-    name: _resolve_package_release_changelog_config
-    module: redeploy.cli.commands.version.release
-    line: 138
-    cyclomatic_complexity: 5
-    calls_out: 2
-    calls_in: 2
-  redeploy.plugins.builtin.hardware_diagnostic._get_storage_gb:
-    name: _get_storage_gb
-    module: redeploy.plugins.builtin.hardware_diagnostic
-    line: 113
-    cyclomatic_complexity: 6
-    calls_out: 11
-    calls_in: 1
-  redeploy.discovery._merge:
-    name: _merge
-    module: redeploy.discovery
-    line: 270
-    cyclomatic_complexity: 11
-    calls_out: 2
+    calls_out: 0
     calls_in: 1
   redeploy.blueprint.sources.compose._parse_compose_volumes:
     name: _parse_compose_volumes
@@ -2917,45 +1258,66 @@ nodes:
     cyclomatic_complexity: 8
     calls_out: 13
     calls_in: 1
-  redeploy.cli.commands.device_map_renderers._build_drm_table:
-    name: _build_drm_table
-    module: redeploy.cli.commands.device_map_renderers
-    line: 48
-    cyclomatic_complexity: 9
+  redeploy.cli.commands.blueprint.show:
+    name: show
+    module: redeploy.cli.commands.blueprint
+    line: 203
+    cyclomatic_complexity: 4
+    calls_out: 18
+    calls_in: 0
+  redeploy.discovery.scanners.discover:
+    name: discover
+    module: redeploy.discovery.scanners
+    line: 216
+    cyclomatic_complexity: 14
+    calls_out: 22
+    calls_in: 3
+  redeploy.apply.handlers.run_scp:
+    name: run_scp
+    module: redeploy.apply.handlers
+    line: 51
+    cyclomatic_complexity: 7
+    calls_out: 12
+    calls_in: 1
+  redeploy.cli.commands.version.scanner._default_keep_scanned_source:
+    name: _default_keep_scanned_source
+    module: redeploy.cli.commands.version.scanner
+    line: 147
+    cyclomatic_complexity: 2
+    calls_out: 0
+    calls_in: 1
+  redeploy.cli.commands.workflow._execute_workflow:
+    name: _execute_workflow
+    module: redeploy.cli.commands.workflow
+    line: 69
+    cyclomatic_complexity: 6
     calls_out: 8
     calls_in: 1
-  redeploy.markpact.parser.parse_markpact_text:
-    name: parse_markpact_text
-    module: redeploy.markpact.parser
-    line: 19
-    cyclomatic_complexity: 7
-    calls_out: 8
-    calls_in: 2
-  redeploy.apply.handlers._format_step_output:
-    name: _format_step_output
-    module: redeploy.apply.handlers
-    line: 24
-    cyclomatic_complexity: 6
-    calls_out: 7
-    calls_in: 6
-  redeploy.mcp_server.run_spec:
-    name: run_spec
-    module: redeploy.mcp_server
-    line: 149
-    cyclomatic_complexity: 5
-    calls_out: 5
-    calls_in: 0
-  redeploy.parse._apply_system_line:
-    name: _apply_system_line
-    module: redeploy.parse
-    line: 106
-    cyclomatic_complexity: 8
+  redeploy.schema._read_version:
+    name: _read_version
+    module: redeploy.schema
+    line: 229
+    cyclomatic_complexity: 3
+    calls_out: 4
+    calls_in: 1
+  redeploy.cli.commands.export._find_export_source:
+    name: _find_export_source
+    module: redeploy.cli.commands.export
+    line: 71
+    cyclomatic_complexity: 9
     calls_out: 10
     calls_in: 1
-  redeploy.discovery._try_ssh_credentials:
-    name: _try_ssh_credentials
-    module: redeploy.discovery
-    line: 439
+  redeploy.mcp_server.nlp_command:
+    name: nlp_command
+    module: redeploy.mcp_server
+    line: 281
+    cyclomatic_complexity: 2
+    calls_out: 2
+    calls_in: 0
+  redeploy.discovery.ssh_credentials.try_ssh_credentials:
+    name: try_ssh_credentials
+    module: redeploy.discovery.ssh_credentials
+    line: 49
     cyclomatic_complexity: 14
     calls_out: 15
     calls_in: 1
@@ -2966,27 +1328,314 @@ nodes:
     cyclomatic_complexity: 4
     calls_out: 4
     calls_in: 2
-  redeploy.parse._apply_health_line:
-    name: _apply_health_line
+  redeploy.markpact.compiler._deep_merge:
+    name: _deep_merge
+    module: redeploy.markpact.compiler
+    line: 177
+    cyclomatic_complexity: 5
+    calls_out: 4
+    calls_in: 3
+  redeploy.cli.commands.version.release._resolve_package_release_changelog_config:
+    name: _resolve_package_release_changelog_config
+    module: redeploy.cli.commands.version.release
+    line: 138
+    cyclomatic_complexity: 5
+    calls_out: 2
+    calls_in: 2
+  redeploy.version.bump._calculate_bump:
+    name: _calculate_bump
+    module: redeploy.version.bump
+    line: 258
+    cyclomatic_complexity: 8
+    calls_out: 10
+    calls_in: 4
+  redeploy.cli.commands.plan_apply_report._run_rsync_checksum:
+    name: _run_rsync_checksum
+    module: redeploy.cli.commands.plan_apply_report
+    line: 135
+    cyclomatic_complexity: 6
+    calls_out: 10
+    calls_in: 1
+  redeploy.plugins.builtin.process_control._find_pid_on_port:
+    name: _find_pid_on_port
+    module: redeploy.plugins.builtin.process_control
+    line: 29
+    cyclomatic_complexity: 11
+    calls_out: 14
+    calls_in: 2
+  redeploy.apply.handlers._resolve_command_ref:
+    name: _resolve_command_ref
+    module: redeploy.apply.handlers
+    line: 345
+    cyclomatic_complexity: 6
+    calls_out: 10
+    calls_in: 1
+  redeploy.analyze.checkers.compose._check_env_files:
+    name: _check_env_files
+    module: redeploy.analyze.checkers.compose
+    line: 51
+    cyclomatic_complexity: 6
+    calls_out: 8
+    calls_in: 1
+  redeploy.cli.commands.plan_apply_report.step_command_block:
+    name: step_command_block
+    module: redeploy.cli.commands.plan_apply_report
+    line: 54
+    cyclomatic_complexity: 14
+    calls_out: 5
+    calls_in: 1
+  redeploy.parse._apply_git_line:
+    name: _apply_git_line
     module: redeploy.parse
-    line: 132
+    line: 124
+    cyclomatic_complexity: 3
+    calls_out: 3
+    calls_in: 1
+  redeploy.dsl.parser._strip_comments:
+    name: _strip_comments
+    module: redeploy.dsl.parser
+    line: 107
+    cyclomatic_complexity: 1
+    calls_out: 3
+    calls_in: 1
+  redeploy.heal.HealRunner.run:
+    name: run
+    module: redeploy.heal
+    line: 434
+    cyclomatic_complexity: 8
+    calls_out: 19
+    calls_in: 0
+  redeploy.plugins.PluginRegistry.names:
+    name: names
+    module: redeploy.plugins
+    line: 100
+    cyclomatic_complexity: 1
+    calls_out: 2
+    calls_in: 0
+  redeploy.cli.commands.version.helpers._load_live_version_diff:
+    name: _load_live_version_diff
+    module: redeploy.cli.commands.version.helpers
+    line: 178
+    cyclomatic_complexity: 3
+    calls_out: 4
+    calls_in: 1
+  redeploy.cli.commands.version.scanner._format_version_scan_source_status:
+    name: _format_version_scan_source_status
+    module: redeploy.cli.commands.version.scanner
+    line: 139
     cyclomatic_complexity: 2
+    calls_out: 2
+    calls_in: 2
+  redeploy.apply.handlers.run_ssh:
+    name: run_ssh
+    module: redeploy.apply.handlers
+    line: 38
+    cyclomatic_complexity: 4
+    calls_out: 5
+    calls_in: 8
+  redeploy.mcp_server._redeploy_bin:
+    name: _redeploy_bin
+    module: redeploy.mcp_server
+    line: 63
+    cyclomatic_complexity: 5
+    calls_out: 4
+    calls_in: 1
+  redeploy.detect.hardware_rules.analyze:
+    name: analyze
+    module: redeploy.detect.hardware_rules
+    line: 44
+    cyclomatic_complexity: 3
+    calls_out: 4
+    calls_in: 0
+  redeploy.plugins.builtin.notify._notify_webhook:
+    name: _notify_webhook
+    module: redeploy.plugins.builtin.notify
+    line: 94
+    cyclomatic_complexity: 6
+    calls_out: 16
+    calls_in: 1
+  redeploy.apply.state._now_iso:
+    name: _now_iso
+    module: redeploy.apply.state
+    line: 31
+    cyclomatic_complexity: 1
+    calls_out: 2
+    calls_in: 2
+  redeploy.cli.display._print_template_match:
+    name: _print_template_match
+    module: redeploy.cli.display
+    line: 259
+    cyclomatic_complexity: 5
+    calls_out: 7
+    calls_in: 1
+  redeploy.heal.hint_provider.apply_fix_to_spec:
+    name: apply_fix_to_spec
+    module: redeploy.heal.hint_provider
+    line: 245
+    cyclomatic_complexity: 16
+    calls_out: 30
+    calls_in: 0
+  redeploy.markpact.parser.parse_markpact_file_with_refs:
+    name: parse_markpact_file_with_refs
+    module: redeploy.markpact.parser
+    line: 98
+    cyclomatic_complexity: 6
+    calls_out: 6
+    calls_in: 0
+  redeploy.heal.apply_fix_to_spec:
+    name: apply_fix_to_spec
+    module: redeploy.heal
+    line: 170
+    cyclomatic_complexity: 6
+    calls_out: 15
+    calls_in: 2
+  redeploy.cli.display.print_inspect_environments:
+    name: print_inspect_environments
+    module: redeploy.cli.display
+    line: 91
+    cyclomatic_complexity: 8
+    calls_out: 11
+    calls_in: 1
+  redeploy.plugins.builtin.hardware_diagnostic.hardware_diagnostic:
+    name: hardware_diagnostic
+    module: redeploy.plugins.builtin.hardware_diagnostic
+    line: 239
+    cyclomatic_complexity: 8
+    calls_out: 22
+    calls_in: 0
+  redeploy.config_apply.loader.load_config_file:
+    name: load_config_file
+    module: redeploy.config_apply.loader
+    line: 10
+    cyclomatic_complexity: 3
+    calls_out: 4
+    calls_in: 1
+  redeploy.cli.display._print_host_header:
+    name: _print_host_header
+    module: redeploy.cli.display
+    line: 252
+    cyclomatic_complexity: 1
     calls_out: 1
     calls_in: 1
-  redeploy.discovery.auto_probe:
-    name: auto_probe
-    module: redeploy.discovery
-    line: 621
-    cyclomatic_complexity: 7
-    calls_out: 33
-    calls_in: 4
-  redeploy.schema.build_schema:
-    name: build_schema
-    module: redeploy.schema
-    line: 288
-    cyclomatic_complexity: 2
+  redeploy.cli.display.print_inspect_app_metadata:
+    name: print_inspect_app_metadata
+    module: redeploy.cli.display
+    line: 81
+    cyclomatic_complexity: 3
+    calls_out: 1
+    calls_in: 1
+  redeploy.cli.commands.import_._examples_plugin_dir:
+    name: _examples_plugin_dir
+    module: redeploy.cli.commands.import_
+    line: 254
+    cyclomatic_complexity: 1
+    calls_out: 2
+    calls_in: 1
+  redeploy.apply.state.state_key:
+    name: state_key
+    module: redeploy.apply.state
+    line: 40
+    cyclomatic_complexity: 1
     calls_out: 7
+    calls_in: 1
+  redeploy.cli.display.print_workflow_host_details:
+    name: print_workflow_host_details
+    module: redeploy.cli.display
+    line: 285
+    cyclomatic_complexity: 3
+    calls_out: 3
+    calls_in: 1
+  redeploy.spec_loader.load_migration_spec:
+    name: load_migration_spec
+    module: redeploy.spec_loader
+    line: 23
+    cyclomatic_complexity: 4
+    calls_out: 8
     calls_in: 4
+  redeploy.cli.commands.hardware._apply_transform:
+    name: _apply_transform
+    module: redeploy.cli.commands.hardware
+    line: 187
+    cyclomatic_complexity: 4
+    calls_out: 4
+    calls_in: 1
+  redeploy.apply.executor.Executor._execute_step:
+    name: _execute_step
+    module: redeploy.apply.executor
+    line: 290
+    cyclomatic_complexity: 4
+    calls_out: 27
+    calls_in: 0
+  redeploy.patterns.RollbackOnFailurePattern.expand:
+    name: expand
+    module: redeploy.patterns
+    line: 336
+    cyclomatic_complexity: 1
+    calls_out: 8
+    calls_in: 0
+  redeploy.apply.state_apply.HardwareStateHandler.apply:
+    name: apply
+    module: redeploy.apply.state_apply
+    line: 65
+    cyclomatic_complexity: 18
+    calls_out: 27
+    calls_in: 0
+  redeploy.cli.commands.version.release._update_release_changelog:
+    name: _update_release_changelog
+    module: redeploy.cli.commands.version.release
+    line: 13
+    cyclomatic_complexity: 7
+    calls_out: 7
+    calls_in: 3
+  redeploy.cli.core.find_manifest_path:
+    name: find_manifest_path
+    module: redeploy.cli.core
+    line: 26
+    cyclomatic_complexity: 3
+    calls_out: 5
+    calls_in: 2
+  redeploy.markpact.parser.extract_script_by_ref:
+    name: extract_script_by_ref
+    module: redeploy.markpact.parser
+    line: 126
+    cyclomatic_complexity: 12
+    calls_out: 11
+    calls_in: 1
+  redeploy.apply.utils.run_container_build.run_container_build:
+    name: run_container_build
+    module: redeploy.apply.utils.run_container_build
+    line: 18
+    cyclomatic_complexity: 10
+    calls_out: 21
+    calls_in: 2
+  redeploy.cli.commands.exec_._extract_all_scripts:
+    name: _extract_all_scripts
+    module: redeploy.cli.commands.exec_
+    line: 182
+    cyclomatic_complexity: 3
+    calls_out: 7
+    calls_in: 1
+  redeploy.discovery.auto_probe.build_probe_command:
+    name: build_probe_command
+    module: redeploy.discovery.auto_probe
+    line: 25
+    cyclomatic_complexity: 1
+    calls_out: 0
+    calls_in: 1
+  redeploy.cli.commands.version.monorepo._finalize_monorepo_version_set:
+    name: _finalize_monorepo_version_set
+    module: redeploy.cli.commands.version.monorepo
+    line: 115
+    cyclomatic_complexity: 11
+    calls_out: 8
+    calls_in: 1
+  redeploy.cli.commands.gh_workflow._trigger_list:
+    name: _trigger_list
+    module: redeploy.cli.commands.gh_workflow
+    line: 55
+    cyclomatic_complexity: 6
+    calls_out: 6
+    calls_in: 1
   redeploy.markpact.parser._handle_fence_line:
     name: _handle_fence_line
     module: redeploy.markpact.parser
@@ -2994,20 +1643,167 @@ nodes:
     cyclomatic_complexity: 7
     calls_out: 7
     calls_in: 1
-  redeploy.cli.commands.import_._print_plugin_templates:
-    name: _print_plugin_templates
-    module: redeploy.cli.commands.import_
-    line: 258
-    cyclomatic_complexity: 2
+  redeploy.plugins.builtin.hardware_diagnostic._get_audio_devices:
+    name: _get_audio_devices
+    module: redeploy.plugins.builtin.hardware_diagnostic
+    line: 147
+    cyclomatic_complexity: 3
+    calls_out: 5
+    calls_in: 1
+  redeploy.cli.commands.plan_apply_shared.load_spec_for_run:
+    name: load_spec_for_run
+    module: redeploy.cli.commands.plan_apply_shared
+    line: 228
+    cyclomatic_complexity: 4
+    calls_out: 6
+    calls_in: 1
+  redeploy.hardware.config_txt.ensure_line:
+    name: ensure_line
+    module: redeploy.hardware.config_txt
+    line: 17
+    cyclomatic_complexity: 14
+    calls_out: 20
+    calls_in: 2
+  redeploy.cli.display._print_alternatives:
+    name: _print_alternatives
+    module: redeploy.cli.display
+    line: 274
+    cyclomatic_complexity: 5
+    calls_out: 2
+    calls_in: 1
+  redeploy.cli.commands.inspect._find_css_path:
+    name: _find_css_path
+    module: redeploy.cli.commands.inspect
+    line: 20
+    cyclomatic_complexity: 4
     calls_out: 4
     calls_in: 1
-  redeploy.cli.commands.version.scanner._read_detected_source_versions:
-    name: _read_detected_source_versions
-    module: redeploy.cli.commands.version.scanner
-    line: 91
+  redeploy.cli.display._format_workflow_header:
+    name: _format_workflow_header
+    module: redeploy.cli.display
+    line: 145
+    cyclomatic_complexity: 2
+    calls_out: 1
+    calls_in: 1
+  redeploy.mcp_server.plan_spec:
+    name: plan_spec
+    module: redeploy.mcp_server
+    line: 135
+    cyclomatic_complexity: 1
+    calls_out: 2
+    calls_in: 0
+  redeploy.discovery.ssh_credentials.tcp_reachable:
+    name: tcp_reachable
+    module: redeploy.discovery.ssh_credentials
+    line: 40
+    cyclomatic_complexity: 2
+    calls_out: 1
+    calls_in: 1
+  redeploy.analyze.checkers.compose._check_volumes:
+    name: _check_volumes
+    module: redeploy.analyze.checkers.compose
+    line: 71
+    cyclomatic_complexity: 11
+    calls_out: 12
+    calls_in: 1
+  redeploy.cli.commands.gh_workflow.gh_workflow_analyze:
+    name: gh_workflow_analyze
+    module: redeploy.cli.commands.gh_workflow
+    line: 163
+    cyclomatic_complexity: 7
+    calls_out: 20
+    calls_in: 0
+  redeploy.heal.parse_failed_step:
+    name: parse_failed_step
+    module: redeploy.heal
+    line: 224
+    cyclomatic_complexity: 8
+    calls_out: 11
+    calls_in: 2
+  redeploy.apply.state_apply.apply_state:
+    name: apply_state
+    module: redeploy.apply.state_apply
+    line: 211
+    cyclomatic_complexity: 2
+    calls_out: 4
+    calls_in: 2
+  redeploy.steps.StepLibrary.list:
+    name: list
+    module: redeploy.steps
+    line: 75
+    cyclomatic_complexity: 1
+    calls_out: 2
+    calls_in: 51
+  redeploy.apply.handlers._parse_container_statuses:
+    name: _parse_container_statuses
+    module: redeploy.apply.handlers
+    line: 180
+    cyclomatic_complexity: 6
+    calls_out: 8
+    calls_in: 1
+  redeploy.blueprint.sources.compose.merge_compose_files:
+    name: merge_compose_files
+    module: redeploy.blueprint.sources.compose
+    line: 13
+    cyclomatic_complexity: 2
+    calls_out: 1
+    calls_in: 1
+  redeploy.heal.hint_provider._ssh:
+    name: _ssh
+    module: redeploy.heal.hint_provider
+    line: 73
+    cyclomatic_complexity: 3
+    calls_out: 2
+    calls_in: 1
+  redeploy.cli.commands.export._load_manifest_from_css:
+    name: _load_manifest_from_css
+    module: redeploy.cli.commands.export
+    line: 90
+    cyclomatic_complexity: 1
+    calls_out: 1
+    calls_in: 1
+  redeploy.detect.probes.probe_iptables_dnat:
+    name: probe_iptables_dnat
+    module: redeploy.detect.probes
+    line: 71
+    cyclomatic_complexity: 7
+    calls_out: 5
+    calls_in: 1
+  redeploy.plan.planner.Planner._plan_pattern:
+    name: _plan_pattern
+    module: redeploy.plan.planner
+    line: 483
+    cyclomatic_complexity: 10
+    calls_out: 17
+    calls_in: 0
+  redeploy.markpact.parser.parse_markpact_text:
+    name: parse_markpact_text
+    module: redeploy.markpact.parser
+    line: 19
+    cyclomatic_complexity: 7
+    calls_out: 8
+    calls_in: 2
+  redeploy.version.changelog.ChangelogManager._categorize_commits:
+    name: _categorize_commits
+    module: redeploy.version.changelog
+    line: 123
     cyclomatic_complexity: 3
     calls_out: 3
-    calls_in: 3
+    calls_in: 0
+  redeploy.blueprint.extractor.extract_blueprint:
+    name: extract_blueprint
+    module: redeploy.blueprint.extractor
+    line: 26
+    cyclomatic_complexity: 22
+    calls_out: 23
+    calls_in: 1
+  redeploy.cli.commands.version.scanner._version_scan_specs:
+    name: _version_scan_specs
+    module: redeploy.cli.commands.version.scanner
+    line: 12
+    cyclomatic_complexity: 1
+    calls_out: 0
+    calls_in: 1
   redeploy.cli.commands.device_map_renderers._build_header_panel:
     name: _build_header_panel
     module: redeploy.cli.commands.device_map_renderers
@@ -3015,12 +1811,194 @@ nodes:
     cyclomatic_complexity: 4
     calls_out: 3
     calls_in: 1
-  redeploy.analyze.checkers.docker_build.collect_sync_mappings:
-    name: collect_sync_mappings
-    module: redeploy.analyze.checkers.docker_build
-    line: 17
+  redeploy.detect.detector.Detector.run:
+    name: run
+    module: redeploy.detect.detector
+    line: 29
+    cyclomatic_complexity: 9
+    calls_out: 30
+    calls_in: 0
+  redeploy.plugins.builtin.hardware_diagnostic._get_storage_gb:
+    name: _get_storage_gb
+    module: redeploy.plugins.builtin.hardware_diagnostic
+    line: 113
+    cyclomatic_complexity: 6
+    calls_out: 11
+    calls_in: 1
+  redeploy.config_apply.handlers.display._validate_display_inputs:
+    name: _validate_display_inputs
+    module: redeploy.config_apply.handlers.display
+    line: 26
+    cyclomatic_complexity: 3
+    calls_out: 4
+    calls_in: 1
+  redeploy.iac.docker_compose.DockerComposeParser._parse_service_networks:
+    name: _parse_service_networks
+    module: redeploy.iac.docker_compose
+    line: 355
+    cyclomatic_complexity: 4
+    calls_out: 6
+    calls_in: 0
+  redeploy.discovery.registry._new_discovered_device:
+    name: _new_discovered_device
+    module: redeploy.discovery.registry
+    line: 49
+    cyclomatic_complexity: 3
+    calls_out: 2
+    calls_in: 1
+  redeploy.markpact.parser._normalize_section_id:
+    name: _normalize_section_id
+    module: redeploy.markpact.parser
+    line: 234
+    cyclomatic_complexity: 1
+    calls_out: 3
+    calls_in: 1
+  redeploy.cli.core.load_spec_with_manifest:
+    name: load_spec_with_manifest
+    module: redeploy.cli.core
+    line: 65
     cyclomatic_complexity: 5
-    calls_out: 10
+    calls_out: 8
+    calls_in: 1
+  redeploy.analyze.checkers.path.resolve_local_path:
+    name: resolve_local_path
+    module: redeploy.analyze.checkers.path
+    line: 12
+    cyclomatic_complexity: 3
+    calls_out: 6
+    calls_in: 3
+  redeploy.schema._git_branch:
+    name: _git_branch
+    module: redeploy.schema
+    line: 240
+    cyclomatic_complexity: 3
+    calls_out: 2
+    calls_in: 1
+  redeploy.discovery.registry._update_existing_device:
+    name: _update_existing_device
+    module: redeploy.discovery.registry
+    line: 37
+    cyclomatic_complexity: 7
+    calls_out: 1
+    calls_in: 1
+  redeploy.heal.hint_provider.ask_llm:
+    name: ask_llm
+    module: redeploy.heal.hint_provider
+    line: 92
+    cyclomatic_complexity: 12
+    calls_out: 22
+    calls_in: 0
+  redeploy.apply.state._slug:
+    name: _slug
+    module: redeploy.apply.state
+    line: 35
+    cyclomatic_complexity: 5
+    calls_out: 3
+    calls_in: 2
+  redeploy.apply.state_apply.detect_handler:
+    name: detect_handler
+    module: redeploy.apply.state_apply
+    line: 203
+    cyclomatic_complexity: 3
+    calls_out: 1
+    calls_in: 2
+  redeploy.cli.core.load_spec_or_exit:
+    name: load_spec_or_exit
+    module: redeploy.cli.core
+    line: 15
+    cyclomatic_complexity: 2
+    calls_out: 3
+    calls_in: 6
+  redeploy.analyze.checkers.compose.ComposeChecker.check:
+    name: check
+    module: redeploy.analyze.checkers.compose
+    line: 122
+    cyclomatic_complexity: 7
+    calls_out: 7
+    calls_in: 0
+  redeploy.heal.hint_provider._extract_step_block:
+    name: _extract_step_block
+    module: redeploy.heal.hint_provider
+    line: 290
+    cyclomatic_complexity: 2
+    calls_out: 4
+    calls_in: 1
+  redeploy.cli.commands.target.target:
+    name: target
+    module: redeploy.cli.commands.target
+    line: 26
+    cyclomatic_complexity: 10
+    calls_out: 31
+    calls_in: 1
+  redeploy.analyze.checkers.binary.extract_binaries:
+    name: extract_binaries
+    module: redeploy.analyze.checkers.binary
+    line: 19
+    cyclomatic_complexity: 14
+    calls_out: 8
+    calls_in: 1
+  redeploy.apply.rollback.rollback_steps:
+    name: rollback_steps
+    module: redeploy.apply.rollback
+    line: 14
+    cyclomatic_complexity: 8
+    calls_out: 8
+    calls_in: 1
+  redeploy.discovery.scanners.detect_local_subnet:
+    name: detect_local_subnet
+    module: redeploy.discovery.scanners
+    line: 173
+    cyclomatic_complexity: 9
+    calls_out: 11
+    calls_in: 1
+  redeploy.cli.commands.version.commands.version_list:
+    name: version_list
+    module: redeploy.cli.commands.version.commands
+    line: 111
+    cyclomatic_complexity: 13
+    calls_out: 38
+    calls_in: 0
+  redeploy.plugins.builtin.systemd_reload.systemd_reload:
+    name: systemd_reload
+    module: redeploy.plugins.builtin.systemd_reload
+    line: 35
+    cyclomatic_complexity: 12
+    calls_out: 23
+    calls_in: 0
+  redeploy.apply.executor.Executor.__init__:
+    name: __init__
+    module: redeploy.apply.executor
+    line: 29
+    cyclomatic_complexity: 14
+    calls_out: 8
+    calls_in: 0
+  redeploy.dsl.loader._build_from_nodes:
+    name: _build_from_nodes
+    module: redeploy.dsl.loader
+    line: 148
+    cyclomatic_complexity: 1
+    calls_out: 4
+    calls_in: 2
+  redeploy.cli.commands.version.helpers._run_version_diff_for_manifest:
+    name: _run_version_diff_for_manifest
+    module: redeploy.cli.commands.version.helpers
+    line: 201
+    cyclomatic_complexity: 7
+    calls_out: 11
+    calls_in: 2
+  redeploy.cli.commands.import_._print_plugin_templates:
+    name: _print_plugin_templates
+    module: redeploy.cli.commands.import_
+    line: 258
+    cyclomatic_complexity: 2
+    calls_out: 4
+    calls_in: 1
+  redeploy.detect.templates._load_templates_from_yaml:
+    name: _load_templates_from_yaml
+    module: redeploy.detect.templates
+    line: 227
+    cyclomatic_complexity: 9
+    calls_out: 22
     calls_in: 1
   redeploy.heal.collect_diagnostics:
     name: collect_diagnostics
@@ -3029,12 +2007,1069 @@ nodes:
     cyclomatic_complexity: 2
     calls_out: 4
     calls_in: 2
-  redeploy.cli.commands.prompt_cmd.prompt_cmd:
-    name: prompt_cmd
-    module: redeploy.cli.commands.prompt_cmd
-    line: 244
+  redeploy.cli.commands.device_map_renderers._build_drm_table:
+    name: _build_drm_table
+    module: redeploy.cli.commands.device_map_renderers
+    line: 48
+    cyclomatic_complexity: 9
+    calls_out: 8
+    calls_in: 1
+  redeploy.cli.commands.plan_apply_report._parse_rsync_output:
+    name: _parse_rsync_output
+    module: redeploy.cli.commands.plan_apply_report
+    line: 163
+    cyclomatic_complexity: 13
+    calls_out: 8
+    calls_in: 1
+  redeploy.dsl_python.runner.PythonMigrationRunner.list_migrations:
+    name: list_migrations
+    module: redeploy.dsl_python.runner
+    line: 124
+    cyclomatic_complexity: 5
+    calls_out: 13
+    calls_in: 0
+  redeploy.cli.commands.device_map_renderers._build_services_table:
+    name: _build_services_table
+    module: redeploy.cli.commands.device_map_renderers
+    line: 73
+    cyclomatic_complexity: 7
+    calls_out: 9
+    calls_in: 1
+  redeploy.cli.commands.plan_apply_report.build_checksum_verification:
+    name: build_checksum_verification
+    module: redeploy.cli.commands.plan_apply_report
+    line: 91
+    cyclomatic_complexity: 14
+    calls_out: 15
+    calls_in: 1
+  redeploy.cli.commands.bump_fix._update_migration_header:
+    name: _update_migration_header
+    module: redeploy.cli.commands.bump_fix
+    line: 113
+    cyclomatic_complexity: 2
+    calls_out: 7
+    calls_in: 2
+  redeploy.blueprint.sources.compose._parse_compose_healthcheck:
+    name: _parse_compose_healthcheck
+    module: redeploy.blueprint.sources.compose
+    line: 138
+    cyclomatic_complexity: 6
+    calls_out: 6
+    calls_in: 1
+  redeploy.plugins.builtin.browser_reload.browser_reload:
+    name: browser_reload
+    module: redeploy.plugins.builtin.browser_reload
+    line: 33
+    cyclomatic_complexity: 16
+    calls_out: 26
+    calls_in: 0
+  redeploy.detect.probes.detect_conflicts:
+    name: detect_conflicts
+    module: redeploy.detect.probes
+    line: 213
+    cyclomatic_complexity: 13
+    calls_out: 12
+    calls_in: 1
+  redeploy.hardware.fixes.fix_enable_spi:
+    name: fix_enable_spi
+    module: redeploy.hardware.fixes
+    line: 152
+    cyclomatic_complexity: 1
+    calls_out: 1
+    calls_in: 0
+  redeploy.mcp_server.exec_ssh:
+    name: exec_ssh
+    module: redeploy.mcp_server
+    line: 245
+    cyclomatic_complexity: 4
+    calls_out: 4
+    calls_in: 0
+  redeploy.cli.display._print_services_table:
+    name: _print_services_table
+    module: redeploy.cli.display
+    line: 342
+    cyclomatic_complexity: 9
+    calls_out: 14
+    calls_in: 1
+  redeploy.blueprint.sources.compose._parse_compose_ports:
+    name: _parse_compose_ports
+    module: redeploy.blueprint.sources.compose
+    line: 85
+    cyclomatic_complexity: 7
+    calls_out: 21
+    calls_in: 1
+  redeploy.cli.cli:
+    name: cli
+    module: redeploy.cli
+    line: 26
+    cyclomatic_complexity: 1
+    calls_out: 5
+    calls_in: 0
+  redeploy.version.diff.diff_manifest_vs_spec:
+    name: diff_manifest_vs_spec
+    module: redeploy.version.diff
+    line: 24
+    cyclomatic_complexity: 4
+    calls_out: 7
+    calls_in: 1
+  redeploy.cli.commands.device_map_actions.execute_query_device_map:
+    name: execute_query_device_map
+    module: redeploy.cli.commands.device_map_actions
+    line: 163
+    cyclomatic_complexity: 1
+    calls_out: 1
+    calls_in: 1
+  redeploy.apply.state.ResumeState.save:
+    name: save
+    module: redeploy.apply.state
+    line: 93
+    cyclomatic_complexity: 5
+    calls_out: 11
+    calls_in: 0
+  redeploy.analyze.checkers.docker_build.parse_docker_build:
+    name: parse_docker_build
+    module: redeploy.analyze.checkers.docker_build
+    line: 33
+    cyclomatic_complexity: 9
+    calls_out: 7
+    calls_in: 1
+  redeploy.cli.commands.bump_fix._update_quadlet_service_version:
+    name: _update_quadlet_service_version
+    module: redeploy.cli.commands.bump_fix
+    line: 135
+    cyclomatic_complexity: 6
+    calls_out: 9
+    calls_in: 1
+  redeploy.patterns._step:
+    name: _step
+    module: redeploy.patterns
+    line: 63
+    cyclomatic_complexity: 1
+    calls_out: 1
+    calls_in: 17
+  redeploy.markpact.parser.parse_markpact_file:
+    name: parse_markpact_file
+    module: redeploy.markpact.parser
+    line: 14
+    cyclomatic_complexity: 1
+    calls_out: 3
+    calls_in: 2
+  redeploy.heal.HealRunner._reload_migration:
+    name: _reload_migration
+    module: redeploy.heal
+    line: 348
+    cyclomatic_complexity: 1
+    calls_out: 4
+    calls_in: 0
+  redeploy.analyze.checkers.docker_build.DockerBuildChecker._check_remote_context:
+    name: _check_remote_context
+    module: redeploy.analyze.checkers.docker_build
+    line: 120
+    cyclomatic_complexity: 12
+    calls_out: 12
+    calls_in: 0
+  redeploy.analyze.preflight_schema.save_preflight_schema:
+    name: save_preflight_schema
+    module: redeploy.analyze.preflight_schema
+    line: 121
+    cyclomatic_complexity: 1
+    calls_out: 3
+    calls_in: 1
+  redeploy.dsl.parser.RedeployDSLParser.parse:
+    name: parse
+    module: redeploy.dsl.parser
+    line: 137
+    cyclomatic_complexity: 6
+    calls_out: 23
+    calls_in: 0
+  redeploy.cli.commands.plan_apply_shared.apply_manifest_to_spec:
+    name: apply_manifest_to_spec
+    module: redeploy.cli.commands.plan_apply_shared
+    line: 11
+    cyclomatic_complexity: 8
+    calls_out: 9
+    calls_in: 1
+  redeploy.apply.handlers._all_containers_healthy:
+    name: _all_containers_healthy
+    module: redeploy.apply.handlers
+    line: 194
+    cyclomatic_complexity: 5
+    calls_out: 2
+    calls_in: 1
+  redeploy.detect.hardware._wrap_remote_probe:
+    name: _wrap_remote_probe
+    module: redeploy.detect.hardware
+    line: 40
+    cyclomatic_complexity: 1
+    calls_out: 2
+    calls_in: 1
+  redeploy.cli.commands.state._show_checkpoint:
+    name: _show_checkpoint
+    module: redeploy.cli.commands.state
+    line: 62
+    cyclomatic_complexity: 4
+    calls_out: 11
+    calls_in: 1
+  redeploy.detect.templates.TemplateEngine.detect:
+    name: detect
+    module: redeploy.detect.templates
+    line: 408
+    cyclomatic_complexity: 2
+    calls_out: 3
+    calls_in: 0
+  redeploy.version.commits.analyze_commits:
+    name: analyze_commits
+    module: redeploy.version.commits
+    line: 78
+    cyclomatic_complexity: 18
+    calls_out: 25
+    calls_in: 1
+  examples.redeploy_iac_parsers.gitops_ci._is_gitops_command:
+    name: _is_gitops_command
+    module: examples.redeploy_iac_parsers.gitops_ci
+    line: 31
+    cyclomatic_complexity: 2
+    calls_out: 2
+    calls_in: 4
+  redeploy.cli.commands.lint.lint:
+    name: lint
+    module: redeploy.cli.commands.lint
+    line: 20
+    cyclomatic_complexity: 19
+    calls_out: 44
+    calls_in: 0
+  redeploy.discovery.registry.update_registry:
+    name: update_registry
+    module: redeploy.discovery.registry
+    line: 11
+    cyclomatic_complexity: 9
+    calls_out: 9
+    calls_in: 1
+  redeploy.version.commits.format_analysis_report:
+    name: format_analysis_report
+    module: redeploy.version.commits
+    line: 196
+    cyclomatic_complexity: 2
+    calls_out: 3
+    calls_in: 1
+  redeploy.blueprint.generators.docker_compose._build_service:
+    name: _build_service
+    module: redeploy.blueprint.generators.docker_compose
+    line: 114
+    cyclomatic_complexity: 20
+    calls_out: 8
+    calls_in: 1
+  redeploy.detect.probes.probe_runtime:
+    name: probe_runtime
+    module: redeploy.detect.probes
+    line: 19
+    cyclomatic_complexity: 5
+    calls_out: 16
+    calls_in: 1
+  redeploy.dsl.loader.manifest_to_css:
+    name: manifest_to_css
+    module: redeploy.dsl.loader
+    line: 330
+    cyclomatic_complexity: 14
+    calls_out: 17
+    calls_in: 2
+  redeploy.discovery.scanners.merge_hosts:
+    name: merge_hosts
+    module: redeploy.discovery.scanners
+    line: 195
+    cyclomatic_complexity: 11
+    calls_out: 2
+    calls_in: 1
+  redeploy.cli.commands.devices_display.render_devices_table:
+    name: render_devices_table
+    module: redeploy.cli.commands.devices_display
+    line: 30
+    cyclomatic_complexity: 7
+    calls_out: 16
+    calls_in: 1
+  redeploy.dsl.loader.load_css_text:
+    name: load_css_text
+    module: redeploy.dsl.loader
+    line: 140
+    cyclomatic_complexity: 2
+    calls_out: 4
+    calls_in: 0
+  redeploy.cli.commands.exec_.exec_cmd:
+    name: exec_cmd
+    module: redeploy.cli.commands.exec_
+    line: 22
+    cyclomatic_complexity: 9
+    calls_out: 40
+    calls_in: 0
+  redeploy.parse.parse_container_line:
+    name: parse_container_line
+    module: redeploy.parse
+    line: 34
+    cyclomatic_complexity: 3
+    calls_out: 3
+    calls_in: 1
+  redeploy.cli.commands.device_map_renderers._build_issues_table:
+    name: _build_issues_table
+    module: redeploy.cli.commands.device_map_renderers
+    line: 94
+    cyclomatic_complexity: 3
+    calls_out: 12
+    calls_in: 1
+  redeploy.cli.commands.version.scanner._classify_version_scan_source_confidence:
+    name: _classify_version_scan_source_confidence
+    module: redeploy.cli.commands.version.scanner
+    line: 130
+    cyclomatic_complexity: 3
+    calls_out: 0
+    calls_in: 1
+  redeploy.cli.commands.gh_workflow._resolve_repo_root:
+    name: _resolve_repo_root
+    module: redeploy.cli.commands.gh_workflow
+    line: 24
+    cyclomatic_complexity: 3
+    calls_out: 5
+    calls_in: 3
+  redeploy.version.manifest.VersionManifest.list_packages:
+    name: list_packages
+    module: redeploy.version.manifest
+    line: 155
+    cyclomatic_complexity: 2
+    calls_out: 2
+    calls_in: 0
+  redeploy.hardware.fixes.fix_enable_i2c:
+    name: fix_enable_i2c
+    module: redeploy.hardware.fixes
+    line: 137
+    cyclomatic_complexity: 1
+    calls_out: 1
+    calls_in: 0
+  redeploy.version.diff.diff_manifest_vs_live:
+    name: diff_manifest_vs_live
+    module: redeploy.version.diff
+    line: 64
+    cyclomatic_complexity: 2
+    calls_out: 2
+    calls_in: 1
+  redeploy.plugins.builtin.notify._notify_slack:
+    name: _notify_slack
+    module: redeploy.plugins.builtin.notify
+    line: 72
+    cyclomatic_complexity: 3
+    calls_out: 7
+    calls_in: 1
+  redeploy.apply.handlers.run_ensure_config_line:
+    name: run_ensure_config_line
+    module: redeploy.apply.handlers
+    line: 384
+    cyclomatic_complexity: 7
+    calls_out: 9
+    calls_in: 2
+  redeploy.cli.commands.hardware._probe_hardware:
+    name: _probe_hardware
+    module: redeploy.cli.commands.hardware
+    line: 39
+    cyclomatic_complexity: 4
+    calls_out: 6
+    calls_in: 1
+  redeploy.markpact.compiler._extract_steps:
+    name: _extract_steps
+    module: redeploy.markpact.compiler
+    line: 134
+    cyclomatic_complexity: 9
+    calls_out: 20
+    calls_in: 1
+  redeploy.plugins.builtin.hardware_diagnostic._get_usb_devices:
+    name: _get_usb_devices
+    module: redeploy.plugins.builtin.hardware_diagnostic
+    line: 135
+    cyclomatic_complexity: 4
+    calls_out: 5
+    calls_in: 1
+  redeploy.integrations.op3_bridge.snapshot_to_infra_state:
+    name: snapshot_to_infra_state
+    module: redeploy.integrations.op3_bridge
+    line: 103
+    cyclomatic_complexity: 3
+    calls_out: 2
+    calls_in: 2
+  redeploy.dsl.loader._condition_key:
+    name: _condition_key
+    module: redeploy.dsl.loader
+    line: 371
+    cyclomatic_complexity: 4
+    calls_out: 5
+    calls_in: 2
+  redeploy.iac.docker_compose.DockerComposeParser._parse_service_ports:
+    name: _parse_service_ports
+    module: redeploy.iac.docker_compose
+    line: 311
+    cyclomatic_complexity: 5
+    calls_out: 6
+    calls_in: 0
+  redeploy.cli.commands.version.helpers._print_verify_result:
+    name: _print_verify_result
+    module: redeploy.cli.commands.version.helpers
+    line: 102
+    cyclomatic_complexity: 6
+    calls_out: 5
+    calls_in: 2
+  redeploy.plugins.builtin.hardware_diagnostic._run_command:
+    name: _run_command
+    module: redeploy.plugins.builtin.hardware_diagnostic
+    line: 44
+    cyclomatic_complexity: 2
+    calls_out: 3
+    calls_in: 8
+  redeploy.apply.handlers.run_ensure_autostart_entry:
+    name: run_ensure_autostart_entry
+    module: redeploy.apply.handlers
+    line: 525
+    cyclomatic_complexity: 16
+    calls_out: 21
+    calls_in: 1
+  redeploy.analyze.checkers.path.PathChecker._check_field:
+    name: _check_field
+    module: redeploy.analyze.checkers.path
+    line: 39
+    cyclomatic_complexity: 9
+    calls_out: 15
+    calls_in: 0
+  redeploy.heal.hint_provider.collect_diagnostics:
+    name: collect_diagnostics
+    module: redeploy.heal.hint_provider
+    line: 82
+    cyclomatic_complexity: 2
+    calls_out: 4
+    calls_in: 0
+  redeploy.cli.commands.bump_fix._find_spec:
+    name: _find_spec
+    module: redeploy.cli.commands.bump_fix
+    line: 14
     cyclomatic_complexity: 15
-    calls_out: 37
+    calls_out: 22
+    calls_in: 2
+  redeploy.cli.commands.version.scanner._review_detected_sources_interactively:
+    name: _review_detected_sources_interactively
+    module: redeploy.cli.commands.version.scanner
+    line: 193
+    cyclomatic_complexity: 5
+    calls_out: 10
+    calls_in: 1
+  redeploy.mcp_server.diagnose:
+    name: diagnose
+    module: redeploy.mcp_server
+    line: 219
+    cyclomatic_complexity: 1
+    calls_out: 2
+    calls_in: 0
+  redeploy.apply.state.ResumeState.reset:
+    name: reset
+    module: redeploy.apply.state
+    line: 137
+    cyclomatic_complexity: 1
+    calls_out: 2
+    calls_in: 0
+  redeploy.cli.commands.gh_workflow._load_yaml:
+    name: _load_yaml
+    module: redeploy.cli.commands.gh_workflow
+    line: 40
+    cyclomatic_complexity: 4
+    calls_out: 5
+    calls_in: 1
+  redeploy.integrations.op3_bridge.snapshot_to_hardware_info:
+    name: snapshot_to_hardware_info
+    module: redeploy.integrations.op3_bridge
+    line: 126
+    cyclomatic_complexity: 10
+    calls_out: 49
+    calls_in: 2
+  redeploy.heal.ask_llm:
+    name: ask_llm
+    module: redeploy.heal
+    line: 97
+    cyclomatic_complexity: 8
+    calls_out: 8
+    calls_in: 2
+  redeploy.schema._discover_specs:
+    name: _discover_specs
+    module: redeploy.schema
+    line: 174
+    cyclomatic_complexity: 14
+    calls_out: 26
+    calls_in: 1
+  redeploy.markpact.parser._check_heading:
+    name: _check_heading
+    module: redeploy.markpact.parser
+    line: 239
+    cyclomatic_complexity: 5
+    calls_out: 5
+    calls_in: 1
+  redeploy.heal.runner.HealRunner.run:
+    name: run
+    module: redeploy.heal.runner
+    line: 209
+    cyclomatic_complexity: 10
+    calls_out: 24
+    calls_in: 0
+  redeploy.parse._apply_health_line:
+    name: _apply_health_line
+    module: redeploy.parse
+    line: 132
+    cyclomatic_complexity: 2
+    calls_out: 1
+    calls_in: 1
+  redeploy.cli.commands.version.scanner._scan_package_version_manifests:
+    name: _scan_package_version_manifests
+    module: redeploy.cli.commands.version.scanner
+    line: 231
+    cyclomatic_complexity: 11
+    calls_out: 14
+    calls_in: 2
+  redeploy.plugins.builtin.hardware_diagnostic._get_memory_mb:
+    name: _get_memory_mb
+    module: redeploy.plugins.builtin.hardware_diagnostic
+    line: 103
+    cyclomatic_complexity: 3
+    calls_out: 5
+    calls_in: 1
+  redeploy.cli.commands.export.export_cmd:
+    name: export_cmd
+    module: redeploy.cli.commands.export
+    line: 25
+    cyclomatic_complexity: 7
+    calls_out: 23
+    calls_in: 0
+  redeploy.version.bump.bump_version_with_git:
+    name: bump_version_with_git
+    module: redeploy.version.bump
+    line: 99
+    cyclomatic_complexity: 13
+    calls_out: 14
+    calls_in: 1
+  redeploy.discovery.helpers.run_shell:
+    name: run_shell
+    module: redeploy.discovery.helpers
+    line: 21
+    cyclomatic_complexity: 2
+    calls_out: 1
+    calls_in: 4
+  redeploy.models.spec.MigrationSpec.to_target_config:
+    name: to_target_config
+    module: redeploy.models.spec
+    line: 166
+    cyclomatic_complexity: 2
+    calls_out: 2
+    calls_in: 0
+  redeploy.cli.commands.bump_fix.bump_cmd:
+    name: bump_cmd
+    module: redeploy.cli.commands.bump_fix
+    line: 184
+    cyclomatic_complexity: 6
+    calls_out: 23
+    calls_in: 0
+  redeploy.mcp_server._validate_exec_ssh_inputs:
+    name: _validate_exec_ssh_inputs
+    module: redeploy.mcp_server
+    line: 98
+    cyclomatic_complexity: 5
+    calls_out: 3
+    calls_in: 1
+  redeploy.analyze.spec_analyzer.SpecAnalyzer.analyze_file:
+    name: analyze_file
+    module: redeploy.analyze.spec_analyzer
+    line: 68
+    cyclomatic_complexity: 7
+    calls_out: 10
+    calls_in: 0
+  redeploy.analyze.spec_analyzer.SpecAnalyzer.__init__:
+    name: __init__
+    module: redeploy.analyze.spec_analyzer
+    line: 48
+    cyclomatic_complexity: 3
+    calls_out: 2
+    calls_in: 0
+  redeploy.cli.commands.plan_apply_report.write_markdown_report:
+    name: write_markdown_report
+    module: redeploy.cli.commands.plan_apply_report
+    line: 279
+    cyclomatic_complexity: 2
+    calls_out: 7
+    calls_in: 2
+  redeploy.discovery.auto_probe.parse_probe_input:
+    name: parse_probe_input
+    module: redeploy.discovery.auto_probe
+    line: 18
+    cyclomatic_complexity: 4
+    calls_out: 1
+    calls_in: 1
+  redeploy.config_apply.handlers.display.apply_display_transform:
+    name: apply_display_transform
+    module: redeploy.config_apply.handlers.display
+    line: 35
+    cyclomatic_complexity: 7
+    calls_out: 25
+    calls_in: 1
+  redeploy.discovery_probe.parse_probe_output:
+    name: parse_probe_output
+    module: redeploy.discovery_probe
+    line: 4
+    cyclomatic_complexity: 16
+    calls_out: 20
+    calls_in: 1
+  redeploy.parse._apply_network_line:
+    name: _apply_network_line
+    module: redeploy.parse
+    line: 140
+    cyclomatic_complexity: 3
+    calls_out: 2
+    calls_in: 1
+  redeploy.models.manifest.ProjectManifest.find_and_load:
+    name: find_and_load
+    module: redeploy.models.manifest
+    line: 41
+    cyclomatic_complexity: 6
+    calls_out: 9
+    calls_in: 0
+  redeploy.cli.commands.state._get_state_path:
+    name: _get_state_path
+    module: redeploy.cli.commands.state
+    line: 12
+    cyclomatic_complexity: 5
+    calls_out: 5
+    calls_in: 1
+  redeploy.audit.paths.extract_port:
+    name: extract_port
+    module: redeploy.audit.paths
+    line: 9
+    cyclomatic_complexity: 5
+    calls_out: 6
+    calls_in: 2
+  redeploy.mcp_server.run_spec:
+    name: run_spec
+    module: redeploy.mcp_server
+    line: 149
+    cyclomatic_complexity: 5
+    calls_out: 5
+    calls_in: 0
+  redeploy.iac.config_hints.ConfigHintsParser._parse_k8s_yaml:
+    name: _parse_k8s_yaml
+    module: redeploy.iac.config_hints
+    line: 141
+    cyclomatic_complexity: 26
+    calls_out: 38
+    calls_in: 0
+  redeploy.cli.commands.version.monorepo._set_monorepo_version:
+    name: _set_monorepo_version
+    module: redeploy.cli.commands.version.monorepo
+    line: 16
+    cyclomatic_complexity: 8
+    calls_out: 13
+    calls_in: 1
+  redeploy.analyze.preflight_schema.generate_preflight_schema:
+    name: generate_preflight_schema
+    module: redeploy.analyze.preflight_schema
+    line: 33
+    cyclomatic_complexity: 14
+    calls_out: 25
+    calls_in: 1
+  redeploy.cli.commands.plan_apply_report._render_checksum_section:
+    name: _render_checksum_section
+    module: redeploy.cli.commands.plan_apply_report
+    line: 190
+    cyclomatic_complexity: 7
+    calls_out: 13
+    calls_in: 1
+  redeploy.cli.commands.version.monorepo._print_monorepo_set_dry_run:
+    name: _print_monorepo_set_dry_run
+    module: redeploy.cli.commands.version.monorepo
+    line: 77
+    cyclomatic_complexity: 3
+    calls_out: 5
+    calls_in: 1
+  redeploy.plugins.builtin.notify._fmt:
+    name: _fmt
+    module: redeploy.plugins.builtin.notify
+    line: 162
+    cyclomatic_complexity: 1
+    calls_out: 3
+    calls_in: 2
+  redeploy.iac.docker_compose._resolve_var:
+    name: _resolve_var
+    module: redeploy.iac.docker_compose
+    line: 37
+    cyclomatic_complexity: 1
+    calls_out: 7
+    calls_in: 3
+  redeploy.observe.DeployAuditLog.record:
+    name: record
+    module: redeploy.observe
+    line: 133
+    cyclomatic_complexity: 11
+    calls_out: 20
+    calls_in: 0
+  redeploy.iac.parsers.compose.DockerComposeParser._parse_service_networks:
+    name: _parse_service_networks
+    module: redeploy.iac.parsers.compose
+    line: 132
+    cyclomatic_complexity: 2
+    calls_out: 2
+    calls_in: 0
+  redeploy.cli.commands.version.helpers._resolve_monorepo_targets:
+    name: _resolve_monorepo_targets
+    module: redeploy.cli.commands.version.helpers
+    line: 10
+    cyclomatic_complexity: 8
+    calls_out: 11
+    calls_in: 5
+  redeploy.discovery.scanners.probe_ssh_batch:
+    name: probe_ssh_batch
+    module: redeploy.discovery.scanners
+    line: 139
+    cyclomatic_complexity: 1
+    calls_out: 6
+    calls_in: 1
+  redeploy.config_apply.applier.apply_config_file:
+    name: apply_config_file
+    module: redeploy.config_apply.applier
+    line: 38
+    cyclomatic_complexity: 4
+    calls_out: 6
+    calls_in: 3
+  redeploy.fleet.Fleet.get:
+    name: get
+    module: redeploy.fleet
+    line: 338
+    cyclomatic_complexity: 3
+    calls_out: 1
+    calls_in: 1
+  redeploy.analyze.checkers.binary.BinaryChecker.check:
+    name: check
+    module: redeploy.analyze.checkers.binary
+    line: 57
+    cyclomatic_complexity: 7
+    calls_out: 8
+    calls_in: 0
+  examples.redeploy_iac_parsers.gitops_ci.GitLabCIGitOpsParser.can_parse:
+    name: can_parse
+    module: examples.redeploy_iac_parsers.gitops_ci
+    line: 96
+    cyclomatic_complexity: 11
+    calls_out: 9
+    calls_in: 0
+  redeploy.mcp_server.list_specs:
+    name: list_specs
+    module: redeploy.mcp_server
+    line: 230
+    cyclomatic_complexity: 1
+    calls_out: 6
+    calls_in: 0
+  redeploy.cli.commands.gh_workflow._workflows_dir:
+    name: _workflows_dir
+    module: redeploy.cli.commands.gh_workflow
+    line: 33
+    cyclomatic_complexity: 2
+    calls_out: 2
+    calls_in: 3
+  redeploy.analyze.checkers.path.CommandPathChecker.check:
+    name: check
+    module: redeploy.analyze.checkers.path
+    line: 71
+    cyclomatic_complexity: 9
+    calls_out: 13
+    calls_in: 0
+  redeploy.cli.commands.plan_apply_run.run_preflight_phase:
+    name: run_preflight_phase
+    module: redeploy.cli.commands.plan_apply_run
+    line: 59
+    cyclomatic_complexity: 8
+    calls_out: 19
+    calls_in: 1
+  redeploy.iac.docker_compose.DockerComposeParser._parse_service_env:
+    name: _parse_service_env
+    module: redeploy.iac.docker_compose
+    line: 337
+    cyclomatic_complexity: 2
+    calls_out: 4
+    calls_in: 0
+  redeploy.apply.state.default_state_path:
+    name: default_state_path
+    module: redeploy.apply.state
+    line: 47
+    cyclomatic_complexity: 2
+    calls_out: 2
+    calls_in: 2
+  redeploy.version.changelog.get_commits_since_tag:
+    name: get_commits_since_tag
+    module: redeploy.version.changelog
+    line: 188
+    cyclomatic_complexity: 5
+    calls_out: 3
+    calls_in: 1
+  redeploy.heal.loop_detector.HealLoopDetector.observe:
+    name: observe
+    module: redeploy.heal.loop_detector
+    line: 36
+    cyclomatic_complexity: 5
+    calls_out: 4
+    calls_in: 0
+  redeploy.schema.build_schema:
+    name: build_schema
+    module: redeploy.schema
+    line: 288
+    cyclomatic_complexity: 2
+    calls_out: 7
+    calls_in: 4
+  redeploy.cli.commands.version.helpers._resolve_package_release_git_config:
+    name: _resolve_package_release_git_config
+    module: redeploy.cli.commands.version.helpers
+    line: 60
+    cyclomatic_complexity: 5
+    calls_out: 5
+    calls_in: 3
+  redeploy.version.bump.bump_version:
+    name: bump_version
+    module: redeploy.version.bump
+    line: 15
+    cyclomatic_complexity: 6
+    calls_out: 9
+    calls_in: 0
+  redeploy.cli.core.run_detect_workflow:
+    name: run_detect_workflow
+    module: redeploy.cli.core
+    line: 138
+    cyclomatic_complexity: 4
+    calls_out: 8
+    calls_in: 1
+  redeploy.analyze.checkers.docker_build.collect_sync_mappings:
+    name: collect_sync_mappings
+    module: redeploy.analyze.checkers.docker_build
+    line: 17
+    cyclomatic_complexity: 5
+    calls_out: 10
+    calls_in: 1
+  redeploy.cli.commands.version.scanner._detect_version_sources_in_dir:
+    name: _detect_version_sources_in_dir
+    module: redeploy.cli.commands.version.scanner
+    line: 49
+    cyclomatic_complexity: 13
+    calls_out: 17
+    calls_in: 4
+  redeploy.apply.handlers.run_raspi_config:
+    name: run_raspi_config
+    module: redeploy.apply.handlers
+    line: 422
+    cyclomatic_complexity: 5
+    calls_out: 6
+    calls_in: 2
+  redeploy.dsl_python.steps.version_check:
+    name: version_check
+    module: redeploy.dsl_python.steps
+    line: 247
+    cyclomatic_complexity: 7
+    calls_out: 10
+    calls_in: 0
+  redeploy.analyze.checkers.compose._is_ignored:
+    name: _is_ignored
+    module: redeploy.analyze.checkers.compose
+    line: 13
+    cyclomatic_complexity: 2
+    calls_out: 4
+    calls_in: 4
+  redeploy.version.read_remote_version:
+    name: read_remote_version
+    module: redeploy.version
+    line: 49
+    cyclomatic_complexity: 4
+    calls_out: 3
+    calls_in: 1
+  redeploy.cli.commands.version.scanner._summarize_version_scan_group:
+    name: _summarize_version_scan_group
+    module: redeploy.cli.commands.version.scanner
+    line: 152
+    cyclomatic_complexity: 6
+    calls_out: 7
+    calls_in: 2
+  redeploy.schema._iac_info:
+    name: _iac_info
+    module: redeploy.schema
+    line: 253
+    cyclomatic_complexity: 2
+    calls_out: 0
+    calls_in: 1
+  redeploy.cli.commands.plugin.plugin_cmd:
+    name: plugin_cmd
+    module: redeploy.cli.commands.plugin
+    line: 17
+    cyclomatic_complexity: 13
+    calls_out: 38
+    calls_in: 0
+  redeploy.cli.display.print_inspect_workflows:
+    name: print_inspect_workflows
+    module: redeploy.cli.display
+    line: 169
+    cyclomatic_complexity: 4
+    calls_out: 6
+    calls_in: 1
+  redeploy.dsl.loader._build_templates:
+    name: _build_templates
+    module: redeploy.dsl.loader
+    line: 223
+    cyclomatic_complexity: 14
+    calls_out: 24
+    calls_in: 1
+  redeploy.cli.display._get_plugin_hint:
+    name: _get_plugin_hint
+    module: redeploy.cli.display
+    line: 137
+    cyclomatic_complexity: 5
+    calls_out: 1
+    calls_in: 1
+  redeploy.plugins.builtin.process_control.process_control:
+    name: process_control
+    module: redeploy.plugins.builtin.process_control
+    line: 76
+    cyclomatic_complexity: 9
+    calls_out: 19
+    calls_in: 0
+  redeploy.plugins.builtin.hardware_diagnostic._get_cpu_info:
+    name: _get_cpu_info
+    module: redeploy.plugins.builtin.hardware_diagnostic
+    line: 86
+    cyclomatic_complexity: 5
+    calls_out: 10
+    calls_in: 1
+  redeploy.analyze.checkers.compose._check_build_section:
+    name: _check_build_section
+    module: redeploy.analyze.checkers.compose
+    line: 21
+    cyclomatic_complexity: 7
+    calls_out: 12
+    calls_in: 1
+  redeploy.cli._setup_logging:
+    name: _setup_logging
+    module: redeploy.cli
+    line: 12
+    cyclomatic_complexity: 2
+    calls_out: 2
+    calls_in: 1
+  redeploy.discovery.scanners.ping_sweep:
+    name: ping_sweep
+    module: redeploy.discovery.scanners
+    line: 106
+    cyclomatic_complexity: 6
+    calls_out: 20
+    calls_in: 1
+  redeploy.cli.commands.probe_display.collect_probe_hosts:
+    name: collect_probe_hosts
+    module: redeploy.cli.commands.probe_display
+    line: 13
+    cyclomatic_complexity: 6
+    calls_out: 8
+    calls_in: 1
+  redeploy.fleet.Fleet.merge:
+    name: merge
+    module: redeploy.fleet
+    line: 376
+    cyclomatic_complexity: 3
+    calls_out: 3
+    calls_in: 0
+  redeploy.cli.commands.version.scanner._print_version_scan_review:
+    name: _print_version_scan_review
+    module: redeploy.cli.commands.version.scanner
+    line: 115
+    cyclomatic_complexity: 6
+    calls_out: 5
+    calls_in: 2
+  redeploy.detect.hardware.probe_hardware:
+    name: probe_hardware
+    module: redeploy.detect.hardware
+    line: 53
+    cyclomatic_complexity: 4
+    calls_out: 10
+    calls_in: 0
+  redeploy.cli.commands.state.state_cmd:
+    name: state_cmd
+    module: redeploy.cli.commands.state
+    line: 90
+    cyclomatic_complexity: 4
+    calls_out: 16
+    calls_in: 0
+  redeploy.cli.display.generate_workflow_output_yaml:
+    name: generate_workflow_output_yaml
+    module: redeploy.cli.display
+    line: 325
+    cyclomatic_complexity: 2
+    calls_out: 6
+    calls_in: 1
+  redeploy.patterns.CanaryPattern.expand:
+    name: expand
+    module: redeploy.patterns
+    line: 229
+    cyclomatic_complexity: 5
+    calls_out: 13
+    calls_in: 0
+  redeploy.hardware.kiosk.autostart.ensure_autostart_entry:
+    name: ensure_autostart_entry
+    module: redeploy.hardware.kiosk.autostart
+    line: 37
+    cyclomatic_complexity: 6
+    calls_out: 6
+    calls_in: 1
+  redeploy.analyze.ignore.ensure_redeployignore:
+    name: ensure_redeployignore
+    module: redeploy.analyze.ignore
+    line: 40
+    cyclomatic_complexity: 2
+    calls_out: 2
+    calls_in: 2
+  redeploy.cli.commands.version.scanner._is_scannable_version_path:
+    name: _is_scannable_version_path
+    module: redeploy.cli.commands.version.scanner
+    line: 34
+    cyclomatic_complexity: 2
+    calls_out: 1
+    calls_in: 3
+  redeploy.detect.hardware_rules._hw_info_to_dict:
+    name: _hw_info_to_dict
+    module: redeploy.detect.hardware_rules
+    line: 21
+    cyclomatic_complexity: 2
+    calls_out: 2
+    calls_in: 1
+  redeploy.apply.handlers.run_podman_build:
+    name: run_podman_build
+    module: redeploy.apply.handlers
+    line: 129
+    cyclomatic_complexity: 1
+    calls_out: 1
+    calls_in: 1
+  redeploy.cli.commands.gh_workflow._find_repo_root:
+    name: _find_repo_root
+    module: redeploy.cli.commands.gh_workflow
+    line: 16
+    cyclomatic_complexity: 4
+    calls_out: 3
+    calls_in: 1
+  redeploy.cli.commands.exec_._extract_script_for_ref:
+    name: _extract_script_for_ref
+    module: redeploy.cli.commands.exec_
+    line: 199
+    cyclomatic_complexity: 2
+    calls_out: 1
+    calls_in: 2
+  redeploy.analyze.models.AnalysisResult.add:
+    name: add
+    module: redeploy.analyze.models
+    line: 29
+    cyclomatic_complexity: 2
+    calls_out: 2
+    calls_in: 2
+  redeploy.heal.HealRunner._collect_diag_with_hint:
+    name: _collect_diag_with_hint
+    module: redeploy.heal
+    line: 363
+    cyclomatic_complexity: 2
+    calls_out: 2
     calls_in: 0
 edges:
 - caller: redeploy.schema.build_schema
@@ -3191,10 +3226,10 @@ edges:
   callee: redeploy.steps.StepLibrary.list
   call_type: resolved
 - caller: redeploy.detect.workflow.DetectionWorkflow._collect_hosts
-  callee: redeploy.discovery.discover
+  callee: redeploy.discovery.scanners.discover
   call_type: resolved
 - caller: redeploy.detect.workflow.DetectionWorkflow._probe_ssh
-  callee: redeploy.discovery.auto_probe
+  callee: redeploy.discovery.auto_probe.auto_probe
   call_type: resolved
 - caller: redeploy.detect.probes.detect_conflicts
   callee: redeploy.steps.StepLibrary.list
@@ -3225,6 +3260,12 @@ edges:
   call_type: resolved
 - caller: redeploy.heal.runner.HealRunner.run
   callee: redeploy.heal.write_repair_log
+  call_type: resolved
+- caller: redeploy.discovery.registry.update_registry
+  callee: redeploy.discovery.registry._update_existing_device
+  call_type: resolved
+- caller: redeploy.discovery.registry.update_registry
+  callee: redeploy.discovery.registry._new_discovered_device
   call_type: resolved
 - caller: redeploy.analyze.spec_analyzer.SpecAnalyzer.__init__
   callee: redeploy.steps.StepLibrary.list
@@ -3380,7 +3421,7 @@ edges:
   callee: redeploy.cli._setup_logging
   call_type: resolved
 - caller: redeploy.cli._resolve_device
-  callee: redeploy.discovery.auto_probe
+  callee: redeploy.discovery.auto_probe.auto_probe
   call_type: resolved
 - caller: redeploy.cli.core.load_spec_or_exit
   callee: redeploy.spec_loader.load_migration_spec
@@ -3389,7 +3430,7 @@ edges:
   callee: redeploy.steps.StepLibrary.list
   call_type: resolved
 - caller: redeploy.cli.core.resolve_device
-  callee: redeploy.discovery.auto_probe
+  callee: redeploy.discovery.auto_probe.auto_probe
   call_type: resolved
 - caller: redeploy.cli.core.load_spec_with_manifest
   callee: redeploy.cli.core.load_spec_or_exit
@@ -3405,6 +3446,33 @@ edges:
   call_type: resolved
 - caller: redeploy.cli.core.run_detect_workflow
   callee: redeploy.cli.display.generate_workflow_output_yaml
+  call_type: resolved
+- caller: redeploy.cli.commands.plan_apply_report.build_checksum_verification
+  callee: redeploy.cli.commands.plan_apply_report._run_rsync_checksum
+  call_type: resolved
+- caller: redeploy.cli.commands.plan_apply_report.build_checksum_verification
+  callee: redeploy.cli.commands.plan_apply_report._skipped_checksum
+  call_type: resolved
+- caller: redeploy.cli.commands.plan_apply_report._run_rsync_checksum
+  callee: redeploy.cli.commands.plan_apply_report._parse_rsync_output
+  call_type: resolved
+- caller: redeploy.cli.commands.plan_apply_report.render_markdown_report
+  callee: redeploy.cli.commands.plan_apply_report._render_checksum_section
+  call_type: resolved
+- caller: redeploy.cli.commands.plan_apply_report.render_markdown_report
+  callee: redeploy.cli.commands.plan_apply_report.step_command_block
+  call_type: resolved
+- caller: redeploy.cli.commands.plan_apply_report.write_markdown_report
+  callee: redeploy.cli.commands.plan_apply_report.resolve_audit_entry
+  call_type: resolved
+- caller: redeploy.cli.commands.plan_apply_report.write_markdown_report
+  callee: redeploy.cli.commands.plan_apply_report.build_checksum_verification
+  call_type: resolved
+- caller: redeploy.cli.commands.plan_apply_report.write_markdown_report
+  callee: redeploy.cli.commands.plan_apply_report.default_report_path
+  call_type: resolved
+- caller: redeploy.cli.commands.plan_apply_report.write_markdown_report
+  callee: redeploy.cli.commands.plan_apply_report.render_markdown_report
   call_type: resolved
 - caller: redeploy.cli.commands.target.target
   callee: redeploy.cli.core.resolve_device
@@ -3565,18 +3633,6 @@ edges:
 - caller: redeploy.cli.commands.gh_workflow.gh_workflow_run
   callee: redeploy.cli.commands.gh_workflow._workflows_dir
   call_type: resolved
-- caller: redeploy.cli.commands.device_map._execute_query_device_map
-  callee: redeploy.cli.query.execute_query
-  call_type: resolved
-- caller: redeploy.cli.commands.device_map._render
-  callee: redeploy.cli.commands.device_map_renderers.render_yaml
-  call_type: resolved
-- caller: redeploy.cli.commands.device_map._render
-  callee: redeploy.cli.commands.device_map_renderers.render_json
-  call_type: resolved
-- caller: redeploy.cli.commands.device_map._render
-  callee: redeploy.cli.commands.device_map_renderers.render_rich
-  call_type: resolved
 - caller: redeploy.cli.commands.hardware._probe_hardware
   callee: redeploy.detect.detector.Detector.probe_hardware
   call_type: resolved
@@ -3600,6 +3656,12 @@ edges:
   call_type: resolved
 - caller: redeploy.cli.commands.prompt_cmd.prompt_cmd
   callee: redeploy.schema.build_schema
+  call_type: resolved
+- caller: redeploy.cli.commands.plan_apply_run.run_preflight_phase
+  callee: redeploy.analyze.preflight_schema.generate_preflight_schema
+  call_type: resolved
+- caller: redeploy.cli.commands.plan_apply_run.run_preflight_phase
+  callee: redeploy.analyze.preflight_schema.save_preflight_schema
   call_type: resolved
 - caller: redeploy.cli.commands.workflow.workflow_cmd
   callee: redeploy.dsl.loader.load_css
@@ -4138,104 +4200,95 @@ edges:
 - caller: examples.redeploy_iac_parsers.gitops_ci.GitLabCIGitOpsParser.can_parse
   callee: examples.redeploy_iac_parsers.gitops_ci._is_gitops_command
   call_type: resolved
-- caller: redeploy.discovery._scan_arp_cache
-  callee: redeploy.discovery._run
+- caller: redeploy.discovery.ssh_credentials.try_ssh_credentials
+  callee: redeploy.discovery.ssh_credentials.tcp_reachable
   call_type: resolved
-- caller: redeploy.discovery._scan_mdns
-  callee: redeploy.discovery._run
+- caller: redeploy.discovery.auto_probe.detect_strategy_remote
+  callee: redeploy.discovery.auto_probe.build_ssh_command
   call_type: resolved
-- caller: redeploy.discovery._scan_mdns
-  callee: redeploy.discovery._is_ip
+- caller: redeploy.discovery.auto_probe.detect_strategy_remote
+  callee: redeploy.discovery.auto_probe.run_ssh_probe
   call_type: resolved
-- caller: redeploy.discovery._ping_sweep
+- caller: redeploy.discovery.auto_probe.detect_strategy_remote
+  callee: redeploy.discovery_probe.parse_probe_output
+  call_type: resolved
+- caller: redeploy.discovery.auto_probe.detect_strategy_remote
+  callee: redeploy.discovery_probe.infer_strategy
+  call_type: resolved
+- caller: redeploy.discovery.auto_probe.detect_strategy_remote
+  callee: redeploy.discovery.auto_probe.build_probe_command
+  call_type: resolved
+- caller: redeploy.discovery.auto_probe.auto_probe
+  callee: redeploy.discovery.auto_probe.parse_probe_input
+  call_type: resolved
+- caller: redeploy.discovery.auto_probe.auto_probe
+  callee: redeploy.discovery.ssh_credentials.collect_ssh_keys
+  call_type: resolved
+- caller: redeploy.discovery.auto_probe.auto_probe
+  callee: redeploy.discovery.ssh_credentials.try_ssh_credentials
+  call_type: resolved
+- caller: redeploy.discovery.auto_probe.auto_probe
+  callee: redeploy.discovery.auto_probe.detect_strategy_remote
+  call_type: resolved
+- caller: redeploy.discovery.scanners.scan_arp_cache
+  callee: redeploy.discovery.helpers.run_shell
+  call_type: resolved
+- caller: redeploy.discovery.scanners.scan_mdns
+  callee: redeploy.discovery.helpers.run_shell
+  call_type: resolved
+- caller: redeploy.discovery.scanners.scan_mdns
+  callee: redeploy.discovery.helpers.is_ip
+  call_type: resolved
+- caller: redeploy.discovery.scanners.ping_sweep
   callee: redeploy.steps.StepLibrary.list
   call_type: resolved
-- caller: redeploy.discovery._probe_ssh
+- caller: redeploy.discovery.scanners.probe_ssh_batch
   callee: redeploy.steps.StepLibrary.list
   call_type: resolved
-- caller: redeploy.discovery._detect_local_subnet
-  callee: redeploy.discovery._run
+- caller: redeploy.discovery.scanners.detect_local_subnet
+  callee: redeploy.discovery.helpers.run_shell
   call_type: resolved
-- caller: redeploy.discovery._merge
+- caller: redeploy.discovery.scanners.merge_hosts
   callee: redeploy.steps.StepLibrary.list
   call_type: resolved
-- caller: redeploy.discovery.discover
-  callee: redeploy.discovery._merge
+- caller: redeploy.discovery.scanners.discover
+  callee: redeploy.discovery.scanners.merge_hosts
   call_type: resolved
-- caller: redeploy.discovery.discover
-  callee: redeploy.discovery._scan_known_hosts
+- caller: redeploy.discovery.scanners.discover
+  callee: redeploy.discovery.scanners.scan_known_hosts
   call_type: resolved
-- caller: redeploy.discovery.discover
-  callee: redeploy.discovery._scan_arp_cache
+- caller: redeploy.discovery.scanners.discover
+  callee: redeploy.discovery.scanners.scan_arp_cache
   call_type: resolved
-- caller: redeploy.discovery.discover
-  callee: redeploy.discovery._probe_ssh
+- caller: redeploy.discovery.scanners.discover
+  callee: redeploy.discovery.scanners.probe_ssh_batch
   call_type: resolved
-- caller: redeploy.discovery._try_ssh_credentials
-  callee: redeploy.discovery._tcp_reachable
+- caller: redeploy.cli.commands.devices.devices
+  callee: redeploy.cli.commands.devices_display.filter_devices
   call_type: resolved
-- caller: redeploy.discovery._detect_strategy_remote
-  callee: redeploy.discovery._build_probe_command
+- caller: redeploy.cli.commands.devices.devices
+  callee: redeploy.cli.commands.devices_display.render_devices_table
   call_type: resolved
-- caller: redeploy.discovery._detect_strategy_remote
-  callee: redeploy.discovery._build_ssh_command
-  call_type: resolved
-- caller: redeploy.discovery._detect_strategy_remote
-  callee: redeploy.discovery._run_ssh_probe
-  call_type: resolved
-- caller: redeploy.discovery.auto_probe
-  callee: redeploy.discovery._parse_probe_input
-  call_type: resolved
-- caller: redeploy.discovery.auto_probe
-  callee: redeploy.discovery._collect_ssh_keys
-  call_type: resolved
-- caller: redeploy.discovery.auto_probe
-  callee: redeploy.discovery._try_ssh_credentials
-  call_type: resolved
-- caller: redeploy.discovery.auto_probe
-  callee: redeploy.discovery._detect_strategy_remote
-  call_type: resolved
-- caller: redeploy.discovery_registry.update_registry
-  callee: redeploy.discovery_registry._update_existing_device
-  call_type: resolved
-- caller: redeploy.discovery_registry.update_registry
-  callee: redeploy.discovery_registry._new_discovered_device
-  call_type: resolved
-- caller: redeploy.cli.commands.plan_apply_report.build_checksum_verification
-  callee: redeploy.cli.commands.plan_apply_report._run_rsync_checksum
-  call_type: resolved
-- caller: redeploy.cli.commands.plan_apply_report.build_checksum_verification
-  callee: redeploy.cli.commands.plan_apply_report._skipped_checksum
-  call_type: resolved
-- caller: redeploy.cli.commands.plan_apply_report._run_rsync_checksum
-  callee: redeploy.cli.commands.plan_apply_report._parse_rsync_output
-  call_type: resolved
-- caller: redeploy.cli.commands.plan_apply_report.render_markdown_report
-  callee: redeploy.cli.commands.plan_apply_report._render_checksum_section
-  call_type: resolved
-- caller: redeploy.cli.commands.plan_apply_report.render_markdown_report
-  callee: redeploy.cli.commands.plan_apply_report.step_command_block
-  call_type: resolved
-- caller: redeploy.cli.commands.plan_apply_report.write_markdown_report
-  callee: redeploy.cli.commands.plan_apply_report.resolve_audit_entry
-  call_type: resolved
-- caller: redeploy.cli.commands.plan_apply_report.write_markdown_report
-  callee: redeploy.cli.commands.plan_apply_report.build_checksum_verification
-  call_type: resolved
-- caller: redeploy.cli.commands.plan_apply_report.write_markdown_report
-  callee: redeploy.cli.commands.plan_apply_report.default_report_path
-  call_type: resolved
-- caller: redeploy.cli.commands.plan_apply_report.write_markdown_report
-  callee: redeploy.cli.commands.plan_apply_report.render_markdown_report
-  call_type: resolved
-- caller: redeploy.cli.commands.plan_apply._apply_manifest_to_spec
+- caller: redeploy.cli.commands.plan_apply_shared.apply_manifest_to_spec
   callee: redeploy.cli.core.find_manifest_path
   call_type: resolved
-- caller: redeploy.cli.commands.plan_apply_run.run_preflight_phase
-  callee: redeploy.analyze.preflight_schema.generate_preflight_schema
+- caller: redeploy.cli.commands.plan_apply_shared.load_spec_for_run
+  callee: redeploy.cli.core.load_spec_or_exit
   call_type: resolved
-- caller: redeploy.cli.commands.plan_apply_run.run_preflight_phase
-  callee: redeploy.analyze.preflight_schema.save_preflight_schema
+- caller: redeploy.cli.commands.probe_display.collect_probe_hosts
+  callee: redeploy.steps.StepLibrary.list
+  call_type: resolved
+- caller: redeploy.cli.commands.probe_display.collect_probe_hosts
+  callee: redeploy.discovery.scanners.discover
+  call_type: resolved
+- caller: redeploy.cli.commands.device_map_actions.probe_device_map
+  callee: redeploy.detect.detector.Detector.probe_hardware
+  call_type: resolved
+- caller: redeploy.cli.commands.device_map_actions.probe_device_map
+  callee: redeploy.steps.StepLibrary.list
+  call_type: resolved
+- caller: redeploy.cli.commands.device_map_actions.execute_query_device_map
+  callee: redeploy.cli.query.execute_query
   call_type: resolved
 modules:
   examples.redeploy_iac_parsers.gitops_ci:
@@ -4358,17 +4411,20 @@ modules:
   - redeploy.cli.commands.bump_fix._update_migration_header
   - redeploy.cli.commands.bump_fix._update_quadlet_service_version
   - redeploy.cli.commands.bump_fix.bump_cmd
-  redeploy.cli.commands.device_map:
-  - redeploy.cli.commands.device_map._execute_query_device_map
-  - redeploy.cli.commands.device_map._render
+  redeploy.cli.commands.device_map_actions:
+  - redeploy.cli.commands.device_map_actions.execute_query_device_map
+  - redeploy.cli.commands.device_map_actions.probe_device_map
   redeploy.cli.commands.device_map_renderers:
   - redeploy.cli.commands.device_map_renderers._build_drm_table
   - redeploy.cli.commands.device_map_renderers._build_header_panel
   - redeploy.cli.commands.device_map_renderers._build_issues_table
   - redeploy.cli.commands.device_map_renderers._build_services_table
-  - redeploy.cli.commands.device_map_renderers.render_json
   - redeploy.cli.commands.device_map_renderers.render_rich
-  - redeploy.cli.commands.device_map_renderers.render_yaml
+  redeploy.cli.commands.devices:
+  - redeploy.cli.commands.devices.devices
+  redeploy.cli.commands.devices_display:
+  - redeploy.cli.commands.devices_display.filter_devices
+  - redeploy.cli.commands.devices_display.render_devices_table
   redeploy.cli.commands.diagnose:
   - redeploy.cli.commands.diagnose.diagnose
   redeploy.cli.commands.exec_:
@@ -4410,8 +4466,6 @@ modules:
   - redeploy.cli.commands.lint.lint
   redeploy.cli.commands.mcp_cmd:
   - redeploy.cli.commands.mcp_cmd.mcp_cmd
-  redeploy.cli.commands.plan_apply:
-  - redeploy.cli.commands.plan_apply._apply_manifest_to_spec
   redeploy.cli.commands.plan_apply_report:
   - redeploy.cli.commands.plan_apply_report._parse_rsync_output
   - redeploy.cli.commands.plan_apply_report._render_checksum_section
@@ -4425,8 +4479,13 @@ modules:
   - redeploy.cli.commands.plan_apply_report.write_markdown_report
   redeploy.cli.commands.plan_apply_run:
   - redeploy.cli.commands.plan_apply_run.run_preflight_phase
+  redeploy.cli.commands.plan_apply_shared:
+  - redeploy.cli.commands.plan_apply_shared.apply_manifest_to_spec
+  - redeploy.cli.commands.plan_apply_shared.load_spec_for_run
   redeploy.cli.commands.plugin:
   - redeploy.cli.commands.plugin.plugin_cmd
+  redeploy.cli.commands.probe_display:
+  - redeploy.cli.commands.probe_display.collect_probe_hosts
   redeploy.cli.commands.prompt_cmd:
   - redeploy.cli.commands.prompt_cmd.prompt_cmd
   redeploy.cli.commands.state:
@@ -4542,30 +4601,36 @@ modules:
   redeploy.detect.workflow:
   - redeploy.detect.workflow.DetectionWorkflow._collect_hosts
   - redeploy.detect.workflow.DetectionWorkflow._probe_ssh
-  redeploy.discovery:
-  - redeploy.discovery._build_probe_command
-  - redeploy.discovery._build_ssh_command
-  - redeploy.discovery._collect_ssh_keys
-  - redeploy.discovery._detect_local_subnet
-  - redeploy.discovery._detect_strategy_remote
-  - redeploy.discovery._is_ip
-  - redeploy.discovery._merge
-  - redeploy.discovery._parse_probe_input
-  - redeploy.discovery._ping_sweep
-  - redeploy.discovery._probe_ssh
-  - redeploy.discovery._run
-  - redeploy.discovery._run_ssh_probe
-  - redeploy.discovery._scan_arp_cache
-  - redeploy.discovery._scan_known_hosts
-  - redeploy.discovery._scan_mdns
-  - redeploy.discovery._tcp_reachable
-  - redeploy.discovery._try_ssh_credentials
-  - redeploy.discovery.auto_probe
-  - redeploy.discovery.discover
-  redeploy.discovery_registry:
-  - redeploy.discovery_registry._new_discovered_device
-  - redeploy.discovery_registry._update_existing_device
-  - redeploy.discovery_registry.update_registry
+  redeploy.discovery.auto_probe:
+  - redeploy.discovery.auto_probe.auto_probe
+  - redeploy.discovery.auto_probe.build_probe_command
+  - redeploy.discovery.auto_probe.build_ssh_command
+  - redeploy.discovery.auto_probe.detect_strategy_remote
+  - redeploy.discovery.auto_probe.parse_probe_input
+  - redeploy.discovery.auto_probe.run_ssh_probe
+  redeploy.discovery.helpers:
+  - redeploy.discovery.helpers.is_ip
+  - redeploy.discovery.helpers.run_shell
+  redeploy.discovery.registry:
+  - redeploy.discovery.registry._new_discovered_device
+  - redeploy.discovery.registry._update_existing_device
+  - redeploy.discovery.registry.update_registry
+  redeploy.discovery.scanners:
+  - redeploy.discovery.scanners.detect_local_subnet
+  - redeploy.discovery.scanners.discover
+  - redeploy.discovery.scanners.merge_hosts
+  - redeploy.discovery.scanners.ping_sweep
+  - redeploy.discovery.scanners.probe_ssh_batch
+  - redeploy.discovery.scanners.scan_arp_cache
+  - redeploy.discovery.scanners.scan_known_hosts
+  - redeploy.discovery.scanners.scan_mdns
+  redeploy.discovery.ssh_credentials:
+  - redeploy.discovery.ssh_credentials.collect_ssh_keys
+  - redeploy.discovery.ssh_credentials.tcp_reachable
+  - redeploy.discovery.ssh_credentials.try_ssh_credentials
+  redeploy.discovery_probe:
+  - redeploy.discovery_probe.infer_strategy
+  - redeploy.discovery_probe.parse_probe_output
   redeploy.dsl.loader:
   - redeploy.dsl.loader._build_from_nodes
   - redeploy.dsl.loader._build_manifest
@@ -4895,6 +4960,7 @@ entry_points:
 - redeploy.audit.probe.Probe.port_listening
 - redeploy.cli._resolve_device
 - redeploy.cli.cli
+- redeploy.cli.commands.apply_cmd.apply
 - redeploy.cli.commands.audit.audit
 - redeploy.cli.commands.blueprint._print_blueprint
 - redeploy.cli.commands.blueprint.blueprint_cmd
@@ -4907,8 +4973,10 @@ entry_points:
 - redeploy.cli.commands.bump_fix.bump_cmd
 - redeploy.cli.commands.bump_fix.fix_cmd
 - redeploy.cli.commands.detect.detect
-- redeploy.cli.commands.device_map._render
 - redeploy.cli.commands.device_map.device_map_cmd
+- redeploy.cli.commands.device_map_renderers.render_json
+- redeploy.cli.commands.device_map_renderers.render_rich
+- redeploy.cli.commands.device_map_renderers.render_yaml
 - redeploy.cli.commands.devices.device_add
 - redeploy.cli.commands.devices.device_rm
 - redeploy.cli.commands.devices.devices
@@ -4929,15 +4997,15 @@ entry_points:
 - redeploy.cli.commands.inspect.inspect
 - redeploy.cli.commands.lint.lint
 - redeploy.cli.commands.mcp_cmd.mcp_cmd
+- redeploy.cli.commands.migrate_cmd.migrate
 - redeploy.cli.commands.patterns.patterns
-- redeploy.cli.commands.plan_apply.apply
-- redeploy.cli.commands.plan_apply.migrate
-- redeploy.cli.commands.plan_apply.plan
-- redeploy.cli.commands.plan_apply.run
+- redeploy.cli.commands.plan_apply_shared.ensure_redeployignore
+- redeploy.cli.commands.plan_cmd.plan
 - redeploy.cli.commands.plugin.plugin_cmd
 - redeploy.cli.commands.probe.probe
 - redeploy.cli.commands.prompt_cmd.prompt_cmd
 - redeploy.cli.commands.push.push
+- redeploy.cli.commands.run_cmd.run
 - redeploy.cli.commands.state.state_cmd
 - redeploy.cli.commands.status.status
 - redeploy.cli.commands.version.commands.version_bump
@@ -4982,11 +5050,6 @@ entry_points:
 - redeploy.detect.workflow.WorkflowResult.generated_migration_yaml
 - redeploy.detect.workflow.WorkflowResult.generated_redeploy_yaml
 - redeploy.detect.workflow.WorkflowResult.summary
-- redeploy.discovery.helpers.is_ip
-- redeploy.discovery.helpers.is_raspberry_pi_mac
-- redeploy.discovery.helpers.run_shell
-- redeploy.discovery_probe.infer_strategy
-- redeploy.discovery_probe.parse_probe_output
 - redeploy.dsl.loader.WorkflowDef.as_shell
 - redeploy.dsl.loader.WorkflowStep.from_command
 - redeploy.dsl.loader.load_css_text

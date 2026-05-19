@@ -1,6 +1,6 @@
 # code2llm call graph | /home/tom/github/maskservice/redeploy
-# generated in 0.19s
-# nodes: 433 | edges: 400 | modules: 111
+# generated in 0.22s
+# nodes: 438 | edges: 406 | modules: 118
 # CC̄=5.0
 
 HUBS[20]:
@@ -18,16 +18,16 @@ HUBS[20]:
     CC=9  in:0  out:40  total:40
   redeploy.cli.commands.version.helpers._bump_single
     CC=25  in:4  out:35  total:39
+  redeploy.cli.commands.version.commands.version_list
+    CC=13  in:0  out:38  total:38
   redeploy.iac.config_hints.ConfigHintsParser._parse_k8s_yaml
     CC=26  in:0  out:38  total:38
   redeploy.cli.commands.plugin.plugin_cmd
     CC=13  in:0  out:38  total:38
-  redeploy.cli.commands.version.commands.version_list
-    CC=13  in:0  out:38  total:38
-  redeploy.discovery.auto_probe
-    CC=7  in:4  out:33  total:37
   redeploy.cli.commands.prompt_cmd.prompt_cmd
     CC=15  in:0  out:37  total:37
+  redeploy.discovery.auto_probe.auto_probe
+    CC=7  in:4  out:33  total:37
   redeploy.blueprint.sources.compose._merge_compose
     CC=21  in:1  out:33  total:34
   redeploy.plugins.builtin.hardware_diagnostic._analyze_hardware
@@ -40,10 +40,10 @@ HUBS[20]:
     CC=9  in:0  out:30  total:30
   examples.redeploy_iac_parsers.helm_kustomize.HelmTemplatesParser.parse
     CC=17  in:0  out:27  total:27
-  redeploy.apply.state_apply.HardwareStateHandler.apply
-    CC=18  in:0  out:27  total:27
   redeploy.apply.executor.Executor._execute_step
     CC=4  in:0  out:27  total:27
+  redeploy.apply.state_apply.HardwareStateHandler.apply
+    CC=18  in:0  out:27  total:27
 
 MODULES:
   examples.redeploy_iac_parsers.gitops_ci  [2 funcs]
@@ -161,17 +161,20 @@ MODULES:
     _update_migration_header  CC=2  out:7
     _update_quadlet_service_version  CC=6  out:9
     bump_cmd  CC=6  out:23
-  redeploy.cli.commands.device_map  [2 funcs]
-    _execute_query_device_map  CC=1  out:1
-    _render  CC=3  out:3
-  redeploy.cli.commands.device_map_renderers  [7 funcs]
+  redeploy.cli.commands.device_map_actions  [2 funcs]
+    execute_query_device_map  CC=1  out:1
+    probe_device_map  CC=9  out:15
+  redeploy.cli.commands.device_map_renderers  [5 funcs]
     _build_drm_table  CC=9  out:8
     _build_header_panel  CC=4  out:3
     _build_issues_table  CC=3  out:12
     _build_services_table  CC=7  out:9
-    render_json  CC=1  out:3
     render_rich  CC=22  out:22
-    render_yaml  CC=1  out:2
+  redeploy.cli.commands.devices  [1 funcs]
+    devices  CC=4  out:14
+  redeploy.cli.commands.devices_display  [2 funcs]
+    filter_devices  CC=13  out:0
+    render_devices_table  CC=7  out:16
   redeploy.cli.commands.diagnose  [1 funcs]
     diagnose  CC=5  out:19
   redeploy.cli.commands.exec_  [3 funcs]
@@ -211,8 +214,6 @@ MODULES:
     lint  CC=19  out:44
   redeploy.cli.commands.mcp_cmd  [1 funcs]
     mcp_cmd  CC=1  out:6
-  redeploy.cli.commands.plan_apply  [1 funcs]
-    _apply_manifest_to_spec  CC=8  out:9
   redeploy.cli.commands.plan_apply_report  [10 funcs]
     _parse_rsync_output  CC=13  out:8
     _render_checksum_section  CC=7  out:13
@@ -226,8 +227,13 @@ MODULES:
     write_markdown_report  CC=2  out:7
   redeploy.cli.commands.plan_apply_run  [1 funcs]
     run_preflight_phase  CC=8  out:19
+  redeploy.cli.commands.plan_apply_shared  [2 funcs]
+    apply_manifest_to_spec  CC=8  out:9
+    load_spec_for_run  CC=4  out:6
   redeploy.cli.commands.plugin  [1 funcs]
     plugin_cmd  CC=13  out:38
+  redeploy.cli.commands.probe_display  [1 funcs]
+    collect_probe_hosts  CC=6  out:8
   redeploy.cli.commands.prompt_cmd  [1 funcs]
     prompt_cmd  CC=15  out:37
   redeploy.cli.commands.state  [4 funcs]
@@ -328,21 +334,36 @@ MODULES:
   redeploy.detect.workflow  [2 funcs]
     _collect_hosts  CC=18  out:14
     _probe_ssh  CC=3  out:3
-  redeploy.discovery  [19 funcs]
-    _build_probe_command  CC=1  out:0
-    _build_ssh_command  CC=1  out:1
-    _collect_ssh_keys  CC=14  out:18
-    _detect_local_subnet  CC=9  out:11
-    _detect_strategy_remote  CC=3  out:5
-    _is_ip  CC=1  out:2
-    _merge  CC=11  out:2
-    _parse_probe_input  CC=4  out:1
-    _ping_sweep  CC=6  out:20
-    _probe_ssh  CC=1  out:6
-  redeploy.discovery_registry  [3 funcs]
+  redeploy.discovery.auto_probe  [6 funcs]
+    auto_probe  CC=7  out:33
+    build_probe_command  CC=1  out:0
+    build_ssh_command  CC=1  out:1
+    detect_strategy_remote  CC=3  out:5
+    parse_probe_input  CC=4  out:1
+    run_ssh_probe  CC=3  out:1
+  redeploy.discovery.helpers  [2 funcs]
+    is_ip  CC=1  out:2
+    run_shell  CC=2  out:1
+  redeploy.discovery.registry  [3 funcs]
     _new_discovered_device  CC=3  out:2
     _update_existing_device  CC=7  out:1
     update_registry  CC=9  out:9
+  redeploy.discovery.scanners  [8 funcs]
+    detect_local_subnet  CC=9  out:11
+    discover  CC=14  out:22
+    merge_hosts  CC=11  out:2
+    ping_sweep  CC=6  out:20
+    probe_ssh_batch  CC=1  out:6
+    scan_arp_cache  CC=10  out:23
+    scan_known_hosts  CC=10  out:18
+    scan_mdns  CC=6  out:11
+  redeploy.discovery.ssh_credentials  [3 funcs]
+    collect_ssh_keys  CC=14  out:16
+    tcp_reachable  CC=2  out:1
+    try_ssh_credentials  CC=14  out:15
+  redeploy.discovery_probe  [2 funcs]
+    infer_strategy  CC=8  out:5
+    parse_probe_output  CC=16  out:20
   redeploy.dsl.loader  [9 funcs]
     _build_from_nodes  CC=1  out:4
     _build_manifest  CC=25  out:23
