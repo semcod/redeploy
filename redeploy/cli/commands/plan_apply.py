@@ -1,7 +1,6 @@
 """plan, apply, migrate, run commands — Migration planning and execution."""
 from __future__ import annotations
 
-import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -20,6 +19,8 @@ from ..core import (
     overlay_device_onto_spec,
 )
 from ..display import print_plan_table
+from .plan_apply_report import write_markdown_report
+from .plan_apply_run import run_lint_phase, run_preflight_phase, setup_run_logging
 
 
 @click.command()
@@ -325,17 +326,13 @@ def run(ctx, spec_file, dry_run, plan_only, do_detect, plan_out, output,
     from ...models import ProjectManifest
     from ...plan import Planner
     from ...plugins import load_user_plugins
-    from ...apply import Executor
 
     console = Console()
 
-    # Create deployment ignore policy on first run (project-aware template).
     _ensure_redeployignore(Path.cwd(), console)
 
-    # Load project manifest (redeploy.yaml) if present
     manifest = ProjectManifest.find_and_load(Path.cwd())
 
-    # Resolve spec file: arg > manifest.spec > "migration.yaml"
     resolved_spec = spec_file or (manifest.spec if manifest else "migration.yaml")
     if not Path(resolved_spec).exists():
         console.print(f"[red]✗ spec file not found: {resolved_spec}[/red]")
@@ -343,47 +340,12 @@ def run(ctx, spec_file, dry_run, plan_only, do_detect, plan_out, output,
         sys.exit(1)
 
     spec = load_spec_or_exit(console, resolved_spec)
-    started_at = datetime.now(timezone.utc)
+    file_handler_id, _log_file, started_at = setup_run_logging(resolved_spec)
 
-    # Redirect all logger output to a dated file under .redeploy/logs/
-    log_dir = Path.cwd() / ".redeploy" / "logs"
-    log_dir.mkdir(parents=True, exist_ok=True)
-    log_file = log_dir / f"redeploy-{started_at.strftime('%Y%m%d_%H%M%S')}.log"
-    file_handler_id = logger.add(
-        log_file,
-        level="DEBUG",
-        format="{time:YYYY-MM-DD HH:mm:ss.SSS} | {level:<8} | {name}:{function}:{line} | {message}",
-        enqueue=True,
-    )
-    logger.info("redeploy run started — spec={}", resolved_spec)
-
-    # Overlay manifest values
     _apply_manifest_to_spec(console, manifest, spec, env_name)
     _print_spec_summary(console, spec)
 
-    # Static analysis (lint)
-    lint_result = None
-    if lint:
-        from ...analyze import SpecAnalyzer, IssueSeverity
-        analyzer = SpecAnalyzer(base_dir=Path.cwd())
-        _, lint_result = analyzer.analyze_file(Path(resolved_spec))
-        if lint_result.issues:
-            console.print(f"\n[bold]lint[/bold]")
-            for i in lint_result.issues:
-                color = "red" if i.severity == IssueSeverity.ERROR else "yellow"
-                prefix = f"[{color}]{i.severity.value}[/{color}]"
-                step = f" ({i.step_id})" if i.step_id else ""
-                console.print(f"  {prefix}{step} {i.category}: {i.message}")
-                if i.suggestion:
-                    console.print(f"      [dim]→ {i.suggestion}[/dim]")
-            if not lint_result.passed:
-                console.print("\n[red]✗ lint failed — fix errors above or use --no-lint to skip.[/red]")
-                logger.remove(file_handler_id)
-                sys.exit(1)
-            else:
-                console.print(f"[yellow]⚠ lint passed with {len(lint_result.warnings())} warning(s)[/yellow]")
-        else:
-            console.print("[green]  ✓ lint passed[/green]")
+    lint_result = run_lint_phase(console, resolved_spec, lint, file_handler_id)
 
     # Optional live detect
     if do_detect:
@@ -405,39 +367,23 @@ def run(ctx, spec_file, dry_run, plan_only, do_detect, plan_out, output,
 
     print_plan_table(console, migration)
 
-    # Operational preflight schema (resolved refs/paths/deps) + optional strict gate
-    if preflight:
-        from ...analyze import generate_preflight_schema, save_preflight_schema
-
-        preflight_result = generate_preflight_schema(
-            spec_path=Path(resolved_spec),
-            spec=spec,
-            migration=migration,
-            lint_result=lint_result,
-            base_dir=Path.cwd(),
-            remote_check=bool(preflight_remote and not dry_run),
-        )
-        save_preflight_schema(preflight_result.schema, Path(preflight_schema_out))
-
-        blockers = len(preflight_result.blockers)
-        console.print(f"\n[bold]preflight[/bold]  [dim]schema saved → {preflight_schema_out}[/dim]")
-        if blockers:
-            console.print(f"[yellow]⚠ preflight blockers: {blockers}[/yellow]")
-            for b in preflight_result.blockers[:10]:
-                sid = f" ({b.get('step_id')})" if b.get("step_id") else ""
-                console.print(f"  [yellow]- {b.get('type')}{sid}: {b.get('message')}[/yellow]")
-            if blockers > 10:
-                console.print(f"  [dim]... and {blockers - 10} more blockers in schema file[/dim]")
-            if strict_preflight:
-                console.print("\n[red]✗ strict preflight failed — aborting before apply[/red]")
-                logger.remove(file_handler_id)
-                sys.exit(1)
-        else:
-            console.print("[green]  ✓ preflight passed (no blockers)[/green]")
+    run_preflight_phase(
+        console,
+        preflight=preflight,
+        resolved_spec=resolved_spec,
+        spec=spec,
+        migration=migration,
+        lint_result=lint_result,
+        preflight_schema_out=preflight_schema_out,
+        preflight_remote=preflight_remote,
+        dry_run=dry_run,
+        strict_preflight=strict_preflight,
+        file_handler_id=file_handler_id,
+    )
 
     if plan_only:
         if report:
-            _write_markdown_report(
+            write_markdown_report(
                 console=console,
                 migration=migration,
                 spec_path=Path(resolved_spec),
@@ -487,7 +433,7 @@ def run(ctx, spec_file, dry_run, plan_only, do_detect, plan_out, output,
         )
 
     if report:
-        _write_markdown_report(
+        write_markdown_report(
             console=console,
             migration=migration,
             spec_path=Path(resolved_spec),
@@ -738,268 +684,3 @@ def _inject_project_sync_step(migration, spec, project_root: Path, console) -> N
     console.print("[dim]plan: injected sync_project_tree (full rsync before apply)[/dim]")
 
 
-def _default_report_path(spec_path: Path) -> Path:
-    return spec_path.parent / f".{spec_path.stem}.md"
-
-
-def _resolve_audit_entry(migration, started_at: datetime, ok: bool):
-    from ...observe import AuditEntry, DeployAuditLog
-
-    log = DeployAuditLog()
-    entries = log.filter(host=migration.host, app=migration.app, since=started_at)
-    if entries:
-        return entries[-1]
-
-    # Fallback if audit record is unavailable for any reason.
-    done_count = sum(1 for s in migration.steps if str(s.status).endswith("DONE"))
-    failed_count = sum(1 for s in migration.steps if str(s.status).endswith("FAILED"))
-    if ok and done_count == 0 and failed_count == 0:
-        # plan-only fallback: treat all planned steps as successful planning output
-        done_count = len(migration.steps)
-
-    data = {
-        "ts": datetime.now(timezone.utc).isoformat(),
-        "host": migration.host,
-        "app": migration.app,
-        "from_strategy": migration.from_strategy.value,
-        "to_strategy": migration.to_strategy.value,
-        "ok": ok,
-        "dry_run": False,
-        "elapsed_s": 0.0,
-        "steps_total": len(migration.steps),
-        "steps_ok": done_count,
-        "steps_failed": failed_count,
-        "steps": [
-            {
-                "id": s.id,
-                "action": s.action.value,
-                "status": str(s.status).split(".")[-1].lower(),
-                "result": s.result,
-                "error": s.error,
-            }
-            for s in migration.steps
-        ],
-    }
-    return AuditEntry(data)
-
-
-def _step_command_block(step) -> str:
-    if step.command:
-        return step.command.strip()
-    if step.command_ref:
-        return f"command_ref: {step.command_ref}"
-    if step.action.value == "rsync":
-        parts = [f"rsync {step.src or ''} -> {step.dst or ''}"]
-        if step.excludes:
-            parts.append("excludes:")
-            parts.extend(f"- {x}" for x in step.excludes)
-        return "\n".join(parts)
-    if step.action.value == "scp":
-        return f"scp {step.src or ''} -> {step.dst or ''}"
-    if step.action.value in {"http_check", "version_check"}:
-        return f"url: {step.url or ''}\nexpect: {step.expect or ''}".strip()
-    return f"action: {step.action.value}"
-
-
-def _build_checksum_verification(migration, executed: bool) -> dict | None:
-    """Build post-deploy sync verification with checksum-aware rsync dry-run."""
-    sync_step = next((s for s in migration.steps if s.id == "sync_project_tree"), None)
-    if not sync_step:
-        return None
-
-    src = (sync_step.src or "").strip()
-    dst = (sync_step.dst or "").strip()
-    host = (migration.host or "").strip()
-
-    local_root = Path(src.rstrip("/")).expanduser() if src else Path.cwd()
-    remote_root = dst.rstrip("/") if dst else ""
-
-    if not executed:
-        return {
-            "status": "skipped",
-            "reason": "plan-only run (apply not executed)",
-            "host": host,
-            "local_root": str(local_root),
-            "remote_root": remote_root,
-            "command": "(not executed)",
-            "changed_paths": [],
-            "changed_count": 0,
-        }
-
-    if not host or host.lower() in {"local", "localhost", "127.0.0.1"}:
-        return {
-            "status": "skipped",
-            "reason": "remote checksum verification requires SSH host",
-            "host": host,
-            "local_root": str(local_root),
-            "remote_root": remote_root,
-            "command": "(not executed)",
-            "changed_paths": [],
-            "changed_count": 0,
-        }
-
-    if not local_root.exists() or not remote_root:
-        return {
-            "status": "error",
-            "reason": "sync scope is incomplete (missing local or remote root)",
-            "host": host,
-            "local_root": str(local_root),
-            "remote_root": remote_root,
-            "command": "(not executed)",
-            "changed_paths": [],
-            "changed_count": 0,
-        }
-
-    cmd = ["rsync", "-a", "-z", "--delete", "--checksum", "--dry-run", "--itemize-changes"]
-    if (local_root / ".gitignore").exists():
-        cmd += ["--filter=:- .gitignore"]
-    if (local_root / ".redeployignore").exists():
-        cmd += ["--filter=:- .redeployignore"]
-    for ex in sync_step.excludes or []:
-        cmd += ["--exclude", ex]
-    cmd += [f"{local_root.as_posix().rstrip('/')}/", f"{host}:{remote_root.rstrip('/')}/"]
-
-    command_preview = " ".join(cmd)
-    try:
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=1200)
-    except Exception as exc:  # pragma: no cover - defensive, non-fatal for report
-        return {
-            "status": "error",
-            "reason": str(exc),
-            "host": host,
-            "local_root": str(local_root),
-            "remote_root": remote_root,
-            "command": command_preview,
-            "changed_paths": [],
-            "changed_count": 0,
-        }
-
-    raw_lines = [ln.rstrip() for ln in (result.stdout or "").splitlines() if ln.strip()]
-    changed_lines = [
-        ln
-        for ln in raw_lines
-        if ln not in {"sending incremental file list"}
-        and not ln.startswith("sent ")
-        and not ln.startswith("total size is ")
-        and not ln.startswith("created directory ")
-    ]
-
-    status = "match" if result.returncode == 0 and not changed_lines else "mismatch"
-    reason = ""
-    if result.returncode != 0:
-        status = "error"
-        reason = (result.stderr or "").strip() or f"rsync exited with {result.returncode}"
-
-    return {
-        "status": status,
-        "reason": reason,
-        "host": host,
-        "local_root": str(local_root),
-        "remote_root": remote_root,
-        "command": command_preview,
-        "changed_paths": changed_lines[:200],
-        "changed_count": len(changed_lines),
-    }
-
-
-def _render_markdown_report(entry, migration, spec_path: Path, checksum: dict | None = None) -> str:
-    by_id = {s.id: s for s in migration.steps}
-    lines: list[str] = [
-        f"# Redeploy Execution Report - {spec_path.name}",
-        "",
-        f"- Timestamp: {entry.ts}",
-        f"- Spec: {spec_path}",
-        f"- Host: {entry.host}",
-        f"- App: {entry.app}",
-        f"- Strategy: {entry.from_strategy} -> {entry.to_strategy}",
-        f"- Result: {'SUCCESS' if entry.ok else 'FAILED'}",
-        f"- Steps: {entry.steps_ok}/{entry.steps_total} ok",
-        f"- Elapsed: {entry.elapsed_s:.1f}s",
-        "",
-    ]
-
-    if checksum:
-        status = (checksum.get("status") or "unknown").upper()
-        lines += [
-            "## Sync Checksum Verification",
-            "",
-            "- Method: rsync --checksum --dry-run --itemize-changes",
-            f"- Scope: {checksum.get('local_root', '')} -> {checksum.get('host', '')}:{checksum.get('remote_root', '')}",
-            f"- Status: {status}",
-            f"- Changed Paths: {checksum.get('changed_count', 0)}",
-        ]
-        reason = (checksum.get("reason") or "").strip()
-        if reason:
-            lines.append(f"- Note: {reason}")
-        lines += [
-            "",
-            "#### Command",
-            "```bash",
-            checksum.get("command") or "(not executed)",
-            "```",
-            "",
-        ]
-        if checksum.get("changed_paths"):
-            lines += [
-                "#### Differences",
-                "```text",
-                "\n".join(checksum.get("changed_paths") or []),
-                "```",
-                "",
-            ]
-
-    lines += [
-        "## Step Logs",
-        "",
-    ]
-
-    for i, step_row in enumerate(entry.steps, 1):
-        sid = step_row.get("id", "")
-        status = (step_row.get("status") or "").upper()
-        action = step_row.get("action", "")
-        model_step = by_id.get(sid)
-        desc = model_step.description if model_step else ""
-        cmd = _step_command_block(model_step) if model_step else f"action: {action}"
-        result = (step_row.get("result") or "").strip()
-        error = (step_row.get("error") or "").strip()
-        log_text = error or result or "(no output captured)"
-
-        lines += [
-            f"### {i}. {sid} [{status}]",
-            "",
-            f"- Action: {action}",
-            f"- Description: {desc}",
-            "",
-            "#### Executed",
-            "```bash",
-            cmd,
-            "```",
-            "",
-            "#### Output",
-            "```text",
-            log_text,
-            "```",
-            "",
-        ]
-
-    return "\n".join(lines)
-
-
-def _write_markdown_report(
-    console,
-    migration,
-    spec_path: Path,
-    started_at: datetime,
-    ok: bool,
-    executed: bool,
-    report_file: Path | None = None,
-) -> None:
-    entry = _resolve_audit_entry(migration, started_at=started_at, ok=ok)
-    checksum = _build_checksum_verification(migration, executed=executed)
-    out_path = report_file or _default_report_path(spec_path)
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(
-        _render_markdown_report(entry, migration, spec_path, checksum=checksum),
-        encoding="utf-8",
-    )
-    console.print(f"[bold]report[/bold]  [dim]saved → {out_path}[/dim]")

@@ -5,19 +5,14 @@
 
 - **Project**: /home/tom/github/maskservice/redeploy
 - **Primary Language**: python
-- **Languages**: python: 203, md: 44, yaml: 37, yml: 3, shell: 2
+- **Languages**: python: 209, md: 44, yaml: 37, yml: 3, shell: 2
 - **Analysis Mode**: static
-- **Total Functions**: 969
-- **Total Classes**: 179
-- **Modules**: 292
-- **Entry Points**: 579
+- **Total Functions**: 981
+- **Total Classes**: 181
+- **Modules**: 298
+- **Entry Points**: 584
 
 ## Architecture by Module
-
-### redeploy.discovery
-- **Functions**: 26
-- **Classes**: 2
-- **File**: `discovery.py`
 
 ### redeploy.cli.display
 - **Functions**: 25
@@ -33,6 +28,11 @@
 - **Classes**: 1
 - **File**: `docker_compose.py`
 
+### redeploy.discovery
+- **Functions**: 23
+- **Classes**: 2
+- **File**: `discovery.py`
+
 ### redeploy.apply.handlers
 - **Functions**: 22
 - **File**: `handlers.py`
@@ -41,10 +41,6 @@
 - **Functions**: 21
 - **Classes**: 1
 - **File**: `planner.py`
-
-### redeploy.cli.commands.plan_apply
-- **Functions**: 19
-- **File**: `plan_apply.py`
 
 ### redeploy.cli.commands.version.scanner
 - **Functions**: 18
@@ -97,6 +93,11 @@
 - **Functions**: 13
 - **Classes**: 4
 - **File**: `devices.py`
+
+### redeploy.audit.auditor
+- **Functions**: 13
+- **Classes**: 1
+- **File**: `auditor.py`
 
 ### redeploy.apply.state
 - **Functions**: 13
@@ -404,14 +405,14 @@ Args:
 - **Methods**: 14
 - **Key Methods**: redeploy.iac.config_hints.ConfigHintsParser.can_parse, redeploy.iac.config_hints.ConfigHintsParser.parse, redeploy.iac.config_hints.ConfigHintsParser._new_spec, redeploy.iac.config_hints.ConfigHintsParser._read_text, redeploy.iac.config_hints.ConfigHintsParser._parse_dockerfile, redeploy.iac.config_hints.ConfigHintsParser._parse_nginx, redeploy.iac.config_hints.ConfigHintsParser._looks_like_k8s, redeploy.iac.config_hints.ConfigHintsParser._parse_k8s_yaml, redeploy.iac.config_hints.ConfigHintsParser._parse_terraform, redeploy.iac.config_hints.ConfigHintsParser._parse_toml
 
+### redeploy.audit.auditor.Auditor
+- **Methods**: 13
+- **Key Methods**: redeploy.audit.auditor.Auditor.__init__, redeploy.audit.auditor.Auditor.run, redeploy.audit.auditor.Auditor._add_disk_check, redeploy.audit.auditor.Auditor._probe_one, redeploy.audit.auditor.Auditor._check, redeploy.audit.auditor.Auditor._probe_binary, redeploy.audit.auditor.Auditor._probe_directory, redeploy.audit.auditor.Auditor._probe_file, redeploy.audit.auditor.Auditor._probe_local_file, redeploy.audit.auditor.Auditor._probe_port_listening
+
 ### redeploy.version.git_integration.GitIntegration
 > Git operations for version management.
 - **Methods**: 13
 - **Key Methods**: redeploy.version.git_integration.GitIntegration.__init__, redeploy.version.git_integration.GitIntegration._run, redeploy.version.git_integration.GitIntegration.require_clean, redeploy.version.git_integration.GitIntegration.is_clean, redeploy.version.git_integration.GitIntegration.get_dirty_files, redeploy.version.git_integration.GitIntegration.stage_files, redeploy.version.git_integration.GitIntegration.commit, redeploy.version.git_integration.GitIntegration.tag, redeploy.version.git_integration.GitIntegration.push, redeploy.version.git_integration.GitIntegration.tag_exists
-
-### redeploy.audit.auditor.Auditor
-- **Methods**: 13
-- **Key Methods**: redeploy.audit.auditor.Auditor.__init__, redeploy.audit.auditor.Auditor.run, redeploy.audit.auditor.Auditor._add_disk_check, redeploy.audit.auditor.Auditor._probe_one, redeploy.audit.auditor.Auditor._check, redeploy.audit.auditor.Auditor._probe_binary, redeploy.audit.auditor.Auditor._probe_directory, redeploy.audit.auditor.Auditor._probe_file, redeploy.audit.auditor.Auditor._probe_local_file, redeploy.audit.auditor.Auditor._probe_port_listening
 
 ### redeploy.heal.HealRunner
 > Wraps Executor with self-healing loop.
@@ -453,12 +454,6 @@ Each event is a YAML document (
 - **Key Methods**: redeploy.models.hardware.HardwareInfo.has_dsi, redeploy.models.hardware.HardwareInfo.kms_enabled, redeploy.models.hardware.HardwareInfo.dsi_connected, redeploy.models.hardware.HardwareInfo.dsi_physically_connected, redeploy.models.hardware.HardwareInfo.dsi_enabled, redeploy.models.hardware.HardwareInfo.backlight_on, redeploy.models.hardware.HardwareInfo.errors, redeploy.models.hardware.HardwareInfo.warnings
 - **Inherits**: BaseModel
 
-### redeploy.version.manifest.VersionManifest
-> Root manifest model for .redeploy/version.yaml.
-- **Methods**: 8
-- **Key Methods**: redeploy.version.manifest.VersionManifest.load, redeploy.version.manifest.VersionManifest.save, redeploy.version.manifest.VersionManifest.format_version, redeploy.version.manifest.VersionManifest.get_source_paths, redeploy.version.manifest.VersionManifest.get_package, redeploy.version.manifest.VersionManifest.list_packages, redeploy.version.manifest.VersionManifest.is_monorepo, redeploy.version.manifest.VersionManifest.get_all_package_versions
-- **Inherits**: BaseModel
-
 ### redeploy.audit.probe.Probe
 > Thin wrapper around SshClient with sensible audit timeouts.
 - **Methods**: 8
@@ -467,6 +462,12 @@ Each event is a YAML document (
 ### redeploy.audit.models.AuditReport
 - **Methods**: 8
 - **Key Methods**: redeploy.audit.models.AuditReport.add, redeploy.audit.models.AuditReport.passed, redeploy.audit.models.AuditReport.failed, redeploy.audit.models.AuditReport.warned, redeploy.audit.models.AuditReport.skipped, redeploy.audit.models.AuditReport.ok, redeploy.audit.models.AuditReport.summary, redeploy.audit.models.AuditReport.to_dict
+
+### redeploy.version.manifest.VersionManifest
+> Root manifest model for .redeploy/version.yaml.
+- **Methods**: 8
+- **Key Methods**: redeploy.version.manifest.VersionManifest.load, redeploy.version.manifest.VersionManifest.save, redeploy.version.manifest.VersionManifest.format_version, redeploy.version.manifest.VersionManifest.get_source_paths, redeploy.version.manifest.VersionManifest.get_package, redeploy.version.manifest.VersionManifest.list_packages, redeploy.version.manifest.VersionManifest.is_monorepo, redeploy.version.manifest.VersionManifest.get_all_package_versions
+- **Inherits**: BaseModel
 
 ## Data Transformation Functions
 
@@ -505,12 +506,6 @@ Handles sections: ===SYSTEM===, ==
 > Parse health-check SSH output (HOSTNAME, UPTIME, HEALTH, DISK, LOAD) into a dict.
 - **Output to**: output.split, line.strip, _HEALTH_PREFIXES.items, line.startswith, line.startswith
 
-### redeploy.discovery._parse_probe_output
-- **Output to**: out.splitlines, line.strip, line.startswith, line.startswith, line.split
-
-### redeploy.discovery._parse_probe_input
-- **Output to**: ip_or_host.split
-
 ### redeploy.mcp_server._validate_exec_ssh_inputs
 > Return validation error message for unsafe exec_ssh inputs, or None.
 - **Output to**: _SAFE_HOST_RE.match, None.lower, os.getenv
@@ -525,6 +520,9 @@ Handles sections: ===SYSTEM===, ==
 ### redeploy.heal.hint_provider.parse_failed_step
 > Extract (step_id, step_output) from executor state or summary string.
 - **Output to**: re.search, getattr, getattr, results.get, isinstance
+
+### redeploy.analyze.checkers.docker_build.parse_docker_build
+- **Output to**: FILE_FLAG_RE.finditer, cmd.split, len, token.startswith, match.group
 
 ### redeploy.config_apply.handlers.display._validate_display_inputs
 - **Output to**: _SAFE_OUTPUT_RE.match, ValueError, ValueError, sorted
@@ -570,6 +568,9 @@ Parameters
 ### redeploy.plugins.builtin.process_control.process_control
 > Kill processes on specified ports.
 - **Output to**: redeploy.plugins.register_plugin, ctx.params.get, ctx.params.get, ctx.params.get, ctx.params.get
+
+### redeploy.markpact.parser.parse_markpact_file
+- **Output to**: Path, redeploy.markpact.parser.parse_markpact_text, file_path.read_text
 
 ## Behavioral Patterns
 
@@ -637,7 +638,7 @@ Parameters
 
 Functions exposed as public API (no underscore prefix):
 
-- `redeploy.cli.commands.plan_apply.run` - 110 calls
+- `redeploy.cli.commands.plan_apply.run` - 74 calls
 - `redeploy.cli.commands.device_map.device_map_cmd` - 59 calls
 - `redeploy.cli.commands.import_.import_cmd` - 56 calls
 - `redeploy.cli.commands.version.commands.version_init` - 56 calls
@@ -662,8 +663,8 @@ Functions exposed as public API (no underscore prefix):
 - `redeploy.cli.commands.exec_.exec_multi_cmd` - 35 calls
 - `redeploy.cli.commands.blueprint.capture` - 35 calls
 - `redeploy.cli.commands.detect.detect` - 35 calls
-- `redeploy.discovery.auto_probe` - 33 calls
 - `redeploy.iac.docker_compose.DockerComposeParser.parse` - 33 calls
+- `redeploy.discovery.auto_probe` - 33 calls
 - `redeploy.cli.commands.target.target` - 31 calls
 - `redeploy.cli.commands.devices.scan` - 31 calls
 - `redeploy.detect.detector.Detector.run` - 30 calls

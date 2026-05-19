@@ -18,12 +18,12 @@ SUMD - Structured Unified Markdown Descriptor for AI-aware project refactorizati
 ## Metadata
 
 - **name**: `redeploy`
-- **version**: `0.2.75`
+- **version**: `0.2.76`
 - **python_requires**: `>=3.11`
 - **license**: Apache-2.0
 - **ai_model**: `openrouter/qwen/qwen3-coder-next`
 - **ecosystem**: SUMD + DOQL + testql + taskfile
-- **generated_from**: pyproject.toml, Makefile, testql(2), app.doql.less, pyqual.yaml, goal.yaml, .env.example, src(14 mod), project/(6 analysis files)
+- **generated_from**: pyproject.toml, Makefile, testql(2), app.doql.less, pyqual.yaml, goal.yaml, .env.example, src(16 mod), project/(6 analysis files)
 
 ## Architecture
 
@@ -39,7 +39,7 @@ SUMD (description) → DOQL/source (code) → taskfile (automation) → testql (
 
 app {
   name: redeploy;
-  version: 0.2.75;
+  version: 0.2.76;
 }
 
 interface[type="cli"] {
@@ -100,6 +100,8 @@ environment[name="local"] {
 - `redeploy.cli`
 - `redeploy.data_sync`
 - `redeploy.discovery`
+- `redeploy.discovery_probe`
+- `redeploy.discovery_registry`
 - `redeploy.fleet`
 - `redeploy.heal`
 - `redeploy.mcp_server`
@@ -260,39 +262,6 @@ class Fleet:  # Unified first-class fleet — wraps FleetConfig and/or DeviceR
     def __repr__()  # CC=1
 ```
 
-### `redeploy.discovery` (`redeploy/discovery.py`)
-
-```python
-def _is_raspberry_pi_mac(mac)  # CC=2, fan=1
-def _scan_known_hosts(ssh_user)  # CC=10, fan=15 ⚠
-def _scan_arp_cache()  # CC=10, fan=12 ⚠
-def _scan_mdns(timeout)  # CC=7, fan=10
-def _ping_sweep(subnet, timeout)  # CC=6, fan=14
-def _probe_ssh(hosts, users, port, timeout, max_workers)  # CC=1, fan=6
-def _detect_local_subnet()  # CC=9, fan=11
-def _merge(hosts)  # CC=11, fan=2 ⚠
-def discover(subnet, ssh_users, ssh_port, ping, mdns, probe_ssh, timeout)  # CC=14, fan=16 ⚠
-def update_registry(hosts, registry, save)  # CC=17, fan=7 ⚠
-def _run(cmd, timeout)  # CC=2, fan=1
-def _is_ip(s)  # CC=1, fan=2
-def _collect_ssh_keys()  # CC=14, fan=11 ⚠
-def _tcp_reachable(ip, port, timeout)  # CC=2, fan=1
-def _try_ssh_credentials(ip, users, keys, port, timeout)  # CC=14, fan=12 ⚠
-def _detect_strategy_remote(host, key, port, timeout)  # CC=3, fan=5
-def _build_probe_command()  # CC=1, fan=0
-def _build_ssh_command(host, port, timeout, key_opts, probe_cmd)  # CC=1, fan=1
-def _run_ssh_probe(cmd, timeout)  # CC=3, fan=1
-def _parse_probe_output(out)  # CC=16, fan=6 ⚠
-def _infer_strategy(info, services)  # CC=8, fan=2
-def _parse_probe_input(ip_or_host, users)  # CC=4, fan=1
-def _detect_app_from_services(services, app_hint)  # CC=5, fan=1
-def _update_existing_device(existing, result, ssh_user, ssh_key, ip, host_str, port, now)  # CC=5, fan=0
-def _create_new_device(result, ssh_user, ssh_key, ip, host_str, port, now)  # CC=2, fan=1
-def auto_probe(ip_or_host, users, port, timeout, app_hint, save)  # CC=7, fan=19
-class DiscoveredHost:
-class ProbeResult:  # Full autonomous probe result for a single host.
-```
-
 ### `redeploy.ssh` (`redeploy/ssh.py`)
 
 ```python
@@ -327,6 +296,36 @@ class RemoteExecutor:  # Thin wrapper kept for deploy.core compatibility.
     def scp_opts()  # CC=1
 ```
 
+### `redeploy.discovery` (`redeploy/discovery.py`)
+
+```python
+def _is_raspberry_pi_mac(mac)  # CC=2, fan=1
+def _scan_known_hosts(ssh_user)  # CC=10, fan=15 ⚠
+def _scan_arp_cache()  # CC=10, fan=12 ⚠
+def _scan_mdns(timeout)  # CC=7, fan=10
+def _ping_sweep(subnet, timeout)  # CC=6, fan=14
+def _probe_ssh(hosts, users, port, timeout, max_workers)  # CC=1, fan=6
+def _detect_local_subnet()  # CC=9, fan=11
+def _merge(hosts)  # CC=11, fan=2 ⚠
+def discover(subnet, ssh_users, ssh_port, ping, mdns, probe_ssh, timeout)  # CC=14, fan=16 ⚠
+def _run(cmd, timeout)  # CC=2, fan=1
+def _is_ip(s)  # CC=1, fan=2
+def _collect_ssh_keys()  # CC=14, fan=11 ⚠
+def _tcp_reachable(ip, port, timeout)  # CC=2, fan=1
+def _try_ssh_credentials(ip, users, keys, port, timeout)  # CC=14, fan=12 ⚠
+def _detect_strategy_remote(host, key, port, timeout)  # CC=3, fan=5
+def _build_probe_command()  # CC=1, fan=0
+def _build_ssh_command(host, port, timeout, key_opts, probe_cmd)  # CC=1, fan=1
+def _run_ssh_probe(cmd, timeout)  # CC=3, fan=1
+def _parse_probe_input(ip_or_host, users)  # CC=4, fan=1
+def _detect_app_from_services(services, app_hint)  # CC=5, fan=1
+def _update_existing_device(existing, result, ssh_user, ssh_key, ip, host_str, port, now)  # CC=5, fan=0
+def _create_new_device(result, ssh_user, ssh_key, ip, host_str, port, now)  # CC=2, fan=1
+def auto_probe(ip_or_host, users, port, timeout, app_hint, save)  # CC=7, fan=19
+class DiscoveredHost:
+class ProbeResult:  # Full autonomous probe result for a single host.
+```
+
 ### `redeploy.heal` (`redeploy/heal.py`)
 
 ```python
@@ -356,7 +355,7 @@ class HealRunner:  # Wraps Executor with self-healing loop.
 
 ## Call Graph
 
-*425 nodes · 393 edges · 108 modules · CC̄=5.1*
+*433 nodes · 400 edges · 111 modules · CC̄=5.0*
 
 ### Hubs (by degree)
 
@@ -366,16 +365,16 @@ class HealRunner:  # Wraps Executor with self-healing loop.
 | `snapshot_to_hardware_info` *(in redeploy.integrations.op3_bridge)* | 10 ⚠ | 2 | 49 | **51** |
 | `gh_workflow_run` *(in redeploy.cli.commands.gh_workflow)* | 19 ⚠ | 0 | 49 | **49** |
 | `lint` *(in redeploy.cli.commands.lint)* | 19 ⚠ | 0 | 44 | **44** |
-| `exec_cmd` *(in redeploy.cli.commands.exec_)* | 9 | 0 | 40 | **40** |
 | `_heal_step` *(in redeploy.heal.runner.HealRunner)* | 14 ⚠ | 0 | 40 | **40** |
+| `exec_cmd` *(in redeploy.cli.commands.exec_)* | 9 | 0 | 40 | **40** |
 | `_bump_single` *(in redeploy.cli.commands.version.helpers)* | 25 ⚠ | 4 | 35 | **39** |
-| `plugin_cmd` *(in redeploy.cli.commands.plugin)* | 13 ⚠ | 0 | 38 | **38** |
+| `_parse_k8s_yaml` *(in redeploy.iac.config_hints.ConfigHintsParser)* | 26 ⚠ | 0 | 38 | **38** |
 
 ```toon markpact:analysis path=project/calls.toon.yaml
 # code2llm call graph | /home/tom/github/maskservice/redeploy
-# generated in 0.18s
-# nodes: 425 | edges: 393 | modules: 108
-# CC̄=5.1
+# generated in 0.19s
+# nodes: 433 | edges: 400 | modules: 111
+# CC̄=5.0
 
 HUBS[20]:
   redeploy.steps.StepLibrary.list
@@ -386,16 +385,16 @@ HUBS[20]:
     CC=19  in:0  out:49  total:49
   redeploy.cli.commands.lint.lint
     CC=19  in:0  out:44  total:44
-  redeploy.cli.commands.exec_.exec_cmd
-    CC=9  in:0  out:40  total:40
   redeploy.heal.runner.HealRunner._heal_step
     CC=14  in:0  out:40  total:40
+  redeploy.cli.commands.exec_.exec_cmd
+    CC=9  in:0  out:40  total:40
   redeploy.cli.commands.version.helpers._bump_single
     CC=25  in:4  out:35  total:39
-  redeploy.cli.commands.plugin.plugin_cmd
-    CC=13  in:0  out:38  total:38
   redeploy.iac.config_hints.ConfigHintsParser._parse_k8s_yaml
     CC=26  in:0  out:38  total:38
+  redeploy.cli.commands.plugin.plugin_cmd
+    CC=13  in:0  out:38  total:38
   redeploy.cli.commands.version.commands.version_list
     CC=13  in:0  out:38  total:38
   redeploy.discovery.auto_probe
@@ -404,20 +403,20 @@ HUBS[20]:
     CC=15  in:0  out:37  total:37
   redeploy.blueprint.sources.compose._merge_compose
     CC=21  in:1  out:33  total:34
-  redeploy.cli.commands.plan_apply._build_checksum_verification
-    CC=32  in:1  out:32  total:33
   redeploy.plugins.builtin.hardware_diagnostic._analyze_hardware
     CC=14  in:1  out:32  total:33
   redeploy.cli.commands.target.target
     CC=10  in:1  out:31  total:32
-  redeploy.detect.detector.Detector.run
-    CC=9  in:0  out:30  total:30
   redeploy.heal.hint_provider.apply_fix_to_spec
     CC=16  in:0  out:30  total:30
-  redeploy.apply.executor.Executor._execute_step
-    CC=4  in:0  out:27  total:27
+  redeploy.detect.detector.Detector.run
+    CC=9  in:0  out:30  total:30
+  examples.redeploy_iac_parsers.helm_kustomize.HelmTemplatesParser.parse
+    CC=17  in:0  out:27  total:27
   redeploy.apply.state_apply.HardwareStateHandler.apply
     CC=18  in:0  out:27  total:27
+  redeploy.apply.executor.Executor._execute_step
+    CC=4  in:0  out:27  total:27
 
 MODULES:
   examples.redeploy_iac_parsers.gitops_ci  [2 funcs]
@@ -454,12 +453,13 @@ MODULES:
     ensure_redeployignore  CC=2  out:2
   redeploy.analyze.models  [1 funcs]
     add  CC=2  out:2
-  redeploy.analyze.preflight_schema  [5 funcs]
+  redeploy.analyze.preflight_schema  [6 funcs]
     _collect_local_artifacts  CC=6  out:16
     _collect_remote_checks  CC=8  out:14
     _resolve_command_refs  CC=11  out:20
     _resolve_local_path  CC=4  out:7
     generate_preflight_schema  CC=14  out:25
+    save_preflight_schema  CC=1  out:3
   redeploy.analyze.spec_analyzer  [2 funcs]
     __init__  CC=3  out:2
     analyze_file  CC=7  out:10
@@ -584,13 +584,21 @@ MODULES:
     lint  CC=19  out:44
   redeploy.cli.commands.mcp_cmd  [1 funcs]
     mcp_cmd  CC=1  out:6
-  redeploy.cli.commands.plan_apply  [6 funcs]
+  redeploy.cli.commands.plan_apply  [1 funcs]
     _apply_manifest_to_spec  CC=8  out:9
-    _build_checksum_verification  CC=32  out:32
-    _default_report_path  CC=1  out:0
-    _render_markdown_report  CC=18  out:25
-    _resolve_audit_entry  CC=10  out:16
-    _write_markdown_report  CC=2  out:7
+  redeploy.cli.commands.plan_apply_report  [10 funcs]
+    _parse_rsync_output  CC=13  out:8
+    _render_checksum_section  CC=7  out:13
+    _run_rsync_checksum  CC=6  out:10
+    _skipped_checksum  CC=1  out:1
+    build_checksum_verification  CC=14  out:15
+    default_report_path  CC=1  out:0
+    render_markdown_report  CC=12  out:13
+    resolve_audit_entry  CC=10  out:16
+    step_command_block  CC=14  out:5
+    write_markdown_report  CC=2  out:7
+  redeploy.cli.commands.plan_apply_run  [1 funcs]
+    run_preflight_phase  CC=8  out:19
   redeploy.cli.commands.plugin  [1 funcs]
     plugin_cmd  CC=13  out:38
   redeploy.cli.commands.prompt_cmd  [1 funcs]
@@ -693,17 +701,21 @@ MODULES:
   redeploy.detect.workflow  [2 funcs]
     _collect_hosts  CC=18  out:14
     _probe_ssh  CC=3  out:3
-  redeploy.discovery  [21 funcs]
+  redeploy.discovery  [19 funcs]
     _build_probe_command  CC=1  out:0
     _build_ssh_command  CC=1  out:1
     _collect_ssh_keys  CC=14  out:18
     _detect_local_subnet  CC=9  out:11
     _detect_strategy_remote  CC=3  out:5
-    _infer_strategy  CC=8  out:5
     _is_ip  CC=1  out:2
     _merge  CC=11  out:2
     _parse_probe_input  CC=4  out:1
-    _parse_probe_output  CC=16  out:20
+    _ping_sweep  CC=6  out:20
+    _probe_ssh  CC=1  out:6
+  redeploy.discovery_registry  [3 funcs]
+    _new_discovered_device  CC=3  out:2
+    _update_existing_device  CC=7  out:1
+    update_registry  CC=9  out:9
   redeploy.dsl.loader  [9 funcs]
     _build_from_nodes  CC=1  out:4
     _build_manifest  CC=25  out:23
@@ -943,27 +955,27 @@ EDGES:
   redeploy.patterns.CanaryPattern.expand → redeploy.patterns._step
   redeploy.patterns.RollbackOnFailurePattern.expand → redeploy.patterns._step
   redeploy.patterns.list_patterns → redeploy.steps.StepLibrary.list
-  redeploy.discovery._scan_arp_cache → redeploy.discovery._run
-  redeploy.discovery._scan_mdns → redeploy.discovery._run
-  redeploy.discovery._scan_mdns → redeploy.discovery._is_ip
-  redeploy.discovery._ping_sweep → redeploy.steps.StepLibrary.list
-  redeploy.discovery._probe_ssh → redeploy.steps.StepLibrary.list
-  redeploy.discovery._detect_local_subnet → redeploy.discovery._run
-  redeploy.discovery._merge → redeploy.steps.StepLibrary.list
-  redeploy.discovery.discover → redeploy.discovery._merge
-  redeploy.discovery.discover → redeploy.discovery._scan_known_hosts
-  redeploy.discovery.discover → redeploy.discovery._scan_arp_cache
-  redeploy.discovery.discover → redeploy.discovery._probe_ssh
-  redeploy.discovery._try_ssh_credentials → redeploy.discovery._tcp_reachable
-  redeploy.discovery._detect_strategy_remote → redeploy.discovery._build_probe_command
-  redeploy.discovery._detect_strategy_remote → redeploy.discovery._build_ssh_command
-  redeploy.discovery._detect_strategy_remote → redeploy.discovery._run_ssh_probe
-  redeploy.discovery._detect_strategy_remote → redeploy.discovery._parse_probe_output
-  redeploy.discovery._detect_strategy_remote → redeploy.discovery._infer_strategy
-  redeploy.discovery.auto_probe → redeploy.discovery._parse_probe_input
-  redeploy.discovery.auto_probe → redeploy.discovery._collect_ssh_keys
-  redeploy.discovery.auto_probe → redeploy.discovery._try_ssh_credentials
-  redeploy.discovery.auto_probe → redeploy.discovery._detect_strategy_remote
+  redeploy.mcp_server._run → redeploy.mcp_server._redeploy_bin
+  redeploy.mcp_server.schema → redeploy.schema.build_schema
+  redeploy.mcp_server.plan_spec → redeploy.mcp_server._run
+  redeploy.mcp_server.run_spec → redeploy.mcp_server._run
+  redeploy.mcp_server.fix_spec → redeploy.mcp_server._run
+  redeploy.mcp_server.bump_version → redeploy.mcp_server._run
+  redeploy.mcp_server.diagnose → redeploy.mcp_server._run
+  redeploy.mcp_server.list_specs → redeploy.schema.build_schema
+  redeploy.mcp_server.exec_ssh → redeploy.mcp_server._validate_exec_ssh_inputs
+  redeploy.mcp_server.nlp_command → redeploy.mcp_server._run
+  redeploy.mcp_server.get_workspace → redeploy.schema.build_schema
+  redeploy.detect.detector.Detector.run → redeploy.detect.probes.probe_runtime
+  redeploy.detect.detector.Detector.run → redeploy.detect.probes.probe_ports
+  redeploy.detect.detector.Detector.run → redeploy.detect.probes.probe_iptables_dnat
+  redeploy.detect.hardware.probe_hardware → redeploy.detect.hardware._wrap_remote_probe
+  redeploy.detect.hardware.probe_hardware → redeploy.integrations.op3_bridge.snapshot_to_hardware_info
+  redeploy.detect.hardware.probe_hardware → redeploy.steps.StepLibrary.list
+  redeploy.detect.hardware_rules.analyze → redeploy.detect.hardware_rules._hw_info_to_dict
+  redeploy.detect.hardware_rules.analyze → redeploy.detect.hardware_rules._op3_diag_to_hw_diag
+  redeploy.detect.templates._build_templates → redeploy.detect.templates._load_templates_from_yaml
+  redeploy.detect.templates.TemplateEngine.detect → redeploy.detect.templates.build_context
 ```
 
 ## Test Contracts
@@ -986,9 +998,9 @@ EDGES:
 
 ```toon markpact:analysis path=project/calls.toon.yaml
 # code2llm call graph | /home/tom/github/maskservice/redeploy
-# generated in 0.18s
-# nodes: 425 | edges: 393 | modules: 108
-# CC̄=5.1
+# generated in 0.19s
+# nodes: 433 | edges: 400 | modules: 111
+# CC̄=5.0
 
 HUBS[20]:
   redeploy.steps.StepLibrary.list
@@ -999,16 +1011,16 @@ HUBS[20]:
     CC=19  in:0  out:49  total:49
   redeploy.cli.commands.lint.lint
     CC=19  in:0  out:44  total:44
-  redeploy.cli.commands.exec_.exec_cmd
-    CC=9  in:0  out:40  total:40
   redeploy.heal.runner.HealRunner._heal_step
     CC=14  in:0  out:40  total:40
+  redeploy.cli.commands.exec_.exec_cmd
+    CC=9  in:0  out:40  total:40
   redeploy.cli.commands.version.helpers._bump_single
     CC=25  in:4  out:35  total:39
-  redeploy.cli.commands.plugin.plugin_cmd
-    CC=13  in:0  out:38  total:38
   redeploy.iac.config_hints.ConfigHintsParser._parse_k8s_yaml
     CC=26  in:0  out:38  total:38
+  redeploy.cli.commands.plugin.plugin_cmd
+    CC=13  in:0  out:38  total:38
   redeploy.cli.commands.version.commands.version_list
     CC=13  in:0  out:38  total:38
   redeploy.discovery.auto_probe
@@ -1017,20 +1029,20 @@ HUBS[20]:
     CC=15  in:0  out:37  total:37
   redeploy.blueprint.sources.compose._merge_compose
     CC=21  in:1  out:33  total:34
-  redeploy.cli.commands.plan_apply._build_checksum_verification
-    CC=32  in:1  out:32  total:33
   redeploy.plugins.builtin.hardware_diagnostic._analyze_hardware
     CC=14  in:1  out:32  total:33
   redeploy.cli.commands.target.target
     CC=10  in:1  out:31  total:32
-  redeploy.detect.detector.Detector.run
-    CC=9  in:0  out:30  total:30
   redeploy.heal.hint_provider.apply_fix_to_spec
     CC=16  in:0  out:30  total:30
-  redeploy.apply.executor.Executor._execute_step
-    CC=4  in:0  out:27  total:27
+  redeploy.detect.detector.Detector.run
+    CC=9  in:0  out:30  total:30
+  examples.redeploy_iac_parsers.helm_kustomize.HelmTemplatesParser.parse
+    CC=17  in:0  out:27  total:27
   redeploy.apply.state_apply.HardwareStateHandler.apply
     CC=18  in:0  out:27  total:27
+  redeploy.apply.executor.Executor._execute_step
+    CC=4  in:0  out:27  total:27
 
 MODULES:
   examples.redeploy_iac_parsers.gitops_ci  [2 funcs]
@@ -1067,12 +1079,13 @@ MODULES:
     ensure_redeployignore  CC=2  out:2
   redeploy.analyze.models  [1 funcs]
     add  CC=2  out:2
-  redeploy.analyze.preflight_schema  [5 funcs]
+  redeploy.analyze.preflight_schema  [6 funcs]
     _collect_local_artifacts  CC=6  out:16
     _collect_remote_checks  CC=8  out:14
     _resolve_command_refs  CC=11  out:20
     _resolve_local_path  CC=4  out:7
     generate_preflight_schema  CC=14  out:25
+    save_preflight_schema  CC=1  out:3
   redeploy.analyze.spec_analyzer  [2 funcs]
     __init__  CC=3  out:2
     analyze_file  CC=7  out:10
@@ -1197,13 +1210,21 @@ MODULES:
     lint  CC=19  out:44
   redeploy.cli.commands.mcp_cmd  [1 funcs]
     mcp_cmd  CC=1  out:6
-  redeploy.cli.commands.plan_apply  [6 funcs]
+  redeploy.cli.commands.plan_apply  [1 funcs]
     _apply_manifest_to_spec  CC=8  out:9
-    _build_checksum_verification  CC=32  out:32
-    _default_report_path  CC=1  out:0
-    _render_markdown_report  CC=18  out:25
-    _resolve_audit_entry  CC=10  out:16
-    _write_markdown_report  CC=2  out:7
+  redeploy.cli.commands.plan_apply_report  [10 funcs]
+    _parse_rsync_output  CC=13  out:8
+    _render_checksum_section  CC=7  out:13
+    _run_rsync_checksum  CC=6  out:10
+    _skipped_checksum  CC=1  out:1
+    build_checksum_verification  CC=14  out:15
+    default_report_path  CC=1  out:0
+    render_markdown_report  CC=12  out:13
+    resolve_audit_entry  CC=10  out:16
+    step_command_block  CC=14  out:5
+    write_markdown_report  CC=2  out:7
+  redeploy.cli.commands.plan_apply_run  [1 funcs]
+    run_preflight_phase  CC=8  out:19
   redeploy.cli.commands.plugin  [1 funcs]
     plugin_cmd  CC=13  out:38
   redeploy.cli.commands.prompt_cmd  [1 funcs]
@@ -1306,17 +1327,21 @@ MODULES:
   redeploy.detect.workflow  [2 funcs]
     _collect_hosts  CC=18  out:14
     _probe_ssh  CC=3  out:3
-  redeploy.discovery  [21 funcs]
+  redeploy.discovery  [19 funcs]
     _build_probe_command  CC=1  out:0
     _build_ssh_command  CC=1  out:1
     _collect_ssh_keys  CC=14  out:18
     _detect_local_subnet  CC=9  out:11
     _detect_strategy_remote  CC=3  out:5
-    _infer_strategy  CC=8  out:5
     _is_ip  CC=1  out:2
     _merge  CC=11  out:2
     _parse_probe_input  CC=4  out:1
-    _parse_probe_output  CC=16  out:20
+    _ping_sweep  CC=6  out:20
+    _probe_ssh  CC=1  out:6
+  redeploy.discovery_registry  [3 funcs]
+    _new_discovered_device  CC=3  out:2
+    _update_existing_device  CC=7  out:1
+    update_registry  CC=9  out:9
   redeploy.dsl.loader  [9 funcs]
     _build_from_nodes  CC=1  out:4
     _build_manifest  CC=25  out:23
@@ -1556,40 +1581,38 @@ EDGES:
   redeploy.patterns.CanaryPattern.expand → redeploy.patterns._step
   redeploy.patterns.RollbackOnFailurePattern.expand → redeploy.patterns._step
   redeploy.patterns.list_patterns → redeploy.steps.StepLibrary.list
-  redeploy.discovery._scan_arp_cache → redeploy.discovery._run
-  redeploy.discovery._scan_mdns → redeploy.discovery._run
-  redeploy.discovery._scan_mdns → redeploy.discovery._is_ip
-  redeploy.discovery._ping_sweep → redeploy.steps.StepLibrary.list
-  redeploy.discovery._probe_ssh → redeploy.steps.StepLibrary.list
-  redeploy.discovery._detect_local_subnet → redeploy.discovery._run
-  redeploy.discovery._merge → redeploy.steps.StepLibrary.list
-  redeploy.discovery.discover → redeploy.discovery._merge
-  redeploy.discovery.discover → redeploy.discovery._scan_known_hosts
-  redeploy.discovery.discover → redeploy.discovery._scan_arp_cache
-  redeploy.discovery.discover → redeploy.discovery._probe_ssh
-  redeploy.discovery._try_ssh_credentials → redeploy.discovery._tcp_reachable
-  redeploy.discovery._detect_strategy_remote → redeploy.discovery._build_probe_command
-  redeploy.discovery._detect_strategy_remote → redeploy.discovery._build_ssh_command
-  redeploy.discovery._detect_strategy_remote → redeploy.discovery._run_ssh_probe
-  redeploy.discovery._detect_strategy_remote → redeploy.discovery._parse_probe_output
-  redeploy.discovery._detect_strategy_remote → redeploy.discovery._infer_strategy
-  redeploy.discovery.auto_probe → redeploy.discovery._parse_probe_input
-  redeploy.discovery.auto_probe → redeploy.discovery._collect_ssh_keys
-  redeploy.discovery.auto_probe → redeploy.discovery._try_ssh_credentials
-  redeploy.discovery.auto_probe → redeploy.discovery._detect_strategy_remote
+  redeploy.mcp_server._run → redeploy.mcp_server._redeploy_bin
+  redeploy.mcp_server.schema → redeploy.schema.build_schema
+  redeploy.mcp_server.plan_spec → redeploy.mcp_server._run
+  redeploy.mcp_server.run_spec → redeploy.mcp_server._run
+  redeploy.mcp_server.fix_spec → redeploy.mcp_server._run
+  redeploy.mcp_server.bump_version → redeploy.mcp_server._run
+  redeploy.mcp_server.diagnose → redeploy.mcp_server._run
+  redeploy.mcp_server.list_specs → redeploy.schema.build_schema
+  redeploy.mcp_server.exec_ssh → redeploy.mcp_server._validate_exec_ssh_inputs
+  redeploy.mcp_server.nlp_command → redeploy.mcp_server._run
+  redeploy.mcp_server.get_workspace → redeploy.schema.build_schema
+  redeploy.detect.detector.Detector.run → redeploy.detect.probes.probe_runtime
+  redeploy.detect.detector.Detector.run → redeploy.detect.probes.probe_ports
+  redeploy.detect.detector.Detector.run → redeploy.detect.probes.probe_iptables_dnat
+  redeploy.detect.hardware.probe_hardware → redeploy.detect.hardware._wrap_remote_probe
+  redeploy.detect.hardware.probe_hardware → redeploy.integrations.op3_bridge.snapshot_to_hardware_info
+  redeploy.detect.hardware.probe_hardware → redeploy.steps.StepLibrary.list
+  redeploy.detect.hardware_rules.analyze → redeploy.detect.hardware_rules._hw_info_to_dict
+  redeploy.detect.hardware_rules.analyze → redeploy.detect.hardware_rules._op3_diag_to_hw_diag
+  redeploy.detect.templates._build_templates → redeploy.detect.templates._load_templates_from_yaml
+  redeploy.detect.templates.TemplateEngine.detect → redeploy.detect.templates.build_context
 ```
 
 ### Code Analysis (`project/analysis.toon.yaml`)
 
 ```toon markpact:analysis path=project/analysis.toon.yaml
-# code2llm | 293f 40505L | python:203,md:44,yaml:37,yml:3,shell:2,json:1,toml:1 | 2026-05-20
-# generated in 0.06s
-# CC̄=5.1 | critical:44/969 | dups:0 | cycles:0
+# code2llm | 299f 40750L | python:209,md:44,yaml:37,yml:3,shell:2,json:1,toml:1 | 2026-05-20
+# generated in 0.07s
+# CC̄=5.0 | critical:41/981 | dups:0 | cycles:0
 
 HEALTH[20]:
   🟡 CC    verify_expectations CC=25 (limit:15)
-  🟡 CC    update_registry CC=17 (limit:15)
-  🟡 CC    _parse_probe_output CC=16 (limit:15)
   🟡 CC    _collect_hosts CC=18 (limit:15)
   🟡 CC    apply_fix_to_spec CC=16 (limit:15)
   🟡 CC    apply_to_spec CC=20 (limit:15)
@@ -1602,16 +1625,18 @@ HEALTH[20]:
   🟡 CC    import_cmd CC=21 (limit:15)
   🟡 CC    _print_import_spec CC=15 (limit:15)
   🟡 CC    _spec_to_migration_yaml CC=22 (limit:15)
-  🟡 CC    run CC=30 (limit:15)
-  🟡 CC    _build_checksum_verification CC=32 (limit:15)
-  🟡 CC    _render_markdown_report CC=18 (limit:15)
   🟡 CC    gh_workflow_run CC=19 (limit:15)
   🟡 CC    device_map_cmd CC=20 (limit:15)
+  🟡 CC    lint CC=19 (limit:15)
+  🟡 CC    prompt_cmd CC=15 (limit:15)
+  🟡 CC    push CC=15 (limit:15)
+  🟡 CC    audit CC=18 (limit:15)
+  🟡 CC    version_init CC=26 (limit:15)
 
 REFACTOR[1]:
   1. split 20 high-CC methods  (CC>15)
 
-PIPELINES[515]:
+PIPELINES[520]:
   [1] Src [to_dict]: to_dict
       PURITY: 100% pure
   [2] Src [record]: record → list
@@ -1692,8 +1717,8 @@ LAYERS:
   │ redeploy.yaml                3L  0C    0m  CC=0.0    ←0
   │
   redeploy/                       CC̄=5.0    ←in:79  →out:2
-  │ !! plan_apply                1005L  0C   19m  CC=32     ←0
-  │ !! discovery                  789L  2C   26m  CC=17     ←5
+  │ !! discovery                  693L  2C   23m  CC=14     ←5
+  │ !! plan_apply                 686L  0C   13m  CC=16     ←0
   │ !! handlers                   655L  0C   22m  CC=16     ←2
   │ !! planner                    627L  1C   21m  CC=10     ←0
   │ !! commands                   594L  0C    8m  CC=26     ←0
@@ -1719,6 +1744,7 @@ LAYERS:
   │ ssh                        301L  4C   17m  CC=7      ←0
   │ !! device_map                 299L  0C    5m  CC=20     ←0
   │ !! compose                    299L  1C   18m  CC=18     ←0
+  │ plan_apply_report          296L  0C   10m  CC=14     ←1
   │ steps                      294L  0C    7m  CC=7      ←0
   │ !! gh_workflow                291L  0C   15m  CC=19     ←0
   │ !! config_hints               289L  1C   15m  CC=26     ←0
@@ -1743,8 +1769,8 @@ LAYERS:
   │ parse                      190L  0C   10m  CC=12     ←0
   │ !! docker_compose             190L  0C    2m  CC=20     ←1
   │ spec                       182L  3C    6m  CC=5      ←1
-  │ compiler                   182L  1C    6m  CC=11     ←3
   │ extractor                  182L  1C    5m  CC=14     ←0
+  │ compiler                   182L  1C    6m  CC=11     ←3
   │ __init__                   180L  2C   10m  CC=7      ←8
   │ core                       179L  0C    7m  CC=10     ←7
   │ !! migration                  179L  0C    1m  CC=19     ←1
@@ -1776,9 +1802,9 @@ LAYERS:
   │ process_control            123L  0C    3m  CC=11     ←0
   │ __init__                   121L  0C    0m  CC=0.0    ←0
   │ !! browser_reload             120L  0C    3m  CC=16     ←0
+  │ spec_analyzer              118L  1C    3m  CC=7      ←0
   │ state                      118L  0C    4m  CC=7      ←0
   │ diff                       118L  1C    3m  CC=8      ←1
-  │ spec_analyzer              118L  1C    3m  CC=7      ←0
   │ hardware                   117L  5C    0m  CC=0.0    ←0
   │ init                       111L  0C    1m  CC=10     ←0
   │ !! push                       110L  0C    1m  CC=15     ←0
@@ -1788,19 +1814,20 @@ LAYERS:
   │ detector                   104L  1C    4m  CC=9      ←2
   │ patterns                   104L  0C    1m  CC=8      ←0
   │ toml_                      104L  1C    3m  CC=10     ←0
+  │ plan_apply_run             104L  0C    3m  CC=8      ←1
   │ systemd_reload              98L  0C    2m  CC=12     ←0
   │ __init__                    97L  1C    4m  CC=4      ←41
   │ target                      97L  0C    1m  CC=10     ←1
   │ blueprint                   95L  6C    3m  CC=3      ←0
-  │ yaml_                       94L  1C    3m  CC=10     ←0
   │ path                        94L  2C    5m  CC=9      ←1
+  │ yaml_                       94L  1C    3m  CC=10     ←0
   │ verify                      92L  1C    7m  CC=8      ←0
   │ json_                       90L  1C    3m  CC=9      ←0
   │ config_txt                  88L  1C    2m  CC=14     ←1
   │ generic                     87L  0C    1m  CC=1      ←0
   │ workflow                    87L  0C    3m  CC=10     ←0
-  │ !! lint                        86L  0C    1m  CC=19     ←0
   │ ignore                      86L  1C    4m  CC=9      ←1
+  │ !! lint                        86L  0C    1m  CC=19     ←0
   │ decider                     85L  2C    2m  CC=7      ←1
   │ autostart                   84L  1C    3m  CC=6      ←1
   │ hardware                    83L  0C    2m  CC=4      ←0
@@ -1809,8 +1836,8 @@ LAYERS:
   │ models                      81L  3C    3m  CC=2      ←0
   │ compositors                 80L  1C    1m  CC=2      ←0
   │ plugin                      79L  0C    1m  CC=13     ←0
-  │ browsers                    78L  1C    1m  CC=5      ←0
   │ probe                       78L  1C    8m  CC=4      ←0
+  │ browsers                    78L  1C    1m  CC=5      ←0
   │ infra                       77L  6C    0m  CC=0.0    ←0
   │ __init__                    77L  0C    0m  CC=0.0    ←0
   │ binary                      74L  1C    2m  CC=14     ←0
@@ -1819,6 +1846,7 @@ LAYERS:
   │ run_container_build         69L  0C    1m  CC=10     ←1
   │ enums                       69L  4C    0m  CC=0.0    ←0
   │ output_profiles             68L  1C    2m  CC=5      ←0
+  │ discovery_registry          66L  0C    3m  CC=9      ←1
   │ regex                       65L  1C    2m  CC=5      ←0
   │ __init__                    65L  1C    5m  CC=2      ←3
   │ loop_detector               61L  2C    4m  CC=5      ←0
@@ -1829,8 +1857,8 @@ LAYERS:
   │ mcp_cmd                     54L  0C    1m  CC=1      ←0
   │ __init__                    52L  0C    0m  CC=0.0    ←0
   │ log_writer                  51L  0C    1m  CC=6      ←0
-  │ panels                      51L  1C    5m  CC=2      ←2
   │ __init__                    51L  0C    1m  CC=1      ←1
+  │ panels                      51L  1C    5m  CC=2      ←2
   │ base                        49L  1C    5m  CC=3      ←0
   │ kiosk                       49L  0C    0m  CC=0.0    ←0
   │ models                      48L  3C    3m  CC=3      ←1
@@ -1840,6 +1868,7 @@ LAYERS:
   │ __init__                    47L  0C    0m  CC=0.0    ←0
   │ data_sync                   45L  0C    2m  CC=7      ←0
   │ hardware                    45L  0C    1m  CC=13     ←1
+  │ !! discovery_probe             45L  0C    2m  CC=16     ←0
   │ exceptions                  44L  6C    4m  CC=1      ←0
   │ rollback                    44L  0C    1m  CC=8      ←1
   │ __init__                    44L  0C    0m  CC=0.0    ←0
@@ -1848,15 +1877,17 @@ LAYERS:
   │ podman                      41L  0C    1m  CC=1      ←0
   │ hyperpixel                  41L  0C    0m  CC=0.0    ←0
   │ docker                      40L  0C    1m  CC=1      ←0
-  │ context                     39L  1C    3m  CC=1      ←0
   │ reference                   39L  1C    1m  CC=12     ←0
+  │ context                     39L  1C    3m  CC=1      ←0
+  │ types                       38L  2C    0m  CC=0.0    ←0
   │ __init__                    37L  0C    0m  CC=0.0    ←0
   │ pipeline                    35L  1C    0m  CC=0.0    ←0
-  │ migration                   34L  0C    1m  CC=9      ←1
   │ paths                       34L  0C    3m  CC=5      ←1
+  │ migration                   34L  0C    1m  CC=9      ←1
   │ diff                        33L  0C    1m  CC=1      ←0
   │ process                     32L  0C    1m  CC=1      ←0
   │ raspi_config                32L  0C    1m  CC=3      ←1
+  │ helpers                     32L  0C    3m  CC=2      ←0
   │ __init__                    30L  0C    0m  CC=0.0    ←0
   │ patterns                    28L  0C    0m  CC=0.0    ←0
   │ persisted                   27L  1C    2m  CC=1      ←0
@@ -1895,7 +1926,7 @@ LAYERS:
   │ __init__                     0L  0C    0m  CC=0.0    ←0
   │
   ./                              CC̄=0.0    ←in:0  →out:0
-  │ !! CHANGELOG.md              1480L  0C    0m  CC=0.0    ←0
+  │ !! CHANGELOG.md              1503L  0C    0m  CC=0.0    ←0
   │ !! README.md                 1117L  0C    0m  CC=0.0    ←0
   │ !! goal.yaml                  512L  0C    0m  CC=0.0    ←0
   │ REFACTORING.md             399L  0C    0m  CC=0.0    ←0
@@ -1910,7 +1941,7 @@ LAYERS:
   │ tree.sh                      1L  0C    0m  CC=0.0    ←0
   │
   docs/                           CC̄=0.0    ←in:0  →out:0
-  │ !! README.md                 1085L  0C    0m  CC=0.0    ←0
+  │ !! README.md                 1141L  0C    0m  CC=0.0    ←0
   │ dsl-migration.md           478L  0C    0m  CC=0.0    ←0
   │ fleet.md                   366L  0C    0m  CC=0.0    ←0
   │ patterns.md                304L  0C    0m  CC=0.0    ←0
@@ -1953,16 +1984,16 @@ COUPLING:
   redeploy.config_apply                                            ←4                                             1                                                                                                                                                                                                                                    ──                       
        redeploy.plugins                      5                                                                                                                                                                                                                                                                                                                                ──
   CYCLES: none
-  HUB: redeploy.version/ (fan-in=15)
-  HUB: redeploy.apply/ (fan-in=8)
   HUB: redeploy.dsl/ (fan-in=8)
-  HUB: redeploy.markpact/ (fan-in=10)
   HUB: redeploy/ (fan-in=79)
   HUB: redeploy.hardware/ (fan-in=5)
+  HUB: redeploy.version/ (fan-in=15)
+  HUB: redeploy.markpact/ (fan-in=10)
+  HUB: redeploy.apply/ (fan-in=8)
+  SMELL: redeploy.heal/ fan-out=11 → split needed
+  SMELL: redeploy.iac/ fan-out=8 → split needed
   SMELL: redeploy.cli/ fan-out=76 → split needed
   SMELL: redeploy.analyze/ fan-out=8 → split needed
-  SMELL: redeploy.iac/ fan-out=8 → split needed
-  SMELL: redeploy.heal/ fan-out=11 → split needed
 
 EXTERNAL:
   validation: run `vallm batch .` → validation.toon
@@ -1972,26 +2003,29 @@ EXTERNAL:
 ### Duplication (`project/duplication.toon.yaml`)
 
 ```toon markpact:analysis path=project/duplication.toon.yaml
-# redup/duplication | 10 groups | 199f 28986L | 2026-05-19
+# redup/duplication | 13 groups | 207f 29261L | 2026-05-19
 
 SUMMARY:
-  files_scanned: 199
-  total_lines:   28986
-  dup_groups:    10
-  dup_fragments: 20
-  saved_lines:   117
-  scan_ms:       2550
+  files_scanned: 207
+  total_lines:   29261
+  dup_groups:    13
+  dup_fragments: 26
+  saved_lines:   165
+  scan_ms:       2624
 
 HOTSPOTS[7] (files with most duplication):
+  redeploy/discovery/probe_parse.py  dup=40L  groups=2  frags=2  (0.1%)
+  redeploy/discovery_probe.py  dup=40L  groups=2  frags=2  (0.1%)
   redeploy/cli/commands/version/helpers.py  dup=38L  groups=2  frags=2  (0.1%)
   redeploy/cli/commands/version/release.py  dup=38L  groups=2  frags=2  (0.1%)
   redeploy/hardware/fixes.py  dup=26L  groups=1  frags=2  (0.1%)
   redeploy/cli/commands/version/utils/changelog_config.py  dup=21L  groups=1  frags=1  (0.1%)
   redeploy/cli/commands/version/utils/git_config.py  dup=21L  groups=1  frags=1  (0.1%)
-  examples/redeploy_iac_parsers/argocd_flux.py  dup=20L  groups=1  frags=2  (0.1%)
-  redeploy/heal.py  dup=18L  groups=3  frags=3  (0.1%)
 
-DUPLICATES[10] (ranked by impact):
+DUPLICATES[13] (ranked by impact):
+  [da68af415fa60292] ! EXAC  parse_probe_output  L=32 N=2 saved=32 sim=1.00
+      redeploy/discovery/probe_parse.py:4-35  (parse_probe_output)
+      redeploy/discovery_probe.py:4-35  (parse_probe_output)
   [bb546964bbb3b9b9]   EXAC  _resolve_package_release_git_config  L=22 N=2 saved=22 sim=1.00
       redeploy/cli/commands/version/helpers.py:60-81  (_resolve_package_release_git_config)
       redeploy/cli/commands/version/release.py:114-135  (_resolve_package_release_git_config)
@@ -2009,13 +2043,19 @@ DUPLICATES[10] (ranked by impact):
       examples/redeploy_iac_parsers/argocd_flux.py:81-90  (can_parse)
   [af902116d9805742]   EXAC  _load_dotenv  L=9 N=2 saved=9 sim=1.00
       redeploy/cli/commands/bump_fix.py:163-171  (_load_dotenv)
-      redeploy/cli/commands/plan_apply.py:616-625  (_load_dotenv)
+      redeploy/cli/commands/plan_apply.py:562-571  (_load_dotenv)
+  [b3424a74c0953eff]   EXAC  infer_strategy  L=8 N=2 saved=8 sim=1.00
+      redeploy/discovery/probe_parse.py:38-45  (infer_strategy)
+      redeploy/discovery_probe.py:38-45  (infer_strategy)
   [fc600e8d2f11c2ec]   EXAC  collect_diagnostics  L=8 N=2 saved=8 sim=1.00
       redeploy/heal/hint_provider.py:82-89  (collect_diagnostics)
       redeploy/heal.py:87-94  (collect_diagnostics)
   [069a3d8b69b2d778]   STRU  run_docker_build  L=8 N=2 saved=8 sim=1.00
       redeploy/apply/handlers.py:119-126  (run_docker_build)
       redeploy/apply/handlers.py:129-136  (run_podman_build)
+  [7b14143d76345ae5]   STRU  run_shell  L=8 N=2 saved=8 sim=1.00
+      redeploy/discovery/helpers.py:21-28  (run_shell)
+      redeploy/discovery.py:355-360  (_run)
   [2bcb64b1eb9fa406]   EXAC  _ssh  L=7 N=2 saved=7 sim=1.00
       redeploy/heal/hint_provider.py:73-79  (_ssh)
       redeploy/heal.py:78-84  (_ssh)
@@ -2023,133 +2063,145 @@ DUPLICATES[10] (ranked by impact):
       redeploy/heal/loop_detector.py:55-57  (reset)
       redeploy/heal.py:271-273  (reset)
 
-REFACTOR[10] (ranked by priority):
-  [1] ○ extract_function   → redeploy/cli/commands/version/utils/_resolve_package_release_git_config.py
+REFACTOR[13] (ranked by priority):
+  [1] ◐ extract_function   → redeploy/utils/parse_probe_output.py
+      WHY: 2 occurrences of 32-line block across 2 files — saves 32 lines
+      FILES: redeploy/discovery/probe_parse.py, redeploy/discovery_probe.py
+  [2] ○ extract_function   → redeploy/cli/commands/version/utils/_resolve_package_release_git_config.py
       WHY: 2 occurrences of 22-line block across 2 files — saves 22 lines
       FILES: redeploy/cli/commands/version/helpers.py, redeploy/cli/commands/version/release.py
-  [2] ○ extract_function   → redeploy/cli/commands/version/utils/utils/resolve_package_release_changelog_config.py
+  [3] ○ extract_function   → redeploy/cli/commands/version/utils/utils/resolve_package_release_changelog_config.py
       WHY: 2 occurrences of 21-line block across 2 files — saves 21 lines
       FILES: redeploy/cli/commands/version/utils/changelog_config.py, redeploy/cli/commands/version/utils/git_config.py
-  [3] ○ extract_function   → redeploy/cli/commands/version/utils/_resolve_package_release_changelog_config.py
+  [4] ○ extract_function   → redeploy/cli/commands/version/utils/_resolve_package_release_changelog_config.py
       WHY: 2 occurrences of 16-line block across 2 files — saves 16 lines
       FILES: redeploy/cli/commands/version/helpers.py, redeploy/cli/commands/version/release.py
-  [4] ○ extract_function   → redeploy/hardware/utils/fix_enable_i2c.py
+  [5] ○ extract_function   → redeploy/hardware/utils/fix_enable_i2c.py
       WHY: 2 occurrences of 13-line block across 1 files — saves 13 lines
       FILES: redeploy/hardware/fixes.py
-  [5] ○ extract_function   → examples/redeploy_iac_parsers/utils/can_parse.py
+  [6] ○ extract_function   → examples/redeploy_iac_parsers/utils/can_parse.py
       WHY: 2 occurrences of 10-line block across 1 files — saves 10 lines
       FILES: examples/redeploy_iac_parsers/argocd_flux.py
-  [6] ○ extract_function   → redeploy/cli/commands/utils/_load_dotenv.py
+  [7] ○ extract_function   → redeploy/cli/commands/utils/_load_dotenv.py
       WHY: 2 occurrences of 9-line block across 2 files — saves 9 lines
       FILES: redeploy/cli/commands/bump_fix.py, redeploy/cli/commands/plan_apply.py
-  [7] ○ extract_function   → redeploy/utils/collect_diagnostics.py
+  [8] ○ extract_function   → redeploy/utils/infer_strategy.py
+      WHY: 2 occurrences of 8-line block across 2 files — saves 8 lines
+      FILES: redeploy/discovery/probe_parse.py, redeploy/discovery_probe.py
+  [9] ○ extract_function   → redeploy/utils/collect_diagnostics.py
       WHY: 2 occurrences of 8-line block across 2 files — saves 8 lines
       FILES: redeploy/heal.py, redeploy/heal/hint_provider.py
-  [8] ○ extract_function   → redeploy/apply/utils/run_docker_build.py
+  [10] ○ extract_function   → redeploy/apply/utils/run_docker_build.py
       WHY: 2 occurrences of 8-line block across 1 files — saves 8 lines
       FILES: redeploy/apply/handlers.py
-  [9] ○ extract_function   → redeploy/utils/_ssh.py
+  [11] ○ extract_function   → redeploy/utils/run_shell.py
+      WHY: 2 occurrences of 8-line block across 2 files — saves 8 lines
+      FILES: redeploy/discovery.py, redeploy/discovery/helpers.py
+  [12] ○ extract_function   → redeploy/utils/_ssh.py
       WHY: 2 occurrences of 7-line block across 2 files — saves 7 lines
       FILES: redeploy/heal.py, redeploy/heal/hint_provider.py
-  [10] ○ extract_class      → redeploy/utils/reset.py
+  [13] ○ extract_class      → redeploy/utils/reset.py
       WHY: 2 occurrences of 3-line block across 2 files — saves 3 lines
       FILES: redeploy/heal.py, redeploy/heal/loop_detector.py
 
-QUICK_WINS[9] (low risk, high savings — do first):
-  [1] extract_function   saved=22L  → redeploy/cli/commands/version/utils/_resolve_package_release_git_config.py
+QUICK_WINS[11] (low risk, high savings — do first):
+  [2] extract_function   saved=22L  → redeploy/cli/commands/version/utils/_resolve_package_release_git_config.py
       FILES: helpers.py, release.py
-  [2] extract_function   saved=21L  → redeploy/cli/commands/version/utils/utils/resolve_package_release_changelog_config.py
+  [3] extract_function   saved=21L  → redeploy/cli/commands/version/utils/utils/resolve_package_release_changelog_config.py
       FILES: changelog_config.py, git_config.py
-  [3] extract_function   saved=16L  → redeploy/cli/commands/version/utils/_resolve_package_release_changelog_config.py
+  [4] extract_function   saved=16L  → redeploy/cli/commands/version/utils/_resolve_package_release_changelog_config.py
       FILES: helpers.py, release.py
-  [4] extract_function   saved=13L  → redeploy/hardware/utils/fix_enable_i2c.py
+  [5] extract_function   saved=13L  → redeploy/hardware/utils/fix_enable_i2c.py
       FILES: fixes.py
-  [5] extract_function   saved=10L  → examples/redeploy_iac_parsers/utils/can_parse.py
+  [6] extract_function   saved=10L  → examples/redeploy_iac_parsers/utils/can_parse.py
       FILES: argocd_flux.py
-  [6] extract_function   saved=9L  → redeploy/cli/commands/utils/_load_dotenv.py
+  [7] extract_function   saved=9L  → redeploy/cli/commands/utils/_load_dotenv.py
       FILES: bump_fix.py, plan_apply.py
-  [7] extract_function   saved=8L  → redeploy/utils/collect_diagnostics.py
+  [8] extract_function   saved=8L  → redeploy/utils/infer_strategy.py
+      FILES: probe_parse.py, discovery_probe.py
+  [9] extract_function   saved=8L  → redeploy/utils/collect_diagnostics.py
       FILES: heal.py, hint_provider.py
-  [8] extract_function   saved=8L  → redeploy/apply/utils/run_docker_build.py
+  [10] extract_function   saved=8L  → redeploy/apply/utils/run_docker_build.py
       FILES: handlers.py
-  [9] extract_function   saved=7L  → redeploy/utils/_ssh.py
-      FILES: heal.py, hint_provider.py
+  [11] extract_function   saved=8L  → redeploy/utils/run_shell.py
+      FILES: discovery.py, helpers.py
 
-EFFORT_ESTIMATE (total ≈ 3.9h):
+EFFORT_ESTIMATE (total ≈ 6.0h):
+  hard   parse_probe_output                  saved=32L  ~96min
   medium _resolve_package_release_git_config saved=22L  ~44min
   medium resolve_package_release_changelog_config saved=21L  ~42min
   medium _resolve_package_release_changelog_config saved=16L  ~32min
   easy   fix_enable_i2c                      saved=13L  ~26min
   easy   can_parse                           saved=10L  ~20min
   easy   _load_dotenv                        saved=9L  ~18min
+  easy   infer_strategy                      saved=8L  ~16min
   easy   collect_diagnostics                 saved=8L  ~16min
   easy   run_docker_build                    saved=8L  ~16min
-  easy   _ssh                                saved=7L  ~14min
-  easy   reset                               saved=3L  ~6min
+  ... +3 more (~36min)
 
 METRICS-TARGET:
-  dup_groups:  10 → 0
-  saved_lines: 117 lines recoverable
+  dup_groups:  13 → 0
+  saved_lines: 165 lines recoverable
 ```
 
 ### Evolution / Churn (`project/evolution.toon.yaml`)
 
 ```toon markpact:analysis path=project/evolution.toon.yaml
-# code2llm/evolution | 951 func | 159f | 2026-05-20
+# code2llm/evolution | 963 func | 164f | 2026-05-20
 # generated in 0.00s
 
 NEXT[10] (ranked by impact):
-  [1] !! SPLIT-FUNC      run  CC=30  fan=44
-      WHY: CC=30 exceeds 15
-      EFFORT: ~1h  IMPACT: 1320
-
-  [2] !! SPLIT-FUNC      version_init  CC=26  fan=26
+  [1] !! SPLIT-FUNC      version_init  CC=26  fan=26
       WHY: CC=26 exceeds 15
       EFFORT: ~1h  IMPACT: 676
 
-  [3] !! SPLIT-FUNC      _build_checksum_verification  CC=32  fan=21
-      WHY: CC=32 exceeds 15
-      EFFORT: ~1h  IMPACT: 672
-
-  [4] !! SPLIT-FUNC      DockerComposeParser.parse  CC=25  fan=24
+  [2] !! SPLIT-FUNC      DockerComposeParser.parse  CC=25  fan=24
       WHY: CC=25 exceeds 15
       EFFORT: ~1h  IMPACT: 600
 
-  [5] !  SPLIT-FUNC      device_map_cmd  CC=20  fan=28
+  [3] !  SPLIT-FUNC      device_map_cmd  CC=20  fan=28
       WHY: CC=20 exceeds 15
       EFFORT: ~1h  IMPACT: 560
 
-  [6] !! SPLIT-FUNC      probe  CC=26  fan=21
+  [4] !! SPLIT-FUNC      probe  CC=26  fan=21
       WHY: CC=26 exceeds 15
       EFFORT: ~1h  IMPACT: 546
 
-  [7] !  SPLIT-FUNC      import_cmd  CC=21  fan=26
+  [5] !  SPLIT-FUNC      import_cmd  CC=21  fan=26
       WHY: CC=21 exceeds 15
       EFFORT: ~1h  IMPACT: 546
 
-  [8] !! SPLIT-FUNC      ConfigHintsParser._parse_k8s_yaml  CC=26  fan=20
+  [6] !  SPLIT-FUNC      run  CC=16  fan=34
+      WHY: CC=16 exceeds 15
+      EFFORT: ~1h  IMPACT: 544
+
+  [7] !! SPLIT-FUNC      ConfigHintsParser._parse_k8s_yaml  CC=26  fan=20
       WHY: CC=26 exceeds 15
       EFFORT: ~1h  IMPACT: 520
 
-  [9] !  SPLIT-FUNC      fix_cmd  CC=17  fan=30
+  [8] !  SPLIT-FUNC      fix_cmd  CC=17  fan=30
       WHY: CC=17 exceeds 15
       EFFORT: ~1h  IMPACT: 510
 
-  [10] !  SPLIT-FUNC      gh_workflow_run  CC=19  fan=25
+  [9] !  SPLIT-FUNC      gh_workflow_run  CC=19  fan=25
       WHY: CC=19 exceeds 15
       EFFORT: ~1h  IMPACT: 475
+
+  [10] !  SPLIT-FUNC      ConfigHintsParser._parse_github_actions  CC=22  fan=21
+      WHY: CC=22 exceeds 15
+      EFFORT: ~1h  IMPACT: 462
 
 
 RISKS[3]:
   ⚠ Splitting CHANGELOG.md may break 0 import paths
-  ⚠ Splitting README.md may break 0 import paths
   ⚠ Splitting docs/README.md may break 0 import paths
+  ⚠ Splitting README.md may break 0 import paths
 
 METRICS-TARGET:
   CC̄:          5.0 → ≤3.5
-  max-CC:      32 → ≤16
+  max-CC:      26 → ≤13
   god-modules: 9 → 0
-  high-CC(≥15): 41 → ≤20
+  high-CC(≥15): 38 → ≤19
   hub-types:   0 → ≤0
 
 PATTERNS (language parser shared logic):
@@ -2177,7 +2229,7 @@ PATTERNS (language parser shared logic):
     - Standardized FunctionInfo/ClassInfo models
 
 HISTORY:
-  prev CC̄=5.1 → now CC̄=5.0
+  prev CC̄=5.0 → now CC̄=5.0
 ```
 
 ### Validation (`project/validation.toon.yaml`)

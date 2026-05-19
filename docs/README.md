@@ -1,7 +1,7 @@
 <!-- code2docs:start --># redeploy
 
-![version](https://img.shields.io/badge/version-0.1.0-blue) ![python](https://img.shields.io/badge/python-%3E%3D3.11-blue) ![coverage](https://img.shields.io/badge/coverage-unknown-lightgrey) ![functions](https://img.shields.io/badge/functions-969-green)
-> **969** functions | **179** classes | **300** files | CC̄ = 5.1
+![version](https://img.shields.io/badge/version-0.1.0-blue) ![python](https://img.shields.io/badge/python-%3E%3D3.11-blue) ![coverage](https://img.shields.io/badge/coverage-unknown-lightgrey) ![functions](https://img.shields.io/badge/functions-986-green)
+> **986** functions | **181** classes | **308** files | CC̄ = 5.0
 
 > Auto-generated project documentation from source code analysis.
 
@@ -104,12 +104,14 @@ redeploy/
     ├── heal/
 ├── redeploy/
     ├── parse
+    ├── discovery_probe
     ├── fleet
     ├── verify
     ├── spec_loader
     ├── ssh
     ├── patterns
     ├── discovery
+    ├── discovery_registry
     ├── mcp_server
         ├── process_control_template
         ├── detector
@@ -137,6 +139,8 @@ redeploy/
         ├── podman
         ├── transfer
         ├── generic
+        ├── helpers
+        ├── types
     ├── analyze/
         ├── spec_analyzer
         ├── models
@@ -170,6 +174,7 @@ redeploy/
         ├── display
         ├── query
         ├── core
+            ├── plan_apply_report
             ├── target
             ├── devices
             ├── state
@@ -194,6 +199,7 @@ redeploy/
             ├── lint
             ├── prompt_cmd
             ├── diff
+            ├── plan_apply_run
             ├── workflow
             ├── push
             ├── patterns
@@ -366,6 +372,8 @@ redeploy/
     ├── hardware-109
             ├── toon
             ├── toon
+        ├── registry
+        ├── probe_parse
 ```
 
 ## API Overview
@@ -412,6 +420,8 @@ redeploy/
 - **`HealLoopDetector`** — Detect repeated non-converging heal hints for a given step.
 - **`HealRunner`** — Wraps :class:`Executor` with a self-healing loop.
 - **`StepLibrary`** — Registry of pre-defined named MigrationSteps.
+- **`DiscoveredHost`** — —
+- **`ProbeResult`** — Full autonomous probe result for a single host.
 - **`SpecAnalyzer`** — Run static checks against a compiled MigrationSpec (and optional raw MarkpactDocument).
 - **`IssueSeverity`** — —
 - **`Issue`** — —
@@ -567,13 +577,15 @@ redeploy/
 - `parse_system_info(output)` — Parse KEY:VALUE system info lines (HOSTNAME, UPTIME, DISK, MEM, LOAD) into a dict.
 - `parse_diagnostics(output)` — Parse multi-section SSH diagnostics output into structured dict.
 - `parse_health_info(output)` — Parse health-check SSH output (HOSTNAME, UPTIME, HEALTH, DISK, LOAD) into a dict.
+- `parse_probe_output(out)` — —
+- `infer_strategy(info, services)` — —
 - `verify_data_integrity(ctx, local_counts, remote_counts)` — Compare local vs remote SQLite row counts and record results in *ctx*.
 - `load_migration_spec(path)` — Load a deployment spec from disk.
 - `get_pattern(name)` — Return pattern class by name, or None if not found.
 - `list_patterns()` — Return all registered pattern names.
 - `discover(subnet, ssh_users, ssh_port, ping)` — Discover SSH-accessible hosts in the local network.
-- `update_registry(hosts, registry, save)` — Merge discovered hosts into DeviceRegistry and optionally save.
 - `auto_probe(ip_or_host, users, port, timeout)` — Autonomously probe a host — try all available SSH keys and users.
+- `update_registry(hosts, registry, save)` — Merge discovered hosts into DeviceRegistry and optionally save.
 - `schema(directory)` — Discover the workspace: find migration specs, read version, git branch.
 - `plan_spec(spec, cwd)` — Preview a migration spec: show all steps without executing anything.
 - `run_spec(spec, force, dry_run, heal)` — Apply a migration spec.
@@ -605,6 +617,9 @@ redeploy/
 - `apply_fix_to_spec(spec_path, failed_step, llm_response)` — Extract YAML block from LLM response and patch it into the spec file.
 - `parse_failed_step(executor_summary, executor)` — Extract (step_id, step_output) from executor state or summary string.
 - `write_repair_log(spec_path, version, repairs)` — Append an entry to *REPAIR_LOG.md* adjacent to the spec file.
+- `is_raspberry_pi_mac(mac)` — —
+- `run_shell(cmd, timeout)` — —
+- `is_ip(value)` — —
 - `ensure_redeployignore(base_dir)` — Create .redeployignore with sensible defaults if it doesn't exist.
 - `generate_preflight_schema()` — —
 - `save_preflight_schema(schema, output_path)` — —
@@ -645,6 +660,12 @@ redeploy/
 - `overlay_device_onto_spec(spec, dev, console)` — Overlay device values onto spec target configuration.
 - `run_detect_for_spec(console, spec, do_detect)` — Run detect if requested and return planner.
 - `run_detect_workflow(console, hosts, manifest, app)` — Run DetectionWorkflow and print rich report.
+- `default_report_path(spec_path)` — —
+- `resolve_audit_entry(migration, started_at, ok)` — —
+- `step_command_block(step)` — —
+- `build_checksum_verification(migration, executed)` — Build post-deploy sync verification with checksum-aware rsync dry-run.
+- `render_markdown_report(entry, migration, spec_path, checksum)` — —
+- `write_markdown_report(console, migration, spec_path, started_at)` — —
 - `target(device_id, spec_file, dry_run, plan_only)` — Deploy a spec to a specific registered device.
 - `devices(tag, strategy, rpi, reachable)` — List known devices from ~/.config/redeploy/devices.yaml.
 - `scan(subnet, ssh_users, ssh_port, ping)` — Discover SSH-accessible devices on the local network.
@@ -686,6 +707,9 @@ redeploy/
 - `lint(ctx, spec_file, env_name, as_json)` — Static analysis of a migration spec (YAML or markpact .md).
 - `prompt_cmd(instruction, schema_only, dry_run, yes)` — Natural-language → redeploy command via LLM.
 - `diff(ci_file, host, from_src, to_src)` — Compare IaC file vs live host (drift detection).  [Phase 3 — coming soon]
+- `setup_run_logging(resolved_spec)` — Attach file logging; return (handler_id, log_file, started_at).
+- `run_lint_phase(console, resolved_spec, lint, file_handler_id)` — Run static lint when enabled; exit process on hard failures.
+- `run_preflight_phase(console)` — Generate preflight schema and optionally abort on blockers.
 - `workflow_cmd(ctx, name, css_file, dry_run)` — Run a named workflow from redeploy.css.
 - `push(host, files, dry_run, ssh_key)` — Apply desired-state YAML/JSON file(s) to a remote host.
 - `patterns(name)` — List available deploy patterns or show detail for one.
@@ -805,6 +829,9 @@ redeploy/
 - `parse_file(path)` — Parse a single file with auto-detected format.
 - `parse_dir(root, recursive, skip_errors)` — Parse all recognised files under *root*.
 - `parse_json_file(path)` — Tiny helper for plugin authors; currently unused by built-ins.
+- `update_registry(hosts, registry, save)` — Merge discovered hosts into DeviceRegistry and optionally save.
+- `parse_probe_output(out)` — —
+- `infer_strategy(info, services)` — —
 
 
 ## Project Structure
@@ -957,7 +984,9 @@ redeploy/
 📄 `redeploy.cli.commands.lint` (1 functions)
 📄 `redeploy.cli.commands.mcp_cmd` (1 functions)
 📄 `redeploy.cli.commands.patterns` (1 functions)
-📄 `redeploy.cli.commands.plan_apply` (19 functions)
+📄 `redeploy.cli.commands.plan_apply` (13 functions)
+📄 `redeploy.cli.commands.plan_apply_report` (10 functions)
+📄 `redeploy.cli.commands.plan_apply_run` (3 functions)
 📄 `redeploy.cli.commands.plugin` (1 functions)
 📄 `redeploy.cli.commands.probe` (1 functions)
 📄 `redeploy.cli.commands.prompt_cmd` (4 functions)
@@ -994,7 +1023,13 @@ redeploy/
 📄 `redeploy.detect.remote`
 📄 `redeploy.detect.templates` (13 functions, 6 classes)
 📄 `redeploy.detect.workflow` (12 functions, 3 classes)
-📄 `redeploy.discovery` (26 functions, 2 classes)
+📄 `redeploy.discovery` (23 functions, 2 classes)
+📄 `redeploy.discovery.helpers` (3 functions)
+📄 `redeploy.discovery.probe_parse` (2 functions)
+📄 `redeploy.discovery.registry` (3 functions)
+📄 `redeploy.discovery.types` (2 classes)
+📄 `redeploy.discovery_probe` (2 functions)
+📄 `redeploy.discovery_registry` (3 functions)
 📦 `redeploy.dsl`
 📄 `redeploy.dsl.loader` (12 functions, 3 classes)
 📄 `redeploy.dsl.parser` (8 functions, 2 classes)

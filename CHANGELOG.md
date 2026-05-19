@@ -12,6 +12,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Deprecate legacy `post_deploy` and `pre_deploy` fields in migration specs.
 - Keep backward compatibility: legacy `post_deploy`/`pre_deploy` are auto-converted to `hooks` during spec loading.
 
+## [0.2.77] - 2026-05-20
+
+### Docs
+- Update README.md
+- Update SUMD.md
+- Update SUMR.md
+- Update docs/README.md
+- Update project/README.md
+- Update project/context.md
+
+### Other
+- Update .code2llm_cache/CHANGELOG_1779233950006312401_47134.pkl
+- Update .code2llm_cache/README_1779233923438740450_59832.pkl
+- Update .code2llm_cache/README_1779233949900145680_35859.pkl
+- Update .code2llm_cache/__init___1779233949900698900_4367.pkl
+- Update .code2llm_cache/discovery_1779234021653078091_25076.pkl
+- Update .code2llm_cache/discovery_probe_1779233980358678165_1688.pkl
+- Update .code2llm_cache/discovery_registry_1779233999225860505_2006.pkl
+- Update .code2llm_cache/helpers_1779234267173510141_674.pkl
+- Update .code2llm_cache/plan_apply_1779234124411762843_23260.pkl
+- Update .code2llm_cache/plan_apply_report_1779233966453544212_9686.pkl
+- ... and 38 more files
+
 ## [0.2.76] - 2026-05-20
 
 ### Docs

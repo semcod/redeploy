@@ -24,12 +24,12 @@ Infrastructure migration toolkit: detect → plan → apply
 ## Metadata
 
 - **name**: `redeploy`
-- **version**: `0.2.75`
+- **version**: `0.2.76`
 - **python_requires**: `>=3.11`
 - **license**: Apache-2.0
 - **ai_model**: `openrouter/qwen/qwen3-coder-next`
 - **ecosystem**: SUMD + DOQL + testql + taskfile
-- **generated_from**: pyproject.toml, Makefile, testql(2), app.doql.less, pyqual.yaml, goal.yaml, .env.example, src(14 mod), project/(2 analysis files)
+- **generated_from**: pyproject.toml, Makefile, testql(2), app.doql.less, pyqual.yaml, goal.yaml, .env.example, src(16 mod), project/(2 analysis files)
 
 ## Architecture
 
@@ -45,7 +45,7 @@ SUMD (description) → DOQL/source (code) → taskfile (automation) → testql (
 
 app {
   name: redeploy;
-  version: 0.2.75;
+  version: 0.2.76;
 }
 
 interface[type="cli"] {
@@ -106,6 +106,8 @@ environment[name="local"] {
 - `redeploy.cli`
 - `redeploy.data_sync`
 - `redeploy.discovery`
+- `redeploy.discovery_probe`
+- `redeploy.discovery_registry`
 - `redeploy.fleet`
 - `redeploy.heal`
 - `redeploy.mcp_server`
@@ -215,7 +217,7 @@ pipeline:
 ```yaml
 project:
   name: redeploy
-  version: 0.2.75
+  version: 0.2.76
   env: local
 ```
 
@@ -317,13 +319,13 @@ pip install -e .[dev]
 ### `project/map.toon.yaml`
 
 ```toon markpact:analysis path=project/map.toon.yaml
-# redeploy | 276f 45125L | python:273,shell:2,less:1 | 2026-05-20
-# stats: 844 func | 384 cls | 276 mod | CC̄=4.8 | critical:96 | cycles:0
-# alerts[5]: CC _build_checksum_verification=32; CC run=30; CC probe=26; CC version_init=26; CC _bump_single=25
-# hotspots[5]: run fan=42; fix_cmd fan=29; hardware fan=28; device_map_cmd fan=27; version_init fan=26
+# redeploy | 286f 45546L | python:283,shell:2,less:1 | 2026-05-20
+# stats: 862 func | 391 cls | 286 mod | CC̄=4.8 | critical:97 | cycles:0
+# alerts[5]: CC probe=26; CC version_init=26; CC _bump_single=25; CC _build_manifest=25; CC extract_blueprint=22
+# hotspots[5]: run fan=32; fix_cmd fan=29; hardware fan=28; device_map_cmd fan=27; version_init fan=26
 # evolution: baseline
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
-M[276]:
+M[286]:
   app.doql.less,60
   examples/redeploy_iac_parsers/argocd_flux.py,130
   examples/redeploy_iac_parsers/gitops_ci.py,138
@@ -393,7 +395,9 @@ M[276]:
   redeploy/cli/commands/lint.py,87
   redeploy/cli/commands/mcp_cmd.py,55
   redeploy/cli/commands/patterns.py,105
-  redeploy/cli/commands/plan_apply.py,1006
+  redeploy/cli/commands/plan_apply.py,687
+  redeploy/cli/commands/plan_apply_report.py,297
+  redeploy/cli/commands/plan_apply_run.py,105
   redeploy/cli/commands/plugin.py,80
   redeploy/cli/commands/probe.py,145
   redeploy/cli/commands/prompt_cmd.py,344
@@ -430,7 +434,13 @@ M[276]:
   redeploy/detect/remote.py,5
   redeploy/detect/templates.py,420
   redeploy/detect/workflow.py,419
-  redeploy/discovery.py,790
+  redeploy/discovery/helpers.py,33
+  redeploy/discovery/probe_parse.py,46
+  redeploy/discovery/registry.py,65
+  redeploy/discovery/types.py,39
+  redeploy/discovery.py,694
+  redeploy/discovery_probe.py,46
+  redeploy/discovery_registry.py,67
   redeploy/dsl/__init__.py,31
   redeploy/dsl/loader.py,404
   redeploy/dsl/parser.py,262
@@ -519,6 +529,7 @@ M[276]:
   redeploy/tests/test_cli.py,329
   redeploy/tests/test_data_sync.py,118
   redeploy/tests/test_discovery.py,232
+  redeploy/tests/test_discovery_probe.py,46
   redeploy/tests/test_dsl.py,355
   redeploy/tests/test_examples.py,519
   redeploy/tests/test_executor.py,733
@@ -537,6 +548,7 @@ M[276]:
   redeploy/tests/test_observe.py,370
   redeploy/tests/test_parse.py,269
   redeploy/tests/test_patterns.py,288
+  redeploy/tests/test_plan_apply_report.py,92
   redeploy/tests/test_planner_edge.py,351
   redeploy/tests/test_plugins.py,411
   redeploy/tests/test_probes.py,347
@@ -929,7 +941,7 @@ D:
     e: patterns
     patterns(name)
   redeploy/cli/commands/plan_apply.py:
-    e: plan,apply,migrate,run,_apply_manifest_to_spec,_print_spec_summary,_perform_live_detect,_run_apply,_load_dotenv,_detect_project_version,_print_heal_banner,_ensure_redeployignore,_inject_project_sync_step,_default_report_path,_resolve_audit_entry,_step_command_block,_build_checksum_verification,_render_markdown_report,_write_markdown_report
+    e: plan,apply,migrate,run,_apply_manifest_to_spec,_print_spec_summary,_perform_live_detect,_run_apply,_load_dotenv,_detect_project_version,_print_heal_banner,_ensure_redeployignore,_inject_project_sync_step
     plan(ctx;infra;target;strategy;domain;target_version;compose;env_file;output)
     apply(ctx;plan_file;dry_run;step;output)
     migrate(ctx;host;app;domain;target;strategy;target_version;compose;env_file;dry_run;infra_out;plan_out)
@@ -943,12 +955,23 @@ D:
     _print_heal_banner(console;fix_hint)
     _ensure_redeployignore(project_root;console)
     _inject_project_sync_step(migration;spec;project_root;console)
-    _default_report_path(spec_path)
-    _resolve_audit_entry(migration;started_at;ok)
-    _step_command_block(step)
-    _build_checksum_verification(migration;executed)
-    _render_markdown_report(entry;migration;spec_path;checksum)
-    _write_markdown_report(console;migration;spec_path;started_at;ok;executed;report_file)
+  redeploy/cli/commands/plan_apply_report.py:
+    e: default_report_path,resolve_audit_entry,step_command_block,_skipped_checksum,build_checksum_verification,_run_rsync_checksum,_parse_rsync_output,_render_checksum_section,render_markdown_report,write_markdown_report
+    default_report_path(spec_path)
+    resolve_audit_entry(migration;started_at;ok)
+    step_command_block(step)
+    _skipped_checksum()
+    build_checksum_verification(migration;executed)
+    _run_rsync_checksum(sync_step;host;local_root;remote_root)
+    _parse_rsync_output(result;host;local_root;remote_root;command_preview)
+    _render_checksum_section(lines;checksum)
+    render_markdown_report(entry;migration;spec_path;checksum)
+    write_markdown_report(console;migration;spec_path;started_at;ok;executed;report_file)
+  redeploy/cli/commands/plan_apply_run.py:
+    e: setup_run_logging,run_lint_phase,run_preflight_phase
+    setup_run_logging(resolved_spec)
+    run_lint_phase(console;resolved_spec;lint;file_handler_id)
+    run_preflight_phase(console)
   redeploy/cli/commands/plugin.py:
     e: plugin_cmd
     plugin_cmd(ctx;subcommand;name)
@@ -1149,8 +1172,26 @@ D:
     HostDetectionResult: strategy(0),environment(0),confidence(0),template_name(0),spec_template(0),env_block(0),notes(0)  # Full detection result for a single host.
     WorkflowResult: reachable(0),unreachable(0),by_env(0),summary(0),generated_redeploy_yaml(0),generated_migration_yaml(1)  # Aggregated result across all probed hosts.
     DetectionWorkflow: __init__(3),_collect_hosts(4),_probe_ssh(1),_deep_detect(1),_score_template(2),run(5)  # Multi-host detection workflow with template scoring.
+  redeploy/discovery/helpers.py:
+    e: is_raspberry_pi_mac,run_shell,is_ip
+    is_raspberry_pi_mac(mac)
+    run_shell(cmd;timeout)
+    is_ip(value)
+  redeploy/discovery/probe_parse.py:
+    e: parse_probe_output,infer_strategy
+    parse_probe_output(out)
+    infer_strategy(info;services)
+  redeploy/discovery/registry.py:
+    e: update_registry,_update_existing_device,_new_discovered_device
+    update_registry(hosts;registry;save)
+    _update_existing_device(existing;host;now)
+    _new_discovered_device(device_id;host;now)
+  redeploy/discovery/types.py:
+    e: DiscoveredHost,ProbeResult
+    DiscoveredHost:
+    ProbeResult:  # Full autonomous probe result for a single host.
   redeploy/discovery.py:
-    e: _is_raspberry_pi_mac,_scan_known_hosts,_scan_arp_cache,_scan_mdns,_ping_sweep,_probe_ssh,_detect_local_subnet,_merge,discover,update_registry,_run,_is_ip,_collect_ssh_keys,_tcp_reachable,_try_ssh_credentials,_detect_strategy_remote,_build_probe_command,_build_ssh_command,_run_ssh_probe,_parse_probe_output,_infer_strategy,_parse_probe_input,_detect_app_from_services,_update_existing_device,_create_new_device,auto_probe,DiscoveredHost,ProbeResult
+    e: _is_raspberry_pi_mac,_scan_known_hosts,_scan_arp_cache,_scan_mdns,_ping_sweep,_probe_ssh,_detect_local_subnet,_merge,discover,_run,_is_ip,_collect_ssh_keys,_tcp_reachable,_try_ssh_credentials,_detect_strategy_remote,_build_probe_command,_build_ssh_command,_run_ssh_probe,_parse_probe_input,_detect_app_from_services,_update_existing_device,_create_new_device,auto_probe,DiscoveredHost,ProbeResult
     DiscoveredHost:
     ProbeResult:  # Full autonomous probe result for a single host.
     _is_raspberry_pi_mac(mac)
@@ -1162,7 +1203,6 @@ D:
     _detect_local_subnet()
     _merge(hosts)
     discover(subnet;ssh_users;ssh_port;ping;mdns;probe_ssh;timeout)
-    update_registry(hosts;registry;save)
     _run(cmd;timeout)
     _is_ip(s)
     _collect_ssh_keys()
@@ -1172,13 +1212,20 @@ D:
     _build_probe_command()
     _build_ssh_command(host;port;timeout;key_opts;probe_cmd)
     _run_ssh_probe(cmd;timeout)
-    _parse_probe_output(out)
-    _infer_strategy(info;services)
     _parse_probe_input(ip_or_host;users)
     _detect_app_from_services(services;app_hint)
     _update_existing_device(existing;result;ssh_user;ssh_key;ip;host_str;port;now)
     _create_new_device(result;ssh_user;ssh_key;ip;host_str;port;now)
     auto_probe(ip_or_host;users;port;timeout;app_hint;save)
+  redeploy/discovery_probe.py:
+    e: parse_probe_output,infer_strategy
+    parse_probe_output(out)
+    infer_strategy(info;services)
+  redeploy/discovery_registry.py:
+    e: update_registry,_update_existing_device,_new_discovered_device
+    update_registry(hosts;registry;save)
+    _update_existing_device(existing;host;now)
+    _new_discovered_device(device_id;host;now)
   redeploy/dsl/__init__.py:
   redeploy/dsl/loader.py:
     e: _build_condition,load_css,load_css_text,_build_from_nodes,_build_manifest,_build_templates,_build_workflows,manifest_to_css,_condition_key,templates_to_css,WorkflowStep,WorkflowDef,LoadResult
@@ -1626,6 +1673,10 @@ D:
     TestMerge: test_deduplicates_by_ip(0),test_merges_mac_from_second(0),test_merges_hostname_from_second(0),test_existing_hostname_not_overwritten(0),test_ssh_ok_propagates(0),test_distinct_ips_kept_separate(0),test_empty_list(0),test_source_updated_from_unknown(0),test_known_source_not_overwritten(0)
     TestScanKnownHosts: _results(2),test_parses_plain_host(1),test_skips_hashed_entries(1),test_skips_comment_lines(1),test_missing_known_hosts_returns_empty(1),test_ip_address_entry(1),test_bracketed_port_format(1)  # _scan_known_hosts uses __import__('pathlib').Path.home() int
     TestUpdateRegistry: _empty_reg(0),test_adds_ssh_ok_device(0),test_does_not_add_non_ssh_device(0),test_updates_existing_device_last_seen(0),test_updates_existing_mac(0),test_device_id_uses_user_at_ip(0),test_device_id_without_user_uses_ip(0),test_discovered_tag_added(0),test_skips_device_with_empty_ip(0),test_multiple_hosts(0)
+  redeploy/tests/test_discovery_probe.py:
+    e: TestParseProbeOutput,TestInferStrategy
+    TestParseProbeOutput: test_parses_metadata_and_services(0)
+    TestInferStrategy: test_docker_full_when_docker_active(0),test_podman_quadlet(0),test_native_kiosk(0),test_systemd_fallback(0)
   redeploy/tests/test_dsl.py:
     e: parse,test_nodes_of_type,test_manifest_to_css_roundtrip,test_templates_to_css,test_load_css_file,TestDSLNode,TestAtRules,TestBlocks,TestComments,TestLoadCssText
     TestDSLNode: test_name_from_name_attr(0),test_name_from_id_attr(0),test_get_default(0),test_get_existing(0),test_repr(0)
@@ -1807,6 +1858,12 @@ D:
     test_get_pattern_known()
     test_get_pattern_unknown()
     test_pattern_registry_keys()
+  redeploy/tests/test_plan_apply_report.py:
+    e: _migration_with_sync,TestBuildChecksumVerification,TestRenderMarkdownReport,TestStepCommandBlock
+    TestBuildChecksumVerification: test_skipped_when_no_sync_step(0),test_skipped_plan_only(0)
+    TestRenderMarkdownReport: test_includes_step_logs(0)
+    TestStepCommandBlock: test_rsync(0)
+    _migration_with_sync()
   redeploy/tests/test_planner_edge.py:
     e: _state,_target,_infra_spec,_plan,TestStepOrdering,TestInsertBefore,TestRiskEscalation,TestVerifySteps,TestK3sConflictFixes,TestPodmanQuadletPlanning,TestNotesAndMetadata,TestPlannerFromSpec
     TestStepOrdering: test_first_step_is_not_verify(0),test_last_steps_are_verify(0),test_wait_appears_before_health_check(0),test_sync_env_before_docker_build(0)
@@ -2417,39 +2474,6 @@ class Fleet:  # Unified first-class fleet — wraps FleetConfig and/or DeviceR
     def __repr__()  # CC=1
 ```
 
-### `redeploy.discovery` (`redeploy/discovery.py`)
-
-```python
-def _is_raspberry_pi_mac(mac)  # CC=2, fan=1
-def _scan_known_hosts(ssh_user)  # CC=10, fan=15 ⚠
-def _scan_arp_cache()  # CC=10, fan=12 ⚠
-def _scan_mdns(timeout)  # CC=7, fan=10
-def _ping_sweep(subnet, timeout)  # CC=6, fan=14
-def _probe_ssh(hosts, users, port, timeout, max_workers)  # CC=1, fan=6
-def _detect_local_subnet()  # CC=9, fan=11
-def _merge(hosts)  # CC=11, fan=2 ⚠
-def discover(subnet, ssh_users, ssh_port, ping, mdns, probe_ssh, timeout)  # CC=14, fan=16 ⚠
-def update_registry(hosts, registry, save)  # CC=17, fan=7 ⚠
-def _run(cmd, timeout)  # CC=2, fan=1
-def _is_ip(s)  # CC=1, fan=2
-def _collect_ssh_keys()  # CC=14, fan=11 ⚠
-def _tcp_reachable(ip, port, timeout)  # CC=2, fan=1
-def _try_ssh_credentials(ip, users, keys, port, timeout)  # CC=14, fan=12 ⚠
-def _detect_strategy_remote(host, key, port, timeout)  # CC=3, fan=5
-def _build_probe_command()  # CC=1, fan=0
-def _build_ssh_command(host, port, timeout, key_opts, probe_cmd)  # CC=1, fan=1
-def _run_ssh_probe(cmd, timeout)  # CC=3, fan=1
-def _parse_probe_output(out)  # CC=16, fan=6 ⚠
-def _infer_strategy(info, services)  # CC=8, fan=2
-def _parse_probe_input(ip_or_host, users)  # CC=4, fan=1
-def _detect_app_from_services(services, app_hint)  # CC=5, fan=1
-def _update_existing_device(existing, result, ssh_user, ssh_key, ip, host_str, port, now)  # CC=5, fan=0
-def _create_new_device(result, ssh_user, ssh_key, ip, host_str, port, now)  # CC=2, fan=1
-def auto_probe(ip_or_host, users, port, timeout, app_hint, save)  # CC=7, fan=19
-class DiscoveredHost:
-class ProbeResult:  # Full autonomous probe result for a single host.
-```
-
 ### `redeploy.ssh` (`redeploy/ssh.py`)
 
 ```python
@@ -2484,6 +2508,36 @@ class RemoteExecutor:  # Thin wrapper kept for deploy.core compatibility.
     def scp_opts()  # CC=1
 ```
 
+### `redeploy.discovery` (`redeploy/discovery.py`)
+
+```python
+def _is_raspberry_pi_mac(mac)  # CC=2, fan=1
+def _scan_known_hosts(ssh_user)  # CC=10, fan=15 ⚠
+def _scan_arp_cache()  # CC=10, fan=12 ⚠
+def _scan_mdns(timeout)  # CC=7, fan=10
+def _ping_sweep(subnet, timeout)  # CC=6, fan=14
+def _probe_ssh(hosts, users, port, timeout, max_workers)  # CC=1, fan=6
+def _detect_local_subnet()  # CC=9, fan=11
+def _merge(hosts)  # CC=11, fan=2 ⚠
+def discover(subnet, ssh_users, ssh_port, ping, mdns, probe_ssh, timeout)  # CC=14, fan=16 ⚠
+def _run(cmd, timeout)  # CC=2, fan=1
+def _is_ip(s)  # CC=1, fan=2
+def _collect_ssh_keys()  # CC=14, fan=11 ⚠
+def _tcp_reachable(ip, port, timeout)  # CC=2, fan=1
+def _try_ssh_credentials(ip, users, keys, port, timeout)  # CC=14, fan=12 ⚠
+def _detect_strategy_remote(host, key, port, timeout)  # CC=3, fan=5
+def _build_probe_command()  # CC=1, fan=0
+def _build_ssh_command(host, port, timeout, key_opts, probe_cmd)  # CC=1, fan=1
+def _run_ssh_probe(cmd, timeout)  # CC=3, fan=1
+def _parse_probe_input(ip_or_host, users)  # CC=4, fan=1
+def _detect_app_from_services(services, app_hint)  # CC=5, fan=1
+def _update_existing_device(existing, result, ssh_user, ssh_key, ip, host_str, port, now)  # CC=5, fan=0
+def _create_new_device(result, ssh_user, ssh_key, ip, host_str, port, now)  # CC=2, fan=1
+def auto_probe(ip_or_host, users, port, timeout, app_hint, save)  # CC=7, fan=19
+class DiscoveredHost:
+class ProbeResult:  # Full autonomous probe result for a single host.
+```
+
 ### `redeploy.heal` (`redeploy/heal.py`)
 
 ```python
@@ -2513,7 +2567,7 @@ class HealRunner:  # Wraps Executor with self-healing loop.
 
 ## Call Graph
 
-*425 nodes · 393 edges · 108 modules · CC̄=5.1*
+*433 nodes · 400 edges · 111 modules · CC̄=5.0*
 
 ### Hubs (by degree)
 
@@ -2523,16 +2577,16 @@ class HealRunner:  # Wraps Executor with self-healing loop.
 | `snapshot_to_hardware_info` *(in redeploy.integrations.op3_bridge)* | 10 ⚠ | 2 | 49 | **51** |
 | `gh_workflow_run` *(in redeploy.cli.commands.gh_workflow)* | 19 ⚠ | 0 | 49 | **49** |
 | `lint` *(in redeploy.cli.commands.lint)* | 19 ⚠ | 0 | 44 | **44** |
-| `exec_cmd` *(in redeploy.cli.commands.exec_)* | 9 | 0 | 40 | **40** |
 | `_heal_step` *(in redeploy.heal.runner.HealRunner)* | 14 ⚠ | 0 | 40 | **40** |
+| `exec_cmd` *(in redeploy.cli.commands.exec_)* | 9 | 0 | 40 | **40** |
 | `_bump_single` *(in redeploy.cli.commands.version.helpers)* | 25 ⚠ | 4 | 35 | **39** |
-| `plugin_cmd` *(in redeploy.cli.commands.plugin)* | 13 ⚠ | 0 | 38 | **38** |
+| `_parse_k8s_yaml` *(in redeploy.iac.config_hints.ConfigHintsParser)* | 26 ⚠ | 0 | 38 | **38** |
 
 ```toon markpact:analysis path=project/calls.toon.yaml
 # code2llm call graph | /home/tom/github/maskservice/redeploy
-# generated in 0.18s
-# nodes: 425 | edges: 393 | modules: 108
-# CC̄=5.1
+# generated in 0.19s
+# nodes: 433 | edges: 400 | modules: 111
+# CC̄=5.0
 
 HUBS[20]:
   redeploy.steps.StepLibrary.list
@@ -2543,16 +2597,16 @@ HUBS[20]:
     CC=19  in:0  out:49  total:49
   redeploy.cli.commands.lint.lint
     CC=19  in:0  out:44  total:44
-  redeploy.cli.commands.exec_.exec_cmd
-    CC=9  in:0  out:40  total:40
   redeploy.heal.runner.HealRunner._heal_step
     CC=14  in:0  out:40  total:40
+  redeploy.cli.commands.exec_.exec_cmd
+    CC=9  in:0  out:40  total:40
   redeploy.cli.commands.version.helpers._bump_single
     CC=25  in:4  out:35  total:39
-  redeploy.cli.commands.plugin.plugin_cmd
-    CC=13  in:0  out:38  total:38
   redeploy.iac.config_hints.ConfigHintsParser._parse_k8s_yaml
     CC=26  in:0  out:38  total:38
+  redeploy.cli.commands.plugin.plugin_cmd
+    CC=13  in:0  out:38  total:38
   redeploy.cli.commands.version.commands.version_list
     CC=13  in:0  out:38  total:38
   redeploy.discovery.auto_probe
@@ -2561,20 +2615,20 @@ HUBS[20]:
     CC=15  in:0  out:37  total:37
   redeploy.blueprint.sources.compose._merge_compose
     CC=21  in:1  out:33  total:34
-  redeploy.cli.commands.plan_apply._build_checksum_verification
-    CC=32  in:1  out:32  total:33
   redeploy.plugins.builtin.hardware_diagnostic._analyze_hardware
     CC=14  in:1  out:32  total:33
   redeploy.cli.commands.target.target
     CC=10  in:1  out:31  total:32
-  redeploy.detect.detector.Detector.run
-    CC=9  in:0  out:30  total:30
   redeploy.heal.hint_provider.apply_fix_to_spec
     CC=16  in:0  out:30  total:30
-  redeploy.apply.executor.Executor._execute_step
-    CC=4  in:0  out:27  total:27
+  redeploy.detect.detector.Detector.run
+    CC=9  in:0  out:30  total:30
+  examples.redeploy_iac_parsers.helm_kustomize.HelmTemplatesParser.parse
+    CC=17  in:0  out:27  total:27
   redeploy.apply.state_apply.HardwareStateHandler.apply
     CC=18  in:0  out:27  total:27
+  redeploy.apply.executor.Executor._execute_step
+    CC=4  in:0  out:27  total:27
 
 MODULES:
   examples.redeploy_iac_parsers.gitops_ci  [2 funcs]
@@ -2611,12 +2665,13 @@ MODULES:
     ensure_redeployignore  CC=2  out:2
   redeploy.analyze.models  [1 funcs]
     add  CC=2  out:2
-  redeploy.analyze.preflight_schema  [5 funcs]
+  redeploy.analyze.preflight_schema  [6 funcs]
     _collect_local_artifacts  CC=6  out:16
     _collect_remote_checks  CC=8  out:14
     _resolve_command_refs  CC=11  out:20
     _resolve_local_path  CC=4  out:7
     generate_preflight_schema  CC=14  out:25
+    save_preflight_schema  CC=1  out:3
   redeploy.analyze.spec_analyzer  [2 funcs]
     __init__  CC=3  out:2
     analyze_file  CC=7  out:10
@@ -2741,13 +2796,21 @@ MODULES:
     lint  CC=19  out:44
   redeploy.cli.commands.mcp_cmd  [1 funcs]
     mcp_cmd  CC=1  out:6
-  redeploy.cli.commands.plan_apply  [6 funcs]
+  redeploy.cli.commands.plan_apply  [1 funcs]
     _apply_manifest_to_spec  CC=8  out:9
-    _build_checksum_verification  CC=32  out:32
-    _default_report_path  CC=1  out:0
-    _render_markdown_report  CC=18  out:25
-    _resolve_audit_entry  CC=10  out:16
-    _write_markdown_report  CC=2  out:7
+  redeploy.cli.commands.plan_apply_report  [10 funcs]
+    _parse_rsync_output  CC=13  out:8
+    _render_checksum_section  CC=7  out:13
+    _run_rsync_checksum  CC=6  out:10
+    _skipped_checksum  CC=1  out:1
+    build_checksum_verification  CC=14  out:15
+    default_report_path  CC=1  out:0
+    render_markdown_report  CC=12  out:13
+    resolve_audit_entry  CC=10  out:16
+    step_command_block  CC=14  out:5
+    write_markdown_report  CC=2  out:7
+  redeploy.cli.commands.plan_apply_run  [1 funcs]
+    run_preflight_phase  CC=8  out:19
   redeploy.cli.commands.plugin  [1 funcs]
     plugin_cmd  CC=13  out:38
   redeploy.cli.commands.prompt_cmd  [1 funcs]
@@ -2850,17 +2913,21 @@ MODULES:
   redeploy.detect.workflow  [2 funcs]
     _collect_hosts  CC=18  out:14
     _probe_ssh  CC=3  out:3
-  redeploy.discovery  [21 funcs]
+  redeploy.discovery  [19 funcs]
     _build_probe_command  CC=1  out:0
     _build_ssh_command  CC=1  out:1
     _collect_ssh_keys  CC=14  out:18
     _detect_local_subnet  CC=9  out:11
     _detect_strategy_remote  CC=3  out:5
-    _infer_strategy  CC=8  out:5
     _is_ip  CC=1  out:2
     _merge  CC=11  out:2
     _parse_probe_input  CC=4  out:1
-    _parse_probe_output  CC=16  out:20
+    _ping_sweep  CC=6  out:20
+    _probe_ssh  CC=1  out:6
+  redeploy.discovery_registry  [3 funcs]
+    _new_discovered_device  CC=3  out:2
+    _update_existing_device  CC=7  out:1
+    update_registry  CC=9  out:9
   redeploy.dsl.loader  [9 funcs]
     _build_from_nodes  CC=1  out:4
     _build_manifest  CC=25  out:23
@@ -3100,27 +3167,27 @@ EDGES:
   redeploy.patterns.CanaryPattern.expand → redeploy.patterns._step
   redeploy.patterns.RollbackOnFailurePattern.expand → redeploy.patterns._step
   redeploy.patterns.list_patterns → redeploy.steps.StepLibrary.list
-  redeploy.discovery._scan_arp_cache → redeploy.discovery._run
-  redeploy.discovery._scan_mdns → redeploy.discovery._run
-  redeploy.discovery._scan_mdns → redeploy.discovery._is_ip
-  redeploy.discovery._ping_sweep → redeploy.steps.StepLibrary.list
-  redeploy.discovery._probe_ssh → redeploy.steps.StepLibrary.list
-  redeploy.discovery._detect_local_subnet → redeploy.discovery._run
-  redeploy.discovery._merge → redeploy.steps.StepLibrary.list
-  redeploy.discovery.discover → redeploy.discovery._merge
-  redeploy.discovery.discover → redeploy.discovery._scan_known_hosts
-  redeploy.discovery.discover → redeploy.discovery._scan_arp_cache
-  redeploy.discovery.discover → redeploy.discovery._probe_ssh
-  redeploy.discovery._try_ssh_credentials → redeploy.discovery._tcp_reachable
-  redeploy.discovery._detect_strategy_remote → redeploy.discovery._build_probe_command
-  redeploy.discovery._detect_strategy_remote → redeploy.discovery._build_ssh_command
-  redeploy.discovery._detect_strategy_remote → redeploy.discovery._run_ssh_probe
-  redeploy.discovery._detect_strategy_remote → redeploy.discovery._parse_probe_output
-  redeploy.discovery._detect_strategy_remote → redeploy.discovery._infer_strategy
-  redeploy.discovery.auto_probe → redeploy.discovery._parse_probe_input
-  redeploy.discovery.auto_probe → redeploy.discovery._collect_ssh_keys
-  redeploy.discovery.auto_probe → redeploy.discovery._try_ssh_credentials
-  redeploy.discovery.auto_probe → redeploy.discovery._detect_strategy_remote
+  redeploy.mcp_server._run → redeploy.mcp_server._redeploy_bin
+  redeploy.mcp_server.schema → redeploy.schema.build_schema
+  redeploy.mcp_server.plan_spec → redeploy.mcp_server._run
+  redeploy.mcp_server.run_spec → redeploy.mcp_server._run
+  redeploy.mcp_server.fix_spec → redeploy.mcp_server._run
+  redeploy.mcp_server.bump_version → redeploy.mcp_server._run
+  redeploy.mcp_server.diagnose → redeploy.mcp_server._run
+  redeploy.mcp_server.list_specs → redeploy.schema.build_schema
+  redeploy.mcp_server.exec_ssh → redeploy.mcp_server._validate_exec_ssh_inputs
+  redeploy.mcp_server.nlp_command → redeploy.mcp_server._run
+  redeploy.mcp_server.get_workspace → redeploy.schema.build_schema
+  redeploy.detect.detector.Detector.run → redeploy.detect.probes.probe_runtime
+  redeploy.detect.detector.Detector.run → redeploy.detect.probes.probe_ports
+  redeploy.detect.detector.Detector.run → redeploy.detect.probes.probe_iptables_dnat
+  redeploy.detect.hardware.probe_hardware → redeploy.detect.hardware._wrap_remote_probe
+  redeploy.detect.hardware.probe_hardware → redeploy.integrations.op3_bridge.snapshot_to_hardware_info
+  redeploy.detect.hardware.probe_hardware → redeploy.steps.StepLibrary.list
+  redeploy.detect.hardware_rules.analyze → redeploy.detect.hardware_rules._hw_info_to_dict
+  redeploy.detect.hardware_rules.analyze → redeploy.detect.hardware_rules._op3_diag_to_hw_diag
+  redeploy.detect.templates._build_templates → redeploy.detect.templates._load_templates_from_yaml
+  redeploy.detect.templates.TemplateEngine.detect → redeploy.detect.templates.build_context
 ```
 
 ## Test Contracts

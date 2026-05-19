@@ -1,7 +1,7 @@
 schema_version: '1.0'
-generated_at: '2026-05-19T23:36:06.254994+00:00'
+generated_at: '2026-05-19T23:41:26.457817+00:00'
 spec:
-  path: /tmp/pytest-of-tom/pytest-1447/test_run_plan_only_supports_ma0/migration.md
+  path: /tmp/pytest-of-tom/pytest-1452/test_run_plan_only_supports_ma0/migration.md
   name: markdown migration
   source_strategy: docker_full
   target_strategy: docker_full

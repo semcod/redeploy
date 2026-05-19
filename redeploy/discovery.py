@@ -24,6 +24,9 @@ from typing import Optional
 
 from loguru import logger
 
+from .discovery_probe import infer_strategy as _infer_strategy
+from .discovery_probe import parse_probe_output as _parse_probe_output
+from .discovery_registry import update_registry
 from .models import DeviceRegistry, KnownDevice
 
 
@@ -347,60 +350,6 @@ def discover(
     return found
 
 
-def update_registry(
-    hosts: list[DiscoveredHost],
-    registry: Optional[DeviceRegistry] = None,
-    save: bool = True,
-) -> DeviceRegistry:
-    """Merge discovered hosts into DeviceRegistry and optionally save.
-
-    Existing devices are updated (last_seen, ssh_ok, hostname, mac).
-    New SSH-accessible devices are added automatically.
-    Devices not seen in this scan are NOT removed (preserved for history).
-    """
-    reg = registry or DeviceRegistry.load()
-    now = datetime.now(timezone.utc)
-
-    for h in hosts:
-        if not h.ip:
-            continue
-        device_id = f"{h.ssh_user}@{h.ip}" if h.ssh_user else h.ip
-        existing = reg.get(device_id) or reg.get(h.ip)
-
-        if existing:
-            existing.last_seen = now
-            if h.mac:
-                existing.mac = h.mac
-            if h.hostname and not existing.hostname:
-                existing.hostname = h.hostname
-            if h.ssh_ok:
-                existing.last_ssh_ok = now
-            if h.is_raspberry_pi and "raspberry-pi" not in existing.tags:
-                existing.tags.append("raspberry-pi")
-            reg.upsert(existing)
-        elif h.ssh_ok:
-            # Only auto-add SSH-accessible devices
-            tags = ["discovered"]
-            if h.is_raspberry_pi:
-                tags.append("raspberry-pi")
-            reg.upsert(KnownDevice(
-                id=device_id,
-                host=device_id,
-                ip=h.ip,
-                mac=h.mac,
-                hostname=h.hostname,
-                ssh_user=h.ssh_user if h.ssh_user else "",  # type: ignore[call-arg]
-                last_seen=now,
-                last_ssh_ok=now,
-                source=h.source,
-                tags=tags,
-            ))
-
-    if save:
-        reg.save()
-    return reg
-
-
 # ── helpers ───────────────────────────────────────────────────────────────────
 
 def _run(cmd: str, timeout: int = 10) -> str:
@@ -613,51 +562,6 @@ def _run_ssh_probe(cmd: list[str], timeout: int) -> str | None:
         return r.stdout
     except Exception:
         return None
-
-
-def _parse_probe_output(out: str) -> tuple[dict, list[str]]:
-    info: dict = {}
-    services: list[str] = []
-    in_services = False
-
-    for line in out.splitlines():
-        line = line.strip()
-        if line.startswith("__arch__="):
-            info["arch"] = line.split("=", 1)[1]
-        elif line.startswith("__os__="):
-            info["os_info"] = line.split("=", 1)[1]
-        elif line.startswith("__hostname__="):
-            info["hostname"] = line.split("=", 1)[1]
-        elif line.startswith("__docker__="):
-            info["has_docker"] = line.endswith("1")
-        elif line.startswith("__podman__="):
-            info["has_podman"] = line.endswith("1")
-        elif line.startswith("__chromium__="):
-            info["has_chromium"] = line.endswith("1")
-        elif line.startswith("__docker_active__="):
-            info["docker_active"] = line.endswith("1")
-        elif line == "__end_services__":
-            in_services = False
-        elif in_services:
-            if line:
-                services.append(line)
-        elif line.endswith(".service") or ("loaded" in line and "active" in line):
-            in_services = True
-            if line.endswith(".service"):
-                services.append(line)
-
-    return info, services
-
-
-def _infer_strategy(info: dict, services: list[str]) -> str:
-    if info.get("docker_active") or info.get("has_docker"):
-        return "docker_full"
-    elif info.get("has_podman"):
-        return "podman_quadlet"
-    elif info.get("has_chromium") and any("kiosk" in s or "chromium" in s for s in services):
-        return "native_kiosk"
-    else:
-        return "systemd"
 
 
 def _parse_probe_input(ip_or_host: str, users: Optional[list[str]]) -> tuple[str, list[str]]:
