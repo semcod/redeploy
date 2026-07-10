@@ -24,8 +24,12 @@ def _fmt_s(seconds: float | None) -> str:
               help="Target project dir — enables the exact file-delta preview.")
 @click.option("--yes", is_flag=True, help="Skip the confirmation gate.")
 @click.option("--gate-only", is_flag=True, help="Show the manifest and exit.")
+@click.option("--prep", "prep_cmds", multiple=True, metavar="CMD",
+              help="Prep commands run in PARALLEL with each other before the "
+                   "engine (e.g. folder syncs + db sync simultaneously). "
+                   "Any failure aborts the deploy.")
 @click.argument("run_args", nargs=-1, type=click.UNPROCESSED)
-def deploy_cmd(spec, repo, remote, yes, gate_only, run_args):
+def deploy_cmd(spec, repo, remote, yes, gate_only, prep_cmds, run_args):
     """Deploy SPEC with host-side control: what ships, how long, live progress.
 
     \b
@@ -81,6 +85,36 @@ def deploy_cmd(spec, repo, remote, yes, gate_only, run_args):
     if not yes and not click.confirm("Wdrożyć?", default=False):
         console.print("[yellow]przerwano na bramce[/yellow]")
         raise SystemExit(4)
+
+    # ── 1b. parallel prep (folders + db simultaneously) ─────────────────────
+    if prep_cmds:
+        import subprocess as sp
+        from concurrent.futures import ThreadPoolExecutor
+
+        t_prep = time.time()
+        console.print(f"[bold]prep[/bold] {len(prep_cmds)} zadań równolegle…")
+
+        def _prep(cmd: str):
+            t = time.time()
+            proc = sp.run(["bash", "-lc", cmd], cwd=str(cwd),
+                          capture_output=True, text=True)
+            return cmd, proc.returncode, time.time() - t, proc.stdout[-400:], proc.stderr[-400:]
+
+        with ThreadPoolExecutor(max_workers=len(prep_cmds)) as pool:
+            outcomes = list(pool.map(_prep, prep_cmds))
+        prep_failed = False
+        for cmd, rc, dt, out, err in outcomes:
+            mark = "[green]✓[/green]" if rc == 0 else "[red]✗[/red]"
+            console.print(f"  {mark} ({_fmt_s(dt)}) {cmd}")
+            if rc != 0:
+                prep_failed = True
+                for chunk in (out, err):
+                    if chunk.strip():
+                        console.print(f"    [dim]{chunk.strip()[:300]}[/dim]")
+        console.print(f"  prep łącznie: {_fmt_s(time.time() - t_prep)} (równolegle)")
+        if prep_failed:
+            console.print("[red]prep nieudany — przerywam przed silnikiem[/red]")
+            raise SystemExit(5)
 
     # ── 2. run with live progress ────────────────────────────────────────────
     state = {"t0": time.time(), "total": 0}
