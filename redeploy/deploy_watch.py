@@ -199,6 +199,9 @@ def run_with_progress(
     report = RunReport(returncode=-1, log_path=log_path)
 
     t0 = time.time()
+    # Engine events carry elapsed_s — use it for durations. Wall-clock at
+    # receipt is skewed: a YAML doc is only delimited by the NEXT event's
+    # '---', so step_start/step_done arrive back-to-back through the pipe.
     step_started: dict[str, float] = {}
     plan_ids: list[str] = []
 
@@ -215,7 +218,9 @@ def run_with_progress(
                 report.total_steps = int(event.get("total_steps") or 0)
                 plan_ids = [s.get("id", "") for s in event.get("steps", [])]
             elif kind == "step_start":
-                step_started[event.get("id", "")] = time.time()
+                step_started[event.get("id", "")] = float(
+                    event.get("elapsed_s") or (time.time() - t0)
+                )
                 if history:
                     done_n = int(event.get("n") or 0)
                     remaining = plan_ids[done_n - 1:]
@@ -226,7 +231,8 @@ def run_with_progress(
                 sid = event.get("id", "")
                 started = step_started.pop(sid, None)
                 if started is not None:
-                    duration = time.time() - started
+                    ended = float(event.get("elapsed_s") or (time.time() - t0))
+                    duration = max(0.0, ended - started)
                     event["duration_s"] = round(duration, 1)
                     report.durations[sid] = duration
                     if history:

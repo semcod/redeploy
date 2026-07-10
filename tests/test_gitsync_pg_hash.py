@@ -171,3 +171,28 @@ class TestDeployWatch:
         m = build_manifest(git_repo)
         assert "app.py" in m.wip_files
         assert m.head and m.head != "?"
+
+    def test_durations_come_from_engine_elapsed(self, tmp_path, monkeypatch):
+        # step_start/step_done docelowo docierają potokiem niemal jednocześnie
+        # (separator '---' domyka dokument dopiero przy następnym zdarzeniu) —
+        # czas kroku MUSI pochodzić z elapsed_s silnika, nie z zegara odbioru.
+        import redeploy.deploy_watch as dw
+
+        class FakeProc:
+            returncode = 0
+            stdout = iter([
+                "---\n", "event: start\n", "total_steps: 1\n",
+                "steps:\n", "- {n: 1, id: build}\n",
+                "---\n", "event: step_start\n", "n: 1\n", "id: build\n",
+                "elapsed_s: 1.0\n",
+                "---\n", "event: step_done\n", "n: 1\n", "id: build\n",
+                "elapsed_s: 61.5\n",
+                "---\n", "event: done\n", "steps_completed: 1\n",
+            ])
+            def wait(self):
+                return 0
+
+        monkeypatch.setattr(dw.subprocess, "Popen", lambda *a, **k: FakeProc())
+        report = dw.run_with_progress("spec.md", tmp_path, log_dir=tmp_path)
+        assert report.returncode == 0
+        assert report.durations["build"] == pytest.approx(60.5)
