@@ -48,6 +48,7 @@ from .commands.sync_git import sync_cmd
 from .commands.db_data import db_cmd
 from .commands.fleet_cmd import fleet_cmd
 from .commands.hash_cmd import hash_cmd
+from .commands.deploy_cmd import deploy_cmd
 from .commands.workflow import workflow_cmd
 from .commands.gh_workflow import gh_workflow_cmd
 from .commands.exec_ import exec_cmd, exec_multi_cmd
@@ -99,6 +100,7 @@ cli.add_command(sync_cmd)
 cli.add_command(db_cmd)
 cli.add_command(fleet_cmd)
 cli.add_command(hash_cmd)
+cli.add_command(deploy_cmd)
 cli.add_command(workflow_cmd)
 cli.add_command(gh_workflow_cmd)
 cli.add_command(bump_cmd, name="bump")

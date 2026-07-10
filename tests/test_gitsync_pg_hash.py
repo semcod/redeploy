@@ -135,3 +135,39 @@ class TestProbeResult:
         assert not bad_unit.healthy
         bad_http = ProbeResult("x", online=True, fields={"api": "FAIL"})
         assert not bad_http.healthy
+
+
+class TestDeployWatch:
+    def test_history_estimate_and_eta(self, tmp_path):
+        from redeploy.deploy_watch import StepHistory
+
+        h = StepHistory(path=tmp_path / "h.json")
+        for v in (10.0, 12.0, 200.0):
+            h.record("build", v)
+        h.record("sync", 2.0)
+        assert h.estimate("build") == 12.0          # median, odporna na outlier
+        eta = h.eta_for(["build", "sync", "unknown"])
+        # unknown = mediana znanych median (sorted [2,12] → indeks 1 → 12)
+        assert eta == 12.0 + 2.0 + 12.0
+        h.record_total(300.0)
+        h.save()
+        h2 = StepHistory.load("x", tmp_path)        # inny klucz → puste
+        assert h2.steps == {}
+
+    def test_yaml_doc_stream_parser(self):
+        from redeploy.deploy_watch import _iter_yaml_docs
+
+        stream = iter([
+            "---\n", "event: start\n", "total_steps: 2\n",
+            "---\n", "event: step_done\n", "n: 1\n",
+        ])
+        docs = list(_iter_yaml_docs(stream))
+        assert [d["event"] for d in docs] == ["start", "step_done"]
+
+    def test_manifest_reports_wip(self, git_repo):
+        from redeploy.deploy_watch import build_manifest
+
+        (git_repo / "app.py").write_text("changed\n")
+        m = build_manifest(git_repo)
+        assert "app.py" in m.wip_files
+        assert m.head and m.head != "?"
