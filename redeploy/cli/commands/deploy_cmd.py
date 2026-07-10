@@ -123,7 +123,12 @@ def deploy_cmd(spec, repo, remote, yes, gate_only, prep_cmds, run_args):
         elapsed = _fmt_s(time.time() - state["t0"])
         if kind == "start":
             state["total"] = ev.get("total_steps", 0)
-            console.print(f"[bold]start[/bold] {state['total']} kroków")
+            console.print(f"[bold]start[/bold] {state['total']} kroków — plan (migration.md):")
+            for step in ev.get("steps", []) or []:
+                console.print(
+                    f"  [dim]{step.get('n'):>3}. {step.get('id','')}"
+                    f"  {str(step.get('description',''))[:70]}[/dim]"
+                )
         elif kind == "step_start":
             n, total = ev.get("n", "?"), state["total"] or "?"
             expected = ev.get("expected_s")
@@ -134,7 +139,7 @@ def deploy_cmd(spec, repo, remote, yes, gate_only, prep_cmds, run_args):
             if eta:
                 suffix += f"  [dim]ETA {_fmt_s(eta)}[/dim]"
             console.print(
-                f"[{elapsed}] [cyan]{n}/{total}[/cyan] {ev.get('id','')}"
+                f"[{elapsed}] [cyan]etap {n}/{total}[/cyan] [bold]{ev.get('id','')}[/bold]"
                 f" [dim]{str(ev.get('description',''))[:60]}[/dim]{suffix}"
             )
         elif kind == "step_done":
