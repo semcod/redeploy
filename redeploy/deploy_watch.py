@@ -99,7 +99,10 @@ def build_manifest(
     *,
     remote: str | None = None,
     history: StepHistory | None = None,
+    frozen: bool = False,
 ) -> ChangeManifest:
+    """Pre-deploy manifest. With ``frozen=True`` the delta is the committed
+    ``.deploy-commit..HEAD`` diff (no working-tree/untracked files)."""
     manifest = ChangeManifest()
     repo = Path(repo).resolve()
     try:
@@ -119,14 +122,19 @@ def build_manifest(
         pass
 
     if remote:
-        from .gitsync import GitSyncError, collect_delta, read_deploy_commit
+        from .gitsync import (
+            GitSyncError,
+            collect_delta,
+            collect_frozen_delta,
+            read_deploy_commit,
+        )
 
         host, _, remote_dir = remote.partition(":")
         try:
             base = read_deploy_commit(host, remote_dir)
             if not base:
                 raise GitSyncError("no .deploy-commit on target (first deploy = full sync)")
-            delta = collect_delta(repo, base)
+            delta = collect_frozen_delta(repo, base) if frozen else collect_delta(repo, base)
             manifest.delta_sync = delta.sync
             manifest.delta_delete = delta.delete
         except (GitSyncError, subprocess.CalledProcessError) as exc:

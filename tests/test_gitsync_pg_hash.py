@@ -8,7 +8,15 @@ from pathlib import Path
 import pytest
 
 from redeploy.fleet_ops import ProbeResult
-from redeploy.gitsync import Delta, _remote_rel, collect_delta
+from redeploy.gitsync import (
+    Delta,
+    GitSyncError,
+    _remote_rel,
+    collect_delta,
+    collect_frozen_delta,
+    frozen_sync,
+    record_deploy_commit,
+)
 from redeploy.pg_sync import PgEndpoint, _hash_query, diff_hashes, sync_tables
 from redeploy.source_hash import (
     compute_scope_hash,
@@ -57,6 +65,124 @@ class TestCollectDelta:
             ["git", "-C", str(git_repo), "rev-parse", "HEAD"], text=True
         ).strip()
         assert collect_delta(git_repo, base).empty
+
+
+class TestFrozenSync:
+    """frozen_sync — delta i treść WYŁĄCZNIE z HEAD (working tree nie jedzie)."""
+
+    @staticmethod
+    def _git(root: Path, *args):
+        subprocess.run(["git", "-C", str(root), *args], check=True,
+                       capture_output=True)
+
+    @staticmethod
+    def _head(root: Path) -> str:
+        return subprocess.check_output(
+            ["git", "-C", str(root), "rev-parse", "HEAD"], text=True
+        ).strip()
+
+    @pytest.fixture()
+    def local_remote(self, git_repo: Path, monkeypatch):
+        """Lokalny katalog jako „remote": ssh/tar i rm podmienione monkeypatchem.
+
+        _head_archive zostaje PRODUKCYJNE (git archive HEAD) — test weryfikuje,
+        że treść naprawdę pochodzi z HEAD, nie z working tree.
+        """
+        import io
+        import tarfile
+
+        import redeploy.gitsync as gitsync
+
+        remote = git_repo / "_remote"
+        remote.mkdir()
+
+        def fake_extract(host, remote_dir, payload):
+            assert host == "pi@test"
+            with tarfile.open(fileobj=io.BytesIO(payload)) as tar:
+                tar.extractall(remote_dir, filter="data")
+
+        def fake_deletes(host, remote_dir, paths):
+            for rel in paths:
+                (Path(remote_dir) / rel).unlink(missing_ok=True)
+
+        monkeypatch.setattr(gitsync, "_remote_extract", fake_extract)
+        monkeypatch.setattr(gitsync, "_apply_deletes", fake_deletes)
+        return remote
+
+    def test_ships_head_content_not_working_tree(self, git_repo: Path, local_remote: Path):
+        base = self._head(git_repo)
+
+        # Commit: app.py → v2-head, nowy shipped.txt, delete gone.txt.
+        (git_repo / "app.py").write_text("v2-head\n")
+        (git_repo / "shipped.txt").write_text("shipped\n")
+        (git_repo / "gone.txt").unlink()
+        self._git(git_repo, "add", "-A")
+        self._git(git_repo, "commit", "-qm", "head")
+
+        # Równoległe edycje PO commicie (symulacja incydentu 2026-07-10):
+        (git_repo / "app.py").write_text("wip-overwrite\n")   # nadpisany w WT
+        (git_repo / "keep.txt").write_text("wip-only\n")      # zmiana tylko w WT
+        (git_repo / "untracked.txt").write_text("wip\n")      # untracked
+
+        (local_remote / "gone.txt").write_text("stale\n")     # do usunięcia
+
+        delta = frozen_sync(git_repo, "pi@test", str(local_remote), base_commit=base)
+
+        # Delta liczona z base..HEAD — bez working tree i untracked.
+        assert set(delta.sync) == {"app.py", "shipped.txt"}
+        assert delta.delete == ["gone.txt"]
+
+        # Treść jedzie z HEAD, mimo że working tree ma inną wersję.
+        assert (local_remote / "app.py").read_text() == "v2-head\n"
+        assert (local_remote / "shipped.txt").read_text() == "shipped\n"
+
+        # WIP/untracked NIE dojechały; delete zastosowany zdalnie.
+        assert not (local_remote / "keep.txt").exists()
+        assert not (local_remote / "untracked.txt").exists()
+        assert not (local_remote / "gone.txt").exists()
+
+    def test_collect_frozen_delta_ignores_working_tree(self, git_repo: Path):
+        base = self._head(git_repo)
+        (git_repo / "app.py").write_text("only-wip\n")        # bez commita
+        (git_repo / "untracked.txt").write_text("wip\n")
+        assert collect_frozen_delta(git_repo, base).empty
+        # Dla porównania: klasyczna delta working tree te pliki widzi.
+        wt = collect_delta(git_repo, base)
+        assert "app.py" in wt.sync and "untracked.txt" in wt.sync
+
+    def test_unknown_base_raises(self, git_repo: Path, local_remote: Path):
+        with pytest.raises(GitSyncError, match="unknown base commit"):
+            frozen_sync(git_repo, "pi@test", str(local_remote),
+                        base_commit="deadbeef" * 5)
+
+    def test_missing_deploy_commit_raises(self, git_repo: Path, local_remote: Path,
+                                          monkeypatch):
+        import redeploy.gitsync as gitsync
+
+        monkeypatch.setattr(gitsync, "read_deploy_commit", lambda *a, **k: None)
+        with pytest.raises(GitSyncError, match=r"no \.deploy-commit"):
+            frozen_sync(git_repo, "pi@test", str(local_remote))
+
+    def test_record_deploy_commit_explicit_commit(self, git_repo: Path, monkeypatch):
+        """--record po frozen deployu stempluje commit ZAMROŻONY, nie HEAD."""
+        import redeploy.gitsync as gitsync
+
+        frozen = self._head(git_repo)
+        (git_repo / "app.py").write_text("later\n")
+        self._git(git_repo, "add", "-A")
+        self._git(git_repo, "commit", "-qm", "made-during-deploy")
+        assert self._head(git_repo) != frozen
+
+        sent: dict = {}
+
+        def fake_run(cmd, **kwargs):
+            sent["cmd"] = cmd
+            return subprocess.CompletedProcess(cmd, 0)
+
+        monkeypatch.setattr(gitsync.subprocess, "run", fake_run)
+        stamped = record_deploy_commit(git_repo, "pi@test", "~/c2004", commit=frozen)
+        assert stamped == frozen
+        assert frozen in " ".join(sent["cmd"])
 
 
 class TestRemoteRel:

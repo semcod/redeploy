@@ -98,6 +98,26 @@ def collect_delta(root: Path, base_commit: str) -> Delta:
     return delta
 
 
+def collect_frozen_delta(root: Path, base_commit: str) -> Delta:
+    """Delta computed ONLY from committed state: ``base_commit..HEAD``.
+
+    Unlike :func:`collect_delta` this never looks at the working tree —
+    no untracked files, no uncommitted modifications. Used by
+    :func:`frozen_sync` so parallel edits during a deploy cannot leak
+    into the target (real incident 2026-07-10).
+    """
+    root = Path(root).resolve()
+    changed = _git_lines(root, "diff", "--name-only", f"{base_commit}..HEAD")
+    deleted = _git_lines(
+        root, "diff", "--name-only", "--diff-filter=D", f"{base_commit}..HEAD"
+    )
+    deleted_set = set(deleted)
+    delta = Delta()
+    delta.sync = [rel for rel in dict.fromkeys(changed) if rel not in deleted_set]
+    delta.delete = list(dict.fromkeys(deleted))
+    return delta
+
+
 # ── remote deploy-commit ──────────────────────────────────────────────────────
 
 def read_deploy_commit(host: str, remote_dir: str, *, timeout: int = 8) -> str | None:
@@ -111,9 +131,18 @@ def read_deploy_commit(host: str, remote_dir: str, *, timeout: int = 8) -> str |
     return value or None
 
 
-def record_deploy_commit(root: Path, host: str, remote_dir: str, *, timeout: int = 8) -> str:
-    """Stamp current HEAD into ``<remote_dir>/.deploy-commit``. Returns the sha."""
-    head = subprocess.check_output(
+def record_deploy_commit(
+    root: Path, host: str, remote_dir: str, *, commit: str | None = None, timeout: int = 8
+) -> str:
+    """Stamp *commit* (default: current HEAD) into ``<remote_dir>/.deploy-commit``.
+
+    Pass the explicit *commit* that actually shipped (HEAD captured at deploy
+    start / frozen commit): stamping the CURRENT head would mark commits made
+    DURING the deploy as deployed even though they never reached the target
+    (c2004 ``scripts/redeploy/record-deploy-commit.sh``, incident 2026-07-10).
+    Returns the stamped sha.
+    """
+    head = commit or subprocess.check_output(
         ["git", "-C", str(root), "rev-parse", "HEAD"], text=True
     ).strip()
     rel = _remote_rel(remote_dir)
@@ -187,6 +216,71 @@ def incremental_sync(
             for fut in futures:
                 fut.result()
 
+    if delta.delete:
+        _apply_deletes(host, remote_dir, delta.delete)
+
+    return delta
+
+
+def _head_archive(root: Path, files: list[str]) -> bytes:
+    """Tar archive of *files* taken from HEAD (never from the working tree)."""
+    try:
+        return subprocess.check_output(
+            ["git", "-C", str(root), "archive", "HEAD", "--", *files]
+        )
+    except subprocess.CalledProcessError as exc:
+        raise GitSyncError(f"git archive HEAD failed (exit {exc.returncode})") from exc
+
+
+def _remote_extract(host: str, remote_dir: str, payload: bytes) -> None:
+    """Unpack a tar *payload* into ``host:remote_dir`` (one ssh call)."""
+    rel = _remote_rel(remote_dir)
+    proc = subprocess.run(
+        ["ssh", host, f"mkdir -p {_sq(rel)} && tar -x -C {_sq(rel)}"],
+        input=payload,
+    )
+    if proc.returncode != 0:
+        raise GitSyncError(f"remote tar extract failed (exit {proc.returncode})")
+
+
+def frozen_sync(
+    root: Path,
+    host: str,
+    remote_dir: str,
+    *,
+    base_commit: str | None = None,
+    dry_run: bool = False,
+) -> Delta:
+    """Sync the FROZEN state: delta and file contents come from HEAD only.
+
+    The delta is ``git diff --name-only <base>..HEAD`` (no untracked files,
+    no working-tree modifications) and contents ship via
+    ``git archive HEAD -- <paths> | ssh tar -x -C <dir>`` — the working tree
+    is never read, so edits made while the sync runs cannot reach the target.
+    Deletions (``--diff-filter=D base..HEAD``) apply in one ssh call, like in
+    :func:`incremental_sync`.
+
+    Raises :class:`GitSyncError` when the base is unavailable (no
+    ``.deploy-commit`` on the target / unknown commit) — the caller should
+    fall back to a full sync.
+    """
+    root = Path(root).resolve()
+    base = base_commit or read_deploy_commit(host, remote_dir)
+    if not base:
+        raise GitSyncError(f"no {DEPLOY_COMMIT_FILE} on {host}:{remote_dir} — full sync required")
+    probe = subprocess.run(
+        ["git", "-C", str(root), "cat-file", "-e", f"{base}^{{commit}}"],
+        capture_output=True,
+    )
+    if probe.returncode != 0:
+        raise GitSyncError(f"unknown base commit {base[:12]} — full sync required")
+
+    delta = collect_frozen_delta(root, base)
+    if dry_run or delta.empty:
+        return delta
+
+    if delta.sync:
+        _remote_extract(host, remote_dir, _head_archive(root, delta.sync))
     if delta.delete:
         _apply_deletes(host, remote_dir, delta.delete)
 

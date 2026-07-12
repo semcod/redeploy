@@ -16,8 +16,11 @@ from rich.console import Console
               help="Parallel rsync streams per repo.")
 @click.option("--dry-run", is_flag=True, help="List the delta without transferring.")
 @click.option("--record", is_flag=True,
-              help="After a successful sync stamp current HEAD as .deploy-commit.")
-def sync_cmd(remote, repos, parallel, dry_run, record):
+              help="After a successful sync stamp the shipped commit as .deploy-commit.")
+@click.option("--frozen", is_flag=True,
+              help="Frozen mode: delta AND contents come from HEAD only "
+                   "(git archive) — working-tree edits/WIP never ship.")
+def sync_cmd(remote, repos, parallel, dry_run, record, frozen):
     """Ship only files changed since the target's ``.deploy-commit``.
 
     Tracked modifications + untracked-not-ignored files rsync in PARALLEL
@@ -25,13 +28,25 @@ def sync_cmd(remote, repos, parallel, dry_run, record):
     path is unavailable (no/unknown .deploy-commit) so callers can fall back
     to a full sync.
 
+    With ``--frozen`` the delta is ``base..HEAD`` only and file contents ship
+    from HEAD via ``git archive`` — parallel edits during the sync cannot
+    reach the target.
+
     \b
     Examples:
         redeploy sync pi@192.168.188.109:~/c2004
         redeploy sync pi@host:~/app --parallel 8 --record
+        redeploy sync pi@host:~/app --frozen --record
         redeploy sync pi@host:~/app --dry-run
     """
-    from ...gitsync import GitSyncError, incremental_sync, record_deploy_commit
+    import subprocess
+
+    from ...gitsync import (
+        GitSyncError,
+        frozen_sync,
+        incremental_sync,
+        record_deploy_commit,
+    )
 
     console = Console()
     host, _, remote_dir = remote.partition(":")
@@ -42,10 +57,23 @@ def sync_cmd(remote, repos, parallel, dry_run, record):
     failed = False
     for root in roots:
         label = root.resolve().name
+        shipped_commit = None
         try:
-            delta = incremental_sync(
-                root, host, remote_dir, parallel=parallel, dry_run=dry_run
-            )
+            if frozen:
+                # Capture the shipped commit BEFORE syncing — commits made
+                # during the sync must not be stamped as deployed.
+                shipped_commit = subprocess.check_output(
+                    ["git", "-C", str(root.resolve()), "rev-parse", "HEAD"], text=True
+                ).strip()
+                console.print(
+                    f"[bold]{label}[/bold]: FROZEN — shipping commit "
+                    f"[cyan]{shipped_commit[:12]}[/cyan] (working tree ignored)"
+                )
+                delta = frozen_sync(root, host, remote_dir, dry_run=dry_run)
+            else:
+                delta = incremental_sync(
+                    root, host, remote_dir, parallel=parallel, dry_run=dry_run
+                )
         except GitSyncError as exc:
             console.print(f"[yellow]{label}: {exc}[/yellow]")
             failed = True
@@ -59,7 +87,7 @@ def sync_cmd(remote, repos, parallel, dry_run, record):
             for path in delta.sync[:20]:
                 console.print(f"  [dim]{path}[/dim]")
         if record and not dry_run:
-            head = record_deploy_commit(root, host, remote_dir)
+            head = record_deploy_commit(root, host, remote_dir, commit=shipped_commit)
             console.print(f"  [dim].deploy-commit → {head[:12]}[/dim]")
 
     if failed:

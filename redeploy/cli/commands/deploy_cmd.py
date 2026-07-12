@@ -28,8 +28,17 @@ def _fmt_s(seconds: float | None) -> str:
               help="Prep commands run in PARALLEL with each other before the "
                    "engine (e.g. folder syncs + db sync simultaneously). "
                    "Any failure aborts the deploy.")
+@click.option("--frozen", is_flag=True,
+              help="Frozen mode: deploy the HEAD commit captured at gate time "
+                   "— delta and contents come from git (archive), WIP/working-"
+                   "tree edits never ship; adds --no-sync-project to the "
+                   "engine automatically. Requires --remote.")
+@click.option("--record", is_flag=True,
+              help="After a successful deploy stamp the DEPLOYED commit as "
+                   ".deploy-commit on the target (with --frozen: the frozen "
+                   "commit, never the post-deploy HEAD). Requires --remote.")
 @click.argument("run_args", nargs=-1, type=click.UNPROCESSED)
-def deploy_cmd(spec, repo, remote, yes, gate_only, prep_cmds, run_args):
+def deploy_cmd(spec, repo, remote, yes, gate_only, prep_cmds, frozen, record, run_args):
     """Deploy SPEC with host-side control: what ships, how long, live progress.
 
     \b
@@ -40,22 +49,52 @@ def deploy_cmd(spec, repo, remote, yes, gate_only, prep_cmds, run_args):
     3. REPORT — total time vs last run, slowest steps table.
 
     \b
+    --frozen deploys a FROZEN state: the delta is .deploy-commit..HEAD and
+    file contents ship from HEAD (git archive | ssh tar) — edits made while
+    the deploy runs cannot leak into the target (incident 2026-07-10).
+
+    \b
     Examples:
         redeploy deploy redeploy/pi109/migration.md --remote pi@host:~/c2004
         redeploy deploy redeploy/122/migration.md --repo . --yes
+        redeploy deploy spec.md --remote pi@host:~/c2004 --frozen --record
         redeploy deploy spec.md --gate-only
     """
+    import subprocess as sp
+
     from ...deploy_watch import StepHistory, build_manifest, run_with_progress
 
     console = Console()
     cwd = Path(repo).resolve()
+    if frozen and not remote:
+        raise click.UsageError("--frozen wymaga --remote HOST:DIR (cel frozen_sync)")
+    if record and not remote:
+        raise click.UsageError("--record wymaga --remote HOST:DIR")
     history = StepHistory.load(spec, cwd)
-    manifest = build_manifest(cwd, remote=remote, history=history)
+    manifest = build_manifest(cwd, remote=remote, history=history, frozen=frozen)
+
+    # Frozen: zamrażamy commit JUŻ NA BRAMCE — commity/edycje zrobione w
+    # trakcie wdrożenia nie zmieniają tego, co jedzie ani co stemplujemy.
+    frozen_commit = None
+    if frozen:
+        frozen_commit = sp.check_output(
+            ["git", "-C", str(cwd), "rev-parse", "HEAD"], text=True
+        ).strip()
 
     # ── 1. gate ──────────────────────────────────────────────────────────────
     console.print(f"[bold]── bramka wdrożenia ──[/bold]  spec={spec}")
     console.print(f"  HEAD          {manifest.head}  [dim]{manifest.describe}[/dim]")
-    if manifest.wip_files:
+    if frozen:
+        console.print(
+            f"  [bold magenta]TRYB FROZEN: wdrażany commit {frozen_commit} "
+            f"— pliki WIP NIE jadą[/bold magenta]"
+        )
+        if manifest.wip_files:
+            console.print(
+                f"  [dim]WIP pominięte: {len(manifest.wip_files)} plik(ów) "
+                f"zostaje tylko na hoście[/dim]"
+            )
+    elif manifest.wip_files:
         console.print(f"  [yellow]WIP (jedzie z deployem): {len(manifest.wip_files)} plik(ów)[/yellow]")
         for path in manifest.wip_files[:8]:
             console.print(f"    [dim]{path}[/dim]")
@@ -64,11 +103,12 @@ def deploy_cmd(spec, repo, remote, yes, gate_only, prep_cmds, run_args):
     else:
         console.print("  WIP           [green]brak — czyste drzewo[/green]")
     if remote:
+        delta_label = "delta HEAD → cel" if frozen else "delta → cel  "
         if manifest.delta_error:
             console.print(f"  delta         [yellow]{manifest.delta_error}[/yellow]")
         else:
             console.print(
-                f"  delta → cel   {len(manifest.delta_sync)} plik(ów), "
+                f"  {delta_label} {len(manifest.delta_sync)} plik(ów), "
                 f"{len(manifest.delta_delete)} usunięć"
             )
             for path in manifest.delta_sync[:8]:
@@ -116,6 +156,30 @@ def deploy_cmd(spec, repo, remote, yes, gate_only, prep_cmds, run_args):
             console.print("[red]prep nieudany — przerywam przed silnikiem[/red]")
             raise SystemExit(5)
 
+    # ── 1c. frozen sync (prep przed silnikiem) ───────────────────────────────
+    run_args = list(run_args)
+    if frozen:
+        from ...gitsync import GitSyncError, frozen_sync
+
+        host, _, remote_dir = remote.partition(":")
+        console.print(
+            f"[bold]frozen sync[/bold] commit {frozen_commit[:12]} → {remote} "
+            f"(treść z HEAD, git archive)…"
+        )
+        t_frozen = time.time()
+        try:
+            delta = frozen_sync(cwd, host, remote_dir, base_commit=None)
+        except GitSyncError as exc:
+            console.print(f"[red]frozen sync nieudany: {exc}[/red]")
+            raise SystemExit(5)
+        console.print(
+            f"  [green]✓[/green] ({_fmt_s(time.time() - t_frozen)}) "
+            f"{len(delta.sync)} plik(ów), {len(delta.delete)} usunięć"
+        )
+        # Silnik nie może już rsyncować working tree — projekt jedzie z HEAD.
+        if "--no-sync-project" not in run_args:
+            run_args.append("--no-sync-project")
+
     # ── 2. run with live progress ────────────────────────────────────────────
     state = {"t0": time.time(), "total": 0}
 
@@ -150,7 +214,7 @@ def deploy_cmd(spec, repo, remote, yes, gate_only, prep_cmds, run_args):
             console.print(f"[{elapsed}]   [red]✗ {ev.get('id','')}: {str(ev.get('error',''))[:120]}[/red]")
 
     report = run_with_progress(
-        spec, cwd, extra_args=list(run_args), history=history, on_event=on_event
+        spec, cwd, extra_args=run_args, history=history, on_event=on_event
     )
 
     # ── 3. report ────────────────────────────────────────────────────────────
@@ -176,5 +240,15 @@ def deploy_cmd(spec, repo, remote, yes, gate_only, prep_cmds, run_args):
             table.add_row(sid, _fmt_s(duration))
         console.print(table)
     console.print(f"[dim]log silnika: {report.log_path}[/dim]")
+    if record and report.returncode == 0:
+        from ...gitsync import record_deploy_commit
+
+        host, _, remote_dir = remote.partition(":")
+        # W trybie frozen stemplujemy commit ZAMROŻONY na bramce — commity
+        # zrobione W TRAKCIE deployu nie dojechały i nie mogą być oznaczone
+        # jako wdrożone (incydent 2026-07-10).
+        stamped = record_deploy_commit(cwd, host, remote_dir, commit=frozen_commit)
+        suffix = " (frozen — nie bieżący HEAD)" if frozen else ""
+        console.print(f"  [dim].deploy-commit → {stamped[:12]}{suffix}[/dim]")
     if report.returncode != 0:
         raise SystemExit(report.returncode)
