@@ -71,32 +71,63 @@ def run_scp(step: MigrationStep, probe: RemoteProbe, plan: MigrationPlan) -> Non
 
 
 def run_rsync(step: MigrationStep, probe: RemoteProbe, plan: MigrationPlan) -> None:
-    """Sync files via rsync."""
+    """Sync files via rsync.
+
+    W trybie FROZEN (env ``REDEPLOY_FROZEN_COMMIT``, ustawiany przez
+    ``redeploy run --frozen-commit``) źródła względne trackowane w zamrożonym
+    commicie jadą z eksportu ``git archive`` zamiast żywego working tree —
+    inaczej kroki spec-a przemycają WIP mimo zamrożonego syncu projektu.
+    """
     if not step.src or not step.dst:
         raise StepError(step, "rsync requires src and dst")
-    if probe.is_local:
-        dst = step.dst
-        Path(dst).mkdir(parents=True, exist_ok=True)
-    else:
-        _ensure_remote_parent_dir(probe, step.dst)
-        dst = f"{plan.host}:{step.dst}"
-    cmd = [
-        "rsync",
-        "-az",
-        "--delete",
-        "--filter",
-        ":- .gitignore",
-        "--filter",
-        ":- .redeployignore",
-    ]
-    for exc in step.excludes:
-        cmd += ["--exclude", exc]
-    cmd += [step.src, dst]
-    result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
-    if result.returncode != 0:
-        raise StepError(step, f"rsync failed: {_format_step_output(result.stdout, result.stderr, 400)}")
-    step.status = StepStatus.DONE
-    step.result = _format_step_output(result.stdout, result.stderr)
+
+    src = step.src
+    frozen_note = ""
+    frozen_commit = os.environ.get("REDEPLOY_FROZEN_COMMIT", "").strip()
+    export_ctx = None
+    if frozen_commit:
+        import tempfile
+
+        from ..gitsync import GitSyncError, frozen_rsync_src
+
+        export_ctx = tempfile.TemporaryDirectory(prefix="redeploy-frozen-rsync-")
+        try:
+            src, frozen_note = frozen_rsync_src(
+                Path.cwd(), frozen_commit, step.src, Path(export_ctx.name)
+            )
+        except GitSyncError as exc:
+            export_ctx.cleanup()
+            raise StepError(step, f"frozen rsync src: {exc}") from exc
+        logger.info(f"  [{step.id}] {frozen_note}")
+
+    try:
+        if probe.is_local:
+            dst = step.dst
+            Path(dst).mkdir(parents=True, exist_ok=True)
+        else:
+            _ensure_remote_parent_dir(probe, step.dst)
+            dst = f"{plan.host}:{step.dst}"
+        cmd = [
+            "rsync",
+            "-az",
+            "--delete",
+            "--filter",
+            ":- .gitignore",
+            "--filter",
+            ":- .redeployignore",
+        ]
+        for exc in step.excludes:
+            cmd += ["--exclude", exc]
+        cmd += [src, dst]
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
+        if result.returncode != 0:
+            raise StepError(step, f"rsync failed: {_format_step_output(result.stdout, result.stderr, 400)}")
+        step.status = StepStatus.DONE
+        parts = [p for p in (frozen_note, _format_step_output(result.stdout, result.stderr)) if p]
+        step.result = "\n".join(parts)
+    finally:
+        if export_ctx is not None:
+            export_ctx.cleanup()
 
 
 def _ensure_remote_parent_dir(probe: RemoteProbe, remote_dst: str) -> None:

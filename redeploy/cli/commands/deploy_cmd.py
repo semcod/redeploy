@@ -179,6 +179,10 @@ def deploy_cmd(spec, repo, remote, yes, gate_only, prep_cmds, frozen, record, ru
         # Silnik nie może już rsyncować working tree — projekt jedzie z HEAD.
         if "--no-sync-project" not in run_args:
             run_args.append("--no-sync-project")
+        # Kroki `action: rsync` w spec-u też mają jechać z zamrożonego commitu
+        # (bez tego przemycają WIP working tree — incydent 2026-07-12).
+        if "--frozen-commit" not in run_args:
+            run_args += ["--frozen-commit", frozen_commit]
 
     # ── 2. run with live progress ────────────────────────────────────────────
     state = {"t0": time.time(), "total": 0}

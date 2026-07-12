@@ -287,6 +287,51 @@ def frozen_sync(
     return delta
 
 
+def frozen_rsync_src(
+    root: Path,
+    commit: str,
+    src: str,
+    export_dir: Path,
+) -> tuple[str, str]:
+    """Resolve an ``action: rsync`` source for FROZEN mode.
+
+    Spec steps rsync the LIVE working tree, which leaks WIP edits into a
+    frozen deploy (incident 2026-07-12: another session's in-progress files
+    rode along via ``sync_connect_scenario``). When the source is a relative
+    path tracked at *commit*, export it via ``git archive`` into *export_dir*
+    and rsync from there instead.
+
+    Returns ``(resolved_src, note)``:
+    - tracked relative path → exported copy under *export_dir* (trailing
+      slash of *src* preserved for rsync semantics), note names the commit;
+    - absolute path (other repo / generated tree) or path unknown at the
+      commit (e.g. operator-published ``.redeploy-hashes/``) → *src*
+      unchanged, note says the live tree is used and why.
+    """
+    if Path(src).is_absolute():
+        return src, "frozen: src poza repo — żywe drzewo"
+    rel = src.rstrip("/")
+    probe = subprocess.run(
+        ["git", "-C", str(root), "rev-parse", "--verify", "--quiet", f"{commit}:{rel}"],
+        capture_output=True,
+    )
+    if probe.returncode != 0:
+        return src, "frozen: src nietrackowany w commicie — żywe drzewo"
+    try:
+        payload = subprocess.check_output(
+            ["git", "-C", str(root), "archive", commit, "--", rel]
+        )
+    except subprocess.CalledProcessError as exc:
+        raise GitSyncError(f"git archive {commit[:12]} -- {rel} failed (exit {exc.returncode})") from exc
+    export_dir = Path(export_dir)
+    export_dir.mkdir(parents=True, exist_ok=True)
+    proc = subprocess.run(["tar", "-x", "-C", str(export_dir)], input=payload)
+    if proc.returncode != 0:
+        raise GitSyncError(f"tar extract of frozen src {rel} failed (exit {proc.returncode})")
+    resolved = str(export_dir / rel) + ("/" if src.endswith("/") else "")
+    return resolved, f"frozen: src z commitu {commit[:12]}"
+
+
 def multi_repo_sync(
     repos: list[tuple[Path, str, str]],
     *,

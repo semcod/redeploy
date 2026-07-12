@@ -14,6 +14,7 @@ from redeploy.gitsync import (
     _remote_rel,
     collect_delta,
     collect_frozen_delta,
+    frozen_rsync_src,
     frozen_sync,
     record_deploy_commit,
 )
@@ -183,6 +184,60 @@ class TestFrozenSync:
         stamped = record_deploy_commit(git_repo, "pi@test", "~/c2004", commit=frozen)
         assert stamped == frozen
         assert frozen in " ".join(sent["cmd"])
+
+
+class TestFrozenRsyncSrc:
+    """Kroki `action: rsync` spec-a w trybie frozen — źródło z git archive.
+
+    Incydent 2026-07-12: sync_connect_scenario rsyncował working tree i
+    przemycił WIP innej sesji mimo zamrożonego syncu projektu.
+    """
+
+    def _head(self, root: Path) -> str:
+        return subprocess.check_output(
+            ["git", "-C", str(root), "rev-parse", "HEAD"], text=True
+        ).strip()
+
+    def test_tracked_dir_ships_commit_content_not_wip(self, git_repo: Path, tmp_path: Path):
+        sub = git_repo / "module"
+        sub.mkdir()
+        (sub / "code.py").write_text("committed\n")
+        subprocess.run(["git", "-C", str(git_repo), "add", "-A"], check=True)
+        subprocess.run(["git", "-C", str(git_repo), "commit", "-qm", "module"], check=True)
+        head = self._head(git_repo)
+        (sub / "code.py").write_text("WIP-other-session\n")   # bez commita
+
+        export = tmp_path / "export"
+        src, note = frozen_rsync_src(git_repo, head, "module/", export)
+        assert src.endswith("/"), "trailing slash rsync musi przetrwać"
+        assert head[:12] in note
+        assert (Path(src) / "code.py").read_text() == "committed\n"
+
+    def test_untracked_src_falls_back_to_live_tree(self, git_repo: Path, tmp_path: Path):
+        # np. operator-publikowane .redeploy-hashes/ — generowane, poza gitem.
+        hashes = git_repo / ".redeploy-hashes"
+        hashes.mkdir()
+        (hashes / "scope").write_text("abc\n")
+        src, note = frozen_rsync_src(
+            git_repo, self._head(git_repo), ".redeploy-hashes/", tmp_path / "e2"
+        )
+        assert src == ".redeploy-hashes/"
+        assert "nietrackowany" in note
+
+    def test_absolute_src_falls_back_to_live_tree(self, git_repo: Path, tmp_path: Path):
+        src, note = frozen_rsync_src(
+            git_repo, self._head(git_repo), "/home/tom/github/oqlos/oqlos/", tmp_path / "e3"
+        )
+        assert src == "/home/tom/github/oqlos/oqlos/"
+        assert "poza repo" in note
+
+    def test_tracked_file_src(self, git_repo: Path, tmp_path: Path):
+        head = self._head(git_repo)
+        (git_repo / "app.py").write_text("WIP\n")
+        src, note = frozen_rsync_src(git_repo, head, "app.py", tmp_path / "e4")
+        assert not src.endswith("/")
+        assert Path(src).read_text() == "v1\n"
+        assert head[:12] in note
 
 
 class TestRemoteRel:

@@ -35,6 +35,7 @@ from .plan_apply_shared import (
 @click.option("--report/--no-report", default=False, show_default=True, help="Write Markdown execution report next to the spec file.")
 @click.option("--report-file", default=None, type=click.Path(), help="Override Markdown report output path.")
 @click.option("--sync-project/--no-sync-project", default=True, show_default=True, help="Before apply, sync full local project tree to target.remote_dir.")
+@click.option("--frozen-commit", "frozen_commit", default=None, metavar="SHA", help="FROZEN mode: 'action: rsync' steps with sources tracked at SHA ship from `git archive SHA` instead of the live working tree (WIP edits never ride along).")
 @click.option("--env", "env_name", default="", help="Named environment from redeploy.yaml (e.g. prod, dev, rpi5)")
 @click.option("--progress-yaml", is_flag=True, help="Emit machine-readable YAML progress events to stdout")
 @click.option("--resume", is_flag=True, help="Skip steps already completed in the persisted checkpoint.")
@@ -52,17 +53,32 @@ from .plan_apply_shared import (
 @click.pass_context
 def run(
     ctx, spec_file, dry_run, plan_only, do_detect, plan_out, output,
-    report, report_file, sync_project, env_name, progress_yaml, resume, from_step,
+    report, report_file, sync_project, frozen_commit, env_name, progress_yaml, resume, from_step,
     state_file, no_state, heal, fix_hint, max_heal_retries, lint,
     preflight, preflight_schema_out, preflight_remote, strict_preflight,
 ):
     """Execute migration from a single YAML spec (source + target in one file)."""
+    import os as _os
+    import subprocess as _subprocess
+
     from ...models import ProjectManifest
     from ...plan import Planner
     from ...plugins import load_user_plugins
 
     console = Console()
     ensure_redeployignore(Path.cwd(), console)
+
+    if frozen_commit:
+        probe = _subprocess.run(
+            ["git", "-C", str(Path.cwd()), "cat-file", "-e", f"{frozen_commit}^{{commit}}"],
+            capture_output=True,
+        )
+        if probe.returncode != 0:
+            raise click.UsageError(f"--frozen-commit: nieznany commit '{frozen_commit}' w {Path.cwd()}")
+        # Kanał do handlera rsync (apply/handlers.run_rsync) — kroki spec-a
+        # jadą wtedy z git archive tego commitu, nie z working tree.
+        _os.environ["REDEPLOY_FROZEN_COMMIT"] = frozen_commit
+        console.print(f"[bold]FROZEN[/bold] kroki rsync jadą z commitu {frozen_commit[:12]}")
 
     manifest = ProjectManifest.find_and_load(Path.cwd())
     resolved_spec, spec = load_spec_for_run(console, spec_file, manifest)
