@@ -30,6 +30,11 @@ class MigrationStep(BaseModel):
     seconds: int = 0
     namespace: Optional[str] = None
 
+    # Consecutive steps sharing the same non-empty parallel_group are executed
+    # concurrently by the executor (bounded by --parallel-jobs). Steps without
+    # a group keep today's strictly sequential semantics.
+    parallel_group: Optional[str] = None
+
     reason: Optional[str] = None
     risk: ConflictSeverity = ConflictSeverity.LOW
     rollback_command: Optional[str] = None

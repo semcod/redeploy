@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import sys
+import threading
 import time
 from datetime import datetime, timezone
 from typing import IO, Optional
@@ -31,6 +32,9 @@ class ProgressEmitter:
     def __init__(self, stream: IO[str] = None):
         self._out = stream or sys.stdout
         self._t0 = time.monotonic()
+        # Steps in a parallel_group batch emit from worker threads — serialize
+        # writes so YAML documents never interleave mid-event.
+        self._lock = threading.Lock()
 
     def _ts(self) -> str:
         return datetime.now(timezone.utc).strftime("%H:%M:%S")
@@ -41,9 +45,10 @@ class ProgressEmitter:
     def _emit(self, event: dict) -> None:
         event.setdefault("ts", self._ts())
         event.setdefault("elapsed_s", self._elapsed())
-        self._out.write("---\n")
-        self._out.write(yaml.dump(event, default_flow_style=False, allow_unicode=True))
-        self._out.flush()
+        with self._lock:
+            self._out.write("---\n")
+            self._out.write(yaml.dump(event, default_flow_style=False, allow_unicode=True))
+            self._out.flush()
 
     def start(self, plan: MigrationPlan) -> None:
         from ..models import StepStatus
@@ -70,23 +75,33 @@ class ProgressEmitter:
             "status": "running",
         })
 
-    def step_done(self, n: int, step: MigrationStep) -> None:
-        self._emit({
+    def step_done(self, n: int, step: MigrationStep,
+                  duration_s: Optional[float] = None) -> None:
+        event = {
             "event": "step_done",
             "n": n,
             "id": step.id,
             "status": "done",
             "result": step.result,
-        })
+        }
+        if duration_s is not None:
+            # Real per-step wall time. `elapsed_s` stays global — in a parallel
+            # batch (elapsed_s(done) - elapsed_s(start)) is NOT the step time.
+            event["duration_s"] = duration_s
+        self._emit(event)
 
-    def step_fail(self, n: int, step: MigrationStep, error: str) -> None:
-        self._emit({
+    def step_fail(self, n: int, step: MigrationStep, error: str,
+                  duration_s: Optional[float] = None) -> None:
+        event = {
             "event": "step_fail",
             "n": n,
             "id": step.id,
             "status": "failed",
             "error": error,
-        })
+        }
+        if duration_s is not None:
+            event["duration_s"] = duration_s
+        self._emit(event)
 
     def progress(self, step_id: str, message: str) -> None:
         self._emit({

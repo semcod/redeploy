@@ -1,7 +1,10 @@
 """Executor — runs MigrationPlan steps, handles rollback on failure."""
 from __future__ import annotations
 
+import os
+import threading
 import time
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import IO, Any, Optional
 
@@ -35,7 +38,8 @@ class Executor:
                  resume: bool = False,
                  from_step: Optional[str] = None,
                  state_path: Optional["Path"] = None,
-                 spec_path: Optional[str] = None):
+                 spec_path: Optional[str] = None,
+                 parallel_jobs: Optional[int] = None):
         self.plan = plan
         self.dry_run = dry_run
         self.probe = RemoteProbe(plan.host)
@@ -48,6 +52,20 @@ class Executor:
         self._audit_log = audit_log
         self._audit_path = audit_path
         self._t0: float = 0.0
+
+        # ── parallel_group execution ─────────────────────────────────────────
+        # Concurrency cap for a parallel_group batch. Default 3: builds on the
+        # Pi compete for SD-card I/O, more workers only thrash the card.
+        if parallel_jobs is None:
+            env_jobs = os.environ.get("REDEPLOY_PARALLEL_JOBS", "").strip()
+            try:
+                parallel_jobs = int(env_jobs) if env_jobs else 3
+            except ValueError:
+                parallel_jobs = 3
+        self._parallel_jobs = max(1, parallel_jobs)
+        # Emitter events, _completed and _state.mark_done are not thread-safe —
+        # one lock guards the whole "step finished" bookkeeping transaction.
+        self._batch_lock = threading.Lock()
 
         # ── spec path for command_ref resolution ─────────────────────────────
         if spec_path and not plan.spec_path:
@@ -110,30 +128,133 @@ class Executor:
         return ok
 
     def _execute_steps_loop(self, skip_ids: set[str]) -> bool:
-        """Execute steps, handling skips and errors. Returns True if all passed."""
-        ok = True
-        for i, step in enumerate(self.plan.steps, 1):
-            if step.id in skip_ids:
-                self._skip_step(i, step)
+        """Execute steps, handling skips and errors. Returns True if all passed.
+
+        Consecutive steps sharing the same non-empty ``parallel_group`` form a
+        batch and run concurrently (bounded by ``parallel_jobs``). Everything
+        else — including 1-element batches and ``--parallel-jobs 1`` — takes
+        the exact same sequential path as before.
+        """
+        steps = self.plan.steps
+        total = len(steps)
+        idx = 0
+        while idx < total:
+            group = steps[idx].parallel_group
+            end = idx + 1
+            if group:
+                while end < total and steps[end].parallel_group == group:
+                    end += 1
+
+            # Steps already completed (resume / --from-step): skip like today.
+            runnable: list[tuple[int, MigrationStep]] = []
+            for j in range(idx, end):
+                if steps[j].id in skip_ids:
+                    self._skip_step(j + 1, steps[j])
+                else:
+                    runnable.append((j + 1, steps[j]))
+            idx = end
+            if not runnable:
                 continue
 
+            if (group and len(runnable) > 1
+                    and self._parallel_jobs > 1 and not self.dry_run):
+                if not self._run_parallel_batch(group, runnable):
+                    return False
+            else:
+                for n, step in runnable:
+                    if not self._run_single_step(n, step):
+                        return False
+        return True
+
+    def _run_single_step(self, i: int, step: MigrationStep) -> bool:
+        """Execute one step sequentially (pre-parallel_group semantics)."""
+        try:
+            if self._emitter:
+                self._emitter.step_start(i, step)
+            self._fire_hooks("before_step", step=step)
+            t0 = time.monotonic()
+            self._execute_step(step)
+            self._completed.append(step)
+            if self._state is not None:
+                self._state.mark_done(step.id)
+            if self._emitter:
+                self._emitter.step_done(i, step,
+                                        duration_s=round(time.monotonic() - t0, 1))
+            self._fire_hooks("after_step", step=step)
+            return True
+        except StepError as e:
+            self._fire_hooks("on_step_failure", step=step, error=str(e))
+            self._handle_step_failure(i, step, e)
+            return False
+
+    def _run_parallel_batch(self, group: str,
+                            items: list[tuple[int, MigrationStep]]) -> bool:
+        """Run a parallel_group batch concurrently. Returns True if all passed.
+
+        Semantics:
+        - ``step_start`` (+ before_step hooks) fire sequentially up-front, in
+          plan order, for readable progress output;
+        - ``step_done`` / ``step_fail`` fire as each step actually finishes
+          (with per-step ``duration_s``), under ``_batch_lock``;
+        - on failure NOTHING is interrupted mid-flight (podman builds do not
+          survive SIGKILL cleanly) — the pool drains, successful steps are
+          counted into ``_completed`` / ``mark_done``, then the FIRST failure
+          (plan order) goes through the standard ``_handle_step_failure`` path
+          so rollback covers everything completed so far;
+        - after_step hooks fire from the main thread, in plan order, only for
+          successful steps (hooks are not assumed thread-safe).
+        """
+        jobs = min(self._parallel_jobs, len(items))
+        logger.info(f"parallel_group '{group}': {len(items)} step(s), "
+                    f"{jobs} concurrent job(s)")
+        for n, step in items:
+            if self._emitter:
+                self._emitter.step_start(n, step)
+            self._fire_hooks("before_step", step=step)
+
+        succeeded: list[tuple[int, MigrationStep]] = []
+        failures: list[tuple[int, MigrationStep, StepError]] = []
+
+        def _worker(n: int, step: MigrationStep) -> None:
+            t0 = time.monotonic()
             try:
-                if self._emitter:
-                    self._emitter.step_start(i, step)
-                self._fire_hooks("before_step", step=step)
                 self._execute_step(step)
+            except StepError as e:
+                duration = round(time.monotonic() - t0, 1)
+                with self._batch_lock:
+                    step.status = StepStatus.FAILED
+                    step.error = str(e)
+                    failures.append((n, step, e))
+                    if self._emitter:
+                        self._emitter.step_fail(n, step, str(e),
+                                                duration_s=duration)
+                return
+            duration = round(time.monotonic() - t0, 1)
+            with self._batch_lock:
                 self._completed.append(step)
                 if self._state is not None:
                     self._state.mark_done(step.id)
+                succeeded.append((n, step))
                 if self._emitter:
-                    self._emitter.step_done(i, step)
-                self._fire_hooks("after_step", step=step)
-            except StepError as e:
-                self._fire_hooks("on_step_failure", step=step, error=str(e))
-                self._handle_step_failure(i, step, e)
-                ok = False
-                break
-        return ok
+                    self._emitter.step_done(n, step, duration_s=duration)
+
+        with ThreadPoolExecutor(max_workers=jobs,
+                                thread_name_prefix=f"pg-{group}") as pool:
+            # list() drains the iterator so a non-StepError exception from any
+            # worker propagates (mirrors the sequential path); the context
+            # manager still waits for every in-flight step to finish first.
+            list(pool.map(lambda it: _worker(*it), items))
+
+        for n, step in sorted(succeeded):
+            self._fire_hooks("after_step", step=step)
+
+        if not failures:
+            return True
+        failures.sort(key=lambda f: f[0])
+        n, step, error = failures[0]
+        self._fire_hooks("on_step_failure", step=step, error=str(error))
+        self._handle_step_failure(n, step, error, step_fail_emitted=True)
+        return False
 
     def _skip_step(self, i: int, step: MigrationStep) -> None:
         """Handle a skipped step due to resume."""
@@ -142,15 +263,21 @@ class Executor:
         if self._emitter:
             self._emitter.step_done(i, step)
 
-    def _handle_step_failure(self, i: int, step: MigrationStep, error: StepError) -> None:
-        """Handle a step failure."""
+    def _handle_step_failure(self, i: int, step: MigrationStep, error: StepError,
+                             *, step_fail_emitted: bool = False) -> None:
+        """Handle a step failure.
+
+        ``step_fail_emitted`` — parallel batches emit step_fail the moment the
+        step finishes; skip the duplicate emission here.
+        """
         logger.error(f"Step failed: {error}")
         step.status = StepStatus.FAILED
         step.error = str(error)
         if self._state is not None:
             self._state.mark_failed(step.id, str(error))
         if self._emitter:
-            self._emitter.step_fail(i, step, str(error))
+            if not step_fail_emitted:
+                self._emitter.step_fail(i, step, str(error))
             self._emitter.failed(len(self._completed), len(self.plan.steps), str(error))
         if not self.dry_run:
             self._rollback()

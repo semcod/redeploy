@@ -339,6 +339,7 @@ class HealRunner:
             from_step=self.executor_kwargs.get("from_step", None),
             state_path=state_path if not self._no_state else None,
             spec_path=str(self.spec_path),
+            parallel_jobs=self.executor_kwargs.get("parallel_jobs", None),
         )
         if self._no_state:
             executor._state = None

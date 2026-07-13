@@ -73,6 +73,7 @@ def run_apply(
     state_file: str | None = None,
     no_state: bool = False,
     spec_path: str | None = None,
+    parallel_jobs: int | None = None,
 ) -> bool:
     from ...apply import Executor
 
@@ -92,6 +93,7 @@ def run_apply(
         from_step=from_step,
         state_path=state_path if not no_state else None,
         spec_path=spec_path,
+        parallel_jobs=parallel_jobs,
     )
     if no_state:
         executor._state = None
