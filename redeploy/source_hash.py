@@ -154,3 +154,17 @@ def image_current(
     if not published:
         return False
     return image_label_hash(image, label=label, engine=engine, ssh_host=ssh_host) == published
+
+
+HASH_PUBLISHER_REL = Path("scripts/redeploy/publish-source-hashes.sh")
+
+
+def project_hash_publisher(root: Path) -> Path | None:
+    """Project-side source-hash publisher script, if the project ships one.
+
+    Deploy cockpits run it before the engine so skip-if-image-current guards
+    compare against FRESH hashes — stale published hashes falsely SKIP builds
+    of changed sources (2026-07-12: a green deploy left an old image running).
+    """
+    candidate = Path(root) / HASH_PUBLISHER_REL
+    return candidate if candidate.is_file() else None

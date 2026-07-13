@@ -377,3 +377,20 @@ class TestDeployWatch:
         report = dw.run_with_progress("spec.md", tmp_path, log_dir=tmp_path)
         assert report.returncode == 0
         assert report.durations["build"] == pytest.approx(60.5)
+
+
+class TestProjectHashPublisher:
+    """Kokpit publikuje hashe przed silnikiem — stale hashe = fałszywy SKIP."""
+
+    def test_found_when_project_ships_script(self, tmp_path: Path):
+        from redeploy.source_hash import project_hash_publisher
+
+        script = tmp_path / "scripts" / "redeploy" / "publish-source-hashes.sh"
+        script.parent.mkdir(parents=True)
+        script.write_text("#!/bin/bash\necho PASS\n")
+        assert project_hash_publisher(tmp_path) == script
+
+    def test_none_without_script(self, tmp_path: Path):
+        from redeploy.source_hash import project_hash_publisher
+
+        assert project_hash_publisher(tmp_path) is None

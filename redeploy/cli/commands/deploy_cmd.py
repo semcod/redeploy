@@ -37,8 +37,16 @@ def _fmt_s(seconds: float | None) -> str:
               help="After a successful deploy stamp the DEPLOYED commit as "
                    ".deploy-commit on the target (with --frozen: the frozen "
                    "commit, never the post-deploy HEAD). Requires --remote.")
+@click.option("--publish-hashes/--no-publish-hashes", "publish_hashes", default=True,
+              show_default=True,
+              help="Before the engine, run the project's source-hash publisher "
+                   "(scripts/redeploy/publish-source-hashes.sh) when present. "
+                   "Stale published hashes make skip-if-image-current guards "
+                   "falsely SKIP builds of changed sources (incident "
+                   "2026-07-12: a green deploy left the old backend image "
+                   "running).")
 @click.argument("run_args", nargs=-1, type=click.UNPROCESSED)
-def deploy_cmd(spec, repo, remote, yes, gate_only, prep_cmds, frozen, record, run_args):
+def deploy_cmd(spec, repo, remote, yes, gate_only, prep_cmds, frozen, record, publish_hashes, run_args):
     """Deploy SPEC with host-side control: what ships, how long, live progress.
 
     \b
@@ -125,6 +133,29 @@ def deploy_cmd(spec, repo, remote, yes, gate_only, prep_cmds, frozen, record, ru
     if not yes and not click.confirm("Wdrożyć?", default=False):
         console.print("[yellow]przerwano na bramce[/yellow]")
         raise SystemExit(4)
+
+    # ── 1a-bis. publish source hashes (guard skip-if-image-current) ─────────
+    if publish_hashes:
+        from ...source_hash import project_hash_publisher
+
+        publisher = project_hash_publisher(cwd)
+        if publisher is not None:
+            import subprocess as sp
+
+            t_pub = time.time()
+            proc = sp.run(["bash", str(publisher)], cwd=str(cwd),
+                          capture_output=True, text=True)
+            if proc.returncode != 0:
+                console.print(
+                    f"[red]publikacja hashy nieudana ({publisher.name}):[/red] "
+                    f"{(proc.stderr or proc.stdout)[-300:].strip()}"
+                )
+                raise SystemExit(5)
+            scopes = sum(1 for line in proc.stdout.splitlines() if line.startswith("PASS"))
+            console.print(
+                f"[bold]hashe źródeł[/bold] opublikowane: {scopes} scope'ów "
+                f"({_fmt_s(time.time() - t_pub)}) — guard skip-if-current aktualny"
+            )
 
     # ── 1b. parallel prep (folders + db simultaneously) ─────────────────────
     if prep_cmds:
