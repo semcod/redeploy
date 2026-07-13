@@ -95,19 +95,37 @@ def deploy_cmd(spec, repo, remote, yes, gate_only, prep_cmds, frozen, record, pu
 
     # Zepsuty HEAD: `x.py` obok pakietu `x/` — pakiet wygrywa import i czysty
     # build padnie, choć working tree autora (z nieskomitowanym rename) działa
-    # (incydent 2026-07-13). Tania kontrola z git ls-tree, zanim ruszą buildy.
-    from ...gitsync import module_shadow_collisions
+    # (incydent 2026-07-13). Blokują tylko kolizje NOWE względem ostatnio
+    # wdrożonego commitu — zastane (celowo martwe moduły) tylko ostrzegają.
+    from ...gitsync import module_shadow_collisions, read_deploy_commit
 
-    collisions = module_shadow_collisions(cwd, frozen_commit or "HEAD")
+    collisions = set(module_shadow_collisions(cwd, frozen_commit or "HEAD"))
     if collisions:
-        console.print("  [red]KOLIZJE modułów w HEAD (moduł przesłonięty pakietem):[/red]")
-        for c in collisions[:6]:
-            console.print(f"    [red]{c}[/red]")
-        console.print(
-            "  [red]czysty build tego commitu padnie na imporcie — "
-            "dokończ/zcommituj rename zanim wdrożysz[/red]"
-        )
-        raise SystemExit(6)
+        baseline: set[str] = set()
+        if remote:
+            host, _, remote_dir = remote.partition(":")
+            base = read_deploy_commit(host, remote_dir)
+            if base:
+                try:
+                    baseline = set(module_shadow_collisions(cwd, base))
+                except sp.CalledProcessError:
+                    pass  # nieznany commit bazowy — traktuj wszystkie jako nowe
+        fresh = sorted(collisions - baseline)
+        stale = sorted(collisions & baseline)
+        if stale:
+            console.print(
+                f"  [yellow]kolizje moduł.py vs pakiet/ (zastane, {len(stale)}): "
+                f"{'; '.join(stale[:3])}[/yellow]"
+            )
+        if fresh:
+            console.print("  [red]NOWE kolizje modułów (moduł przesłonięty pakietem):[/red]")
+            for c in fresh[:6]:
+                console.print(f"    [red]{c}[/red]")
+            console.print(
+                "  [red]czysty build tego commitu padnie na imporcie — "
+                "dokończ/zcommituj rename zanim wdrożysz[/red]"
+            )
+            raise SystemExit(6)
     if frozen:
         console.print(
             f"  [bold magenta]TRYB FROZEN: wdrażany commit {frozen_commit} "
