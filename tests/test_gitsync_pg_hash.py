@@ -394,3 +394,23 @@ class TestProjectHashPublisher:
         from redeploy.source_hash import project_hash_publisher
 
         assert project_hash_publisher(tmp_path) is None
+
+
+class TestModuleShadowCollisions:
+    """Bramka wykrywa `x.py` + pakiet `x/` w commicie (incydent 2026-07-13)."""
+
+    def test_detects_collision_in_head(self, git_repo: Path):
+        from redeploy.gitsync import module_shadow_collisions
+
+        pkg = git_repo / "shared" / "event_store"
+        pkg.mkdir(parents=True)
+        (pkg / "__init__.py").write_text("")
+        (git_repo / "shared" / "event_store.py").write_text("class EventStore: ...\n")
+        subprocess.run(["git", "-C", str(git_repo), "add", "-A"], check=True)
+        subprocess.run(["git", "-C", str(git_repo), "commit", "-qm", "collision"], check=True)
+        assert module_shadow_collisions(git_repo) == ["shared/event_store.py vs shared/event_store/"]
+
+    def test_clean_tree_no_collisions(self, git_repo: Path):
+        from redeploy.gitsync import module_shadow_collisions
+
+        assert module_shadow_collisions(git_repo) == []

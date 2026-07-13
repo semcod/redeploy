@@ -359,3 +359,22 @@ def multi_repo_sync(
     with ThreadPoolExecutor(max_workers=max(1, len(repos))) as pool:
         list(pool.map(_one, repos))
     return results
+
+
+def module_shadow_collisions(root: Path, commit: str = "HEAD") -> list[str]:
+    """Paths where *commit* contains BOTH ``x.py`` and a package ``x/``.
+
+    Python resolves the package first, silently shadowing the module —
+    a clean build of such a tree crashes at import time even though the
+    author's working tree (with the uncommitted rename) works fine
+    (incident 2026-07-13: shared/cqrs/event_store.py vs event_store/).
+    """
+    listed = subprocess.check_output(
+        ["git", "-C", str(root), "ls-tree", "-r", "--name-only", commit],
+        text=True,
+    ).splitlines()
+    files = set(listed)
+    dirs = {p.rsplit("/", 1)[0] for p in listed if "/" in p}
+    return sorted(
+        f"{d}.py vs {d}/" for d in dirs if f"{d}.py" in files
+    )

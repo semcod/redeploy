@@ -92,6 +92,22 @@ def deploy_cmd(spec, repo, remote, yes, gate_only, prep_cmds, frozen, record, pu
     # ── 1. gate ──────────────────────────────────────────────────────────────
     console.print(f"[bold]── bramka wdrożenia ──[/bold]  spec={spec}")
     console.print(f"  HEAD          {manifest.head}  [dim]{manifest.describe}[/dim]")
+
+    # Zepsuty HEAD: `x.py` obok pakietu `x/` — pakiet wygrywa import i czysty
+    # build padnie, choć working tree autora (z nieskomitowanym rename) działa
+    # (incydent 2026-07-13). Tania kontrola z git ls-tree, zanim ruszą buildy.
+    from ...gitsync import module_shadow_collisions
+
+    collisions = module_shadow_collisions(cwd, frozen_commit or "HEAD")
+    if collisions:
+        console.print("  [red]KOLIZJE modułów w HEAD (moduł przesłonięty pakietem):[/red]")
+        for c in collisions[:6]:
+            console.print(f"    [red]{c}[/red]")
+        console.print(
+            "  [red]czysty build tego commitu padnie na imporcie — "
+            "dokończ/zcommituj rename zanim wdrożysz[/red]"
+        )
+        raise SystemExit(6)
     if frozen:
         console.print(
             f"  [bold magenta]TRYB FROZEN: wdrażany commit {frozen_commit} "
