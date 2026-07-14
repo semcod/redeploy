@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import base64
+import json
 import os
 import shlex
 import subprocess
@@ -273,6 +274,119 @@ def run_http_check(
         logger.debug(f"    retry {attempt + 1}/{retries}: {last_err}")
         time.sleep(delay)
     raise StepError(step, f"HTTP check failed after {retries} retries: {last_err}")
+
+
+# ── Query-language post-deploy tests (testql / oql / aql) ─────────────────────
+# These run LOCALLY on the controller (where the interpreters live) and target
+# the freshly deployed host via `step.url`. Each supports an inline command
+# override via `step.command` with {url}/{source}/{mode}/{locale}/{context}
+# placeholders; otherwise a sensible default argv is built per language.
+
+def _run_local_query(step: MigrationStep, label: str, default_argv: list[str]) -> subprocess.CompletedProcess:
+    """Run a query-language runner locally; command-template override wins."""
+    timeout = step.timeout or 300
+    if step.command:
+        # Podmieniamy TYLKO znane placeholdery (nie .format() — literalne {}
+        # w komendzie, np. JSON, nie mogą być traktowane jako pola formatu).
+        cmd = step.command
+        for key, val in {
+            "url": step.url or "",
+            "source": step.query_source or "",
+            "mode": step.query_mode or "",
+            "locale": step.query_locale or "en",
+            "context": step.query_context or "",
+        }.items():
+            cmd = cmd.replace("{" + key + "}", val)
+        logger.info(f"{label}: {cmd}")
+        shell, argv = True, cmd
+    else:
+        argv = [a for a in default_argv if a != ""]
+        logger.info(f"{label}: {' '.join(shlex.quote(a) for a in argv)}")
+        shell = False
+    try:
+        return subprocess.run(argv, shell=shell, capture_output=True, text=True, timeout=timeout)
+    except FileNotFoundError:
+        raise StepError(step, f"{label}: runner not found on PATH — {default_argv[0]!r} (ustaw query_runner albo command)")
+    except subprocess.TimeoutExpired:
+        raise StepError(step, f"{label}: timeout po {timeout}s")
+
+
+def _query_output(r: subprocess.CompletedProcess) -> str:
+    return ((r.stdout or "") + ("\n" + r.stderr if r.stderr else "")).strip()
+
+
+def run_testql(step: MigrationStep, probe: RemoteProbe) -> None:
+    """TestQL smoke przeciw wdrożonemu hostowi: `testql run --url <url> <scenario>`."""
+    if not step.query_source and not step.command:
+        raise StepError(step, "testql wymaga query_source (plik .testql.toon.yaml) albo command")
+    runner = step.query_runner or "testql"
+    default_argv = [runner, "run"] + (["--url", step.url] if step.url else []) \
+        + list(step.flags or []) + ([step.query_source] if step.query_source else [])
+    r = _run_local_query(step, "testql", default_argv)
+    out = _query_output(r)
+    if r.returncode == 0 and (not step.expect or step.expect in out):
+        step.status = StepStatus.DONE
+        step.result = f"testql OK: {step.query_source or step.command}" + (f" (expect '{step.expect}')" if step.expect else "")
+        return
+    raise StepError(step, f"testql FAILED (rc={r.returncode}): {out[-500:]}")
+
+
+def run_oql(step: MigrationStep, probe: RemoteProbe) -> None:
+    """OQL scenariusz przeciw wdrożonemu runtime: `oqlctl <scen.oql> -m <mode> --json`.
+
+    Zwykle celuje w firmware (`--firmware-url <url>`). Werdykt z pola JSON `ok`;
+    fallback: kod wyjścia 0.
+    """
+    if not step.query_source and not step.command:
+        raise StepError(step, "oql wymaga query_source (plik .oql) albo command")
+    runner = step.query_runner or "oqlctl"
+    mode = step.query_mode or "execute"
+    default_argv = [runner, step.query_source or "", "-m", mode, "--json", "-q"] \
+        + (["--firmware-url", step.url] if step.url else []) + list(step.flags or [])
+    r = _run_local_query(step, "oql", default_argv)
+    out = _query_output(r)
+    verdict, detail = _parse_oql_verdict(r.stdout, r.returncode)
+    if verdict:
+        step.status = StepStatus.DONE
+        step.result = f"oql OK: {step.query_source or step.command} ({detail})"
+        return
+    raise StepError(step, f"oql FAILED ({detail}): {out[-500:]}")
+
+
+def _parse_oql_verdict(stdout: str, returncode: int) -> tuple[bool, str]:
+    """Zwróć (ok, opis) z JSON-a oqlctl (`ok`, `errors`); fallback na exit code."""
+    text = (stdout or "").strip()
+    for candidate in (text, text.splitlines()[-1] if text else ""):
+        try:
+            data = json.loads(candidate)
+        except (json.JSONDecodeError, ValueError):
+            continue
+        ok = bool(data.get("ok"))
+        errs = data.get("errors") or []
+        return ok, ("ok=true" if ok else f"ok=false errors={errs[:2]}")
+    return returncode == 0, f"exit={returncode} (brak JSON)"
+
+
+def run_aql(step: MigrationStep, probe: RemoteProbe) -> None:
+    """AQL model decyzyjny: rozwiąż i sprawdź werdykt (wariant/plan).
+
+    Domyślnie `aql <source> [locale]`; asercja: exit 0 i (jeśli podano) `expect`
+    w wyjściu (np. nazwa wariantu). Dla resolve z kontekstem ustaw `command`,
+    np. `node relcom/central-node/aql/resolve.mjs {source} {context}`.
+    """
+    if not step.query_source and not step.command:
+        raise StepError(step, "aql wymaga query_source (plik .aql) albo command")
+    runner = step.query_runner or "aql"
+    default_argv = [runner, step.query_source or ""] \
+        + ([step.query_context] if step.query_context else []) \
+        + ([step.query_locale] if step.query_locale else []) + list(step.flags or [])
+    r = _run_local_query(step, "aql", default_argv)
+    out = _query_output(r)
+    if r.returncode == 0 and (not step.expect or step.expect in out):
+        step.status = StepStatus.DONE
+        step.result = f"aql OK: {step.query_source or step.command}" + (f" (expect '{step.expect}')" if step.expect else "")
+        return
+    raise StepError(step, f"aql FAILED (rc={r.returncode}): {out[-500:]}")
 
 
 def run_version_check(step: MigrationStep, probe: RemoteProbe) -> None:

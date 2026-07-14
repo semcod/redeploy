@@ -64,6 +64,15 @@ class MigrationStep(BaseModel):
     kiosk_script_path: Optional[str] = None
     browser_profile: Optional[str] = None
 
+    # query-language test params (testql / oql / aql) — run locally against the
+    # deployed target (url). `expect` (above) is the optional assertion string;
+    # `command` may hold an inline runner-command override (with {url}/{source}).
+    query_source: Optional[str] = None   # path to .testql.toon.yaml / .oql / .aql
+    query_mode: Optional[str] = None     # oql: validate | dry-run | execute
+    query_runner: Optional[str] = None   # override runner binary (testql/oqlctl/aql)
+    query_locale: Optional[str] = None   # aql: locale (en/pl)
+    query_context: Optional[str] = None  # aql: path to context JSON for resolve
+
     result: Optional[str] = None
     error: Optional[str] = None
 

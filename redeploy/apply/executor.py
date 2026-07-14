@@ -20,6 +20,7 @@ from .handlers import (
     run_version_check, run_plugin, run_wait, run_inline_script,
     run_ensure_config_line, run_raspi_config,
     run_ensure_kanshi_profile, run_ensure_autostart_entry, run_ensure_browser_kiosk_script,
+    run_testql, run_oql, run_aql,
 )
 from .progress import ProgressEmitter
 from .rollback import rollback_steps
@@ -438,6 +439,9 @@ class Executor:
             StepAction.SCP:                 lambda s: run_scp(s, self.probe, self.plan),
             StepAction.RSYNC:               lambda s: run_rsync(s, self.probe, self.plan),
             StepAction.HTTP_CHECK:          lambda s: run_http_check(s, self.probe),
+            StepAction.TESTQL:              lambda s: run_testql(s, self.probe),
+            StepAction.OQL:                 lambda s: run_oql(s, self.probe),
+            StepAction.AQL:                 lambda s: run_aql(s, self.probe),
             StepAction.VERSION_CHECK:       lambda s: run_version_check(s, self.probe),
             StepAction.WAIT:                lambda s: run_wait(s),
             StepAction.PLUGIN:              lambda s: run_plugin(s, self.probe, self.plan, self._emitter, self.dry_run),

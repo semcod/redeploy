@@ -479,6 +479,57 @@ extra_steps:
     insert_before: docker_build_pull   # runs before build, not after verify
 ```
 
+## Query-language post-deploy tests — `testql` / `oql` / `aql`
+
+Beyond `http_check`/`inline_script`, redeploy can run **query-language test
+scenarios** as post-deploy verification. Each runs the interpreter **locally**
+(on the controller, where it is installed) and targets the freshly deployed
+host via `url`. The step fails — and thus the deploy fails/rolls back — when the
+scenario fails.
+
+| Action | Default runner | Verdict | Purpose |
+|--------|----------------|---------|---------|
+| `testql` | `testql run --url <url> <file>` | exit 0 (+ optional `expect` in output) | API/GUI smoke of the deployed app |
+| `oql` | `oqlctl <file> -m <mode> --json [--firmware-url <url>]` | JSON `ok == true` (fallback: exit 0) | run an OQL scenario against the deployed runtime/firmware |
+| `aql` | `aql <file> [locale]` | exit 0 (+ optional `expect`, e.g. a variant name) | evaluate an AQL decision model and assert the verdict |
+
+Fields (on top of `url` / `expect`):
+
+- `query_source` — path to the `.testql.toon.yaml` / `.oql` / `.aql` scenario.
+- `query_mode` — OQL mode: `validate` \| `dry-run` \| `execute`.
+- `query_runner` — override the runner binary (absolute path is fine).
+- `query_locale` — AQL locale (`en` \| `pl`).
+- `query_context` — AQL: path to a context JSON for resolve.
+- `command` — full command-template override; placeholders `{url} {source} {mode} {locale} {context}` are substituted (literal `{}` in the command are left intact — no `str.format`).
+
+```yaml
+extra_steps:
+  - id: post_deploy_oql
+    action: oql
+    description: "OQL: real sensor read from the deployed firmware"
+    query_source: deploy-tests/oql/firmware-sensor-read.oql
+    query_mode: execute
+    url: http://192.168.188.122:8202          # oqlctl --firmware-url
+
+  - id: post_deploy_testql
+    action: testql
+    description: "TestQL: API smoke of the deployed app"
+    query_source: deploy-tests/testql/post-deploy-api-smoke.testql.toon.yaml
+    flags: ["--output", "json", "--quiet"]
+    url: http://192.168.188.109:8100          # testql run --url
+
+  - id: post_deploy_aql
+    action: aql
+    description: "AQL: decision model returns the expected variant"
+    query_source: deploy-tests/aql/personalization.en.aql
+    command: "python3 /path/to/aql/cli.py {source} {locale}"
+    query_locale: en
+    expect: technical_deep
+```
+
+A ready example spec lives in c2004: `deploy-tests/post-deploy.redeploy.md`
+(run with `redeploy run deploy-tests/post-deploy.redeploy.md`).
+
 ## Plugin system
 
 Extend the step pipeline with custom action types using `action: plugin`:

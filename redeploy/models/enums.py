@@ -35,6 +35,10 @@ class StepAction(str, Enum):
     ENSURE_KANSHI_PROFILE = "ensure_kanshi_profile"
     ENSURE_AUTOSTART_ENTRY = "ensure_autostart_entry"
     ENSURE_BROWSER_KIOSK_SCRIPT = "ensure_browser_kiosk_script"
+    # Query-language post-deploy tests (run locally against the deployed target).
+    TESTQL = "testql"   # testql run --url <target> <scenario.testql.toon.yaml>
+    OQL = "oql"         # oqlctl <scenario.oql> -m <mode> [--firmware-url <target>]
+    AQL = "aql"         # AQL decision model resolved + asserted (variant/plan)
 
 
 class StepStatus(str, Enum):
