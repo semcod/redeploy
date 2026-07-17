@@ -481,9 +481,12 @@ def run_inline_script(
     )
 
     r = probe.run(cmd, timeout=timeout)
-    step.result = r.out[:500] if r.out else "script executed"
+    step.result = _format_step_output(r.out, r.stderr, 500) or "script executed"
     if not r.ok:
-        raise StepError(step, f"script failed with exit={r.exit_code}: {r.stderr[:200]}")
+        raise StepError(
+            step,
+            f"script failed with exit={r.exit_code}: {_format_step_output(r.out, r.stderr, 800)}",
+        )
     step.status = StepStatus.DONE
 
 
