@@ -2,7 +2,7 @@
 
 | Doc | Topic |
 | --- | --- |
-| [subactor-deployment.md](subactor-deployment.md) | Subactor / sub.actor / `*.subactor.com` topology via redeploy |
+| [subactor-deployment.md](subactor-deployment.md) | Pointer → SSOT `subactor/deployment` (not HOME here) |
 | [fleet.md](fleet.md) | Fleet & device registry |
 | [patterns.md](patterns.md) | Common migration patterns |
 | [observe.md](observe.md) | Observe mode |

@@ -1,5 +1,0 @@
-spec: migration.yaml
-host: deploy@SUBACTOR_VPS_IP
-app: www-sub-actor
-domain: sub.actor
-remote_dir: /opt/subactor

@@ -43,12 +43,11 @@ They are not useful as:
 examples/
 ├── yaml/       # supported, tested examples
 ├── md/         # three supported markdown subset examples plus prototypes
-└── subactor/   # Subactor Plesk edge + Docker VPS fleet (docs + verify wrappers)
+└── subactor/   # pointer only → https://github.com/subactor/deployment
 ```
 
-Subactor operators: start at
-[`subactor/README.md`](subactor/README.md) and
-[`../docs/subactor-deployment.md`](../docs/subactor-deployment.md).
+Subactor operators: use **`subactor/deployment`** (HOME), not this toolkit repo.
+See [`../docs/subactor-deployment.md`](../docs/subactor-deployment.md).
 
 ## Notes
 
