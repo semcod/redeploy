@@ -41,9 +41,14 @@ They are not useful as:
 
 ```text
 examples/
-├── yaml/   # supported, tested examples
-└── md/     # three supported markdown subset examples plus prototypes
+├── yaml/       # supported, tested examples
+├── md/         # three supported markdown subset examples plus prototypes
+└── subactor/   # Subactor Plesk edge + Docker VPS fleet (docs + verify wrappers)
 ```
+
+Subactor operators: start at
+[`subactor/README.md`](subactor/README.md) and
+[`../docs/subactor-deployment.md`](../docs/subactor-deployment.md).
 
 ## Notes
 
