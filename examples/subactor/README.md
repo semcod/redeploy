@@ -1,29 +1,8 @@
-# Subactor examples for `redeploy`
+# Moved: Subactor examples
 
-Operational package for Subactor edge + Docker VPS topology.
+Subactor fleet + migration wrappers live in **`subactor/deployment`**:
 
-Narrative: [`../../docs/subactor-deployment.md`](../../docs/subactor-deployment.md).
+https://github.com/subactor/deployment/tree/main/redeploy
 
-## Commands
-
-```bash
-# From repo root
-redeploy fleet --file examples/subactor/fleet.yaml
-
-redeploy run examples/subactor/01-plesk-edge-verify/migration.yaml --plan-only
-redeploy run examples/subactor/02-founder-origin-verify/migration.yaml --plan-only
-redeploy run examples/subactor/03-docker-vps-platform/migration.yaml --plan-only
-
-# After editing host placeholders:
-redeploy run examples/subactor/03-docker-vps-platform/migration.yaml --dry-run
-```
-
-## What these examples do / do not do
-
-| Example | Does | Does not |
-| --- | --- | --- |
-| `01-plesk-edge-verify` | Document curl EQL for public pages | Mutate Plesk docroots |
-| `02-founder-origin-verify` | Document Founder origin probes | Start/stop the SSH tunnel |
-| `03-docker-vps-platform` | Wrap documented `deploy-all.sh` surface | Invent secrets or unpinned `main` |
-
-Publish to Plesk remains Subactor `plesk://` + deployment bindings.
+This directory is intentionally empty of Subactor SSOT so operators are not
+misled into treating `semcod/redeploy` as HOME for Subactor deployment.
