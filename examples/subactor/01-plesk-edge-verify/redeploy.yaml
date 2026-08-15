@@ -1,0 +1,5 @@
+spec: migration.yaml
+host: operator@localhost
+app: subactor-edge
+domain: subactor.com
+remote_dir: /tmp/subactor-redeploy-noop

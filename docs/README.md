@@ -1,3 +1,13 @@
+# Operator docs (hand-written)
+
+| Doc | Topic |
+| --- | --- |
+| [subactor-deployment.md](subactor-deployment.md) | Subactor / sub.actor / `*.subactor.com` topology via redeploy |
+| [fleet.md](fleet.md) | Fleet & device registry |
+| [patterns.md](patterns.md) | Common migration patterns |
+| [observe.md](observe.md) | Observe mode |
+| [dsl-migration.md](dsl-migration.md) | DSL migration notes |
+
 <!-- code2docs:start --># redeploy
 
 ![version](https://img.shields.io/badge/version-0.1.0-blue) ![python](https://img.shields.io/badge/python-%3E%3D3.11-blue) ![coverage](https://img.shields.io/badge/coverage-unknown-lightgrey) ![functions](https://img.shields.io/badge/functions-985-green)
