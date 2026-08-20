@@ -49,7 +49,15 @@ from .plan_apply_shared import (
 @click.option("--max-heal-retries", default=3, show_default=True, help="Maximum number of LLM self-healing attempts.")
 @click.option("--lint/--no-lint", default=True, show_default=True, help="Run static analysis before deployment.")
 @click.option("--preflight/--no-preflight", default=True, show_default=True, help="Generate operational preflight schema before apply.")
-@click.option("--preflight-schema-out", default=".redeploy/preflight-schema.yaml", show_default=True, type=click.Path())
+@click.option(
+    "--preflight-schema-out",
+    default=None,
+    type=click.Path(),
+    help=(
+        "Save the preflight schema to PATH. Apply runs default to "
+        ".redeploy/preflight-schema.yaml; plan-only stays write-free unless PATH is given."
+    ),
+)
 @click.option("--preflight-remote/--no-preflight-remote", default=True, show_default=True)
 @click.option("--strict-preflight/--no-strict-preflight", default=True, show_default=True)
 @click.pass_context
@@ -116,8 +124,14 @@ def run(
         spec=spec,
         migration=migration,
         lint_result=lint_result,
-        preflight_schema_out=preflight_schema_out,
-        preflight_remote=preflight_remote,
+        preflight_schema_out=(
+            preflight_schema_out
+            if preflight_schema_out or plan_only
+            else ".redeploy/preflight-schema.yaml"
+        ),
+        # A plan-only invocation is a local, read-only planning operation.
+        # Explicit remote probing belongs to dry/apply runs.
+        preflight_remote=bool(preflight_remote and not plan_only),
         dry_run=dry_run,
         strict_preflight=strict_preflight,
         file_handler_id=file_handler_id,

@@ -1,10 +1,7 @@
 """Tests for apply/executor.py — Executor, StepError, rollback, all handlers."""
 from __future__ import annotations
 
-from unittest.mock import MagicMock, patch, call
-import subprocess
-
-import pytest
+from unittest.mock import MagicMock, patch
 
 from redeploy.apply.executor import Executor, StepError
 from redeploy.models import (
@@ -408,7 +405,7 @@ class TestRunWait:
         step = _make_step("wait0", action=StepAction.WAIT, command=None, seconds=0)
         plan = _make_plan([step])
         exc = _executor(plan)
-        with patch("time.sleep") as mock_sleep:
+        with patch("time.sleep"):
             exc.run()
         # seconds=0 → executor skips sleep (if step.seconds > 0 guard)
         assert step.status == StepStatus.DONE
@@ -468,6 +465,33 @@ class TestRollback:
         exc = _executor(plan, dry_run=True)
         exc.run()
         exc.probe.run.assert_not_called()
+
+    def test_verification_step_can_suppress_plan_rollback(self):
+        s1 = _make_step("deploy", rollback_command="rollback-deploy")
+        verify = _make_step(
+            "verify",
+            command="bad",
+            rollback_on_failure=False,
+        )
+        exc = _executor(_make_plan([s1, verify]))
+
+        call_count = {"n": 0}
+
+        def _side(cmd, timeout=300):
+            call_count["n"] += 1
+            result = MagicMock()
+            result.ok = call_count["n"] != 2
+            result.out = ""
+            result.stderr = "verification failed"
+            result.exit_code = 0 if result.ok else 1
+            return result
+
+        exc.probe.run.side_effect = _side
+
+        assert exc.run() is False
+        executed = [call.args[0] for call in exc.probe.run.call_args_list]
+        assert executed == ["echo ok", "bad"]
+        assert "rollback-deploy" not in executed
 
 
 # ── from_file / save_results ──────────────────────────────────────────────────
@@ -602,7 +626,7 @@ class TestRunContainerLogTail:
 # ── wait progress ticker ──────────────────────────────────────────────────────
 
 
-class TestRunWait:
+class TestRunWaitEdgeCases:
     def test_zero_seconds(self):
         step = MigrationStep(id="w", action=StepAction.WAIT, description="w", seconds=0)
         plan = _make_plan([step])
@@ -613,7 +637,6 @@ class TestRunWait:
         assert step.result == "waited 0s"
 
     def test_positive_seconds(self):
-        import redeploy.apply.executor as ex_mod
         step = MigrationStep(id="w", action=StepAction.WAIT, description="w", seconds=15)
         plan = _make_plan([step])
         exc = _executor(plan)

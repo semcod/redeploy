@@ -4,6 +4,7 @@ from __future__ import annotations
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+import os
 
 from loguru import logger
 from rich.console import Console
@@ -14,6 +15,7 @@ def setup_run_logging(resolved_spec: str) -> tuple[int, Path, datetime]:
     started_at = datetime.now(timezone.utc)
     log_dir = Path.cwd() / ".redeploy" / "logs"
     log_dir.mkdir(parents=True, exist_ok=True)
+    _prune_run_logs(log_dir)
     log_file = log_dir / f"redeploy-{started_at.strftime('%Y%m%d_%H%M%S')}.log"
     handler_id = logger.add(
         log_file,
@@ -23,6 +25,24 @@ def setup_run_logging(resolved_spec: str) -> tuple[int, Path, datetime]:
     )
     logger.info("redeploy run started — spec={}", resolved_spec)
     return handler_id, log_file, started_at
+
+
+def _prune_run_logs(log_dir: Path) -> None:
+    """Bound local run-log growth; keep newest files and never fail a run."""
+    try:
+        keep = max(1, int(os.environ.get("REDEPLOY_LOG_RETENTION", "20")))
+    except ValueError:
+        keep = 20
+    try:
+        logs = sorted(
+            log_dir.glob("redeploy-*.log"),
+            key=lambda path: path.stat().st_mtime,
+            reverse=True,
+        )
+        for stale in logs[keep:]:
+            stale.unlink()
+    except OSError as exc:
+        logger.debug("redeploy log pruning failed (non-fatal): {}", exc)
 
 
 def run_lint_phase(console: Console, resolved_spec: str, lint: bool, file_handler_id: int) -> object | None:
@@ -64,7 +84,7 @@ def run_preflight_phase(
     spec,
     migration,
     lint_result,
-    preflight_schema_out: str,
+    preflight_schema_out: str | None,
     preflight_remote: bool,
     dry_run: bool,
     strict_preflight: bool,
@@ -84,10 +104,16 @@ def run_preflight_phase(
         base_dir=Path.cwd(),
         remote_check=bool(preflight_remote and not dry_run),
     )
-    save_preflight_schema(preflight_result.schema, Path(preflight_schema_out))
+    if preflight_schema_out:
+        save_preflight_schema(preflight_result.schema, Path(preflight_schema_out))
 
     blockers = len(preflight_result.blockers)
-    console.print(f"\n[bold]preflight[/bold]  [dim]schema saved → {preflight_schema_out}[/dim]")
+    if preflight_schema_out:
+        console.print(
+            f"\n[bold]preflight[/bold]  [dim]schema saved → {preflight_schema_out}[/dim]"
+        )
+    else:
+        console.print("\n[bold]preflight[/bold]  [dim]schema evaluated in memory[/dim]")
     if not blockers:
         console.print("[green]  ✓ preflight passed (no blockers)[/green]")
         return

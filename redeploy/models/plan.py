@@ -38,6 +38,9 @@ class MigrationStep(BaseModel):
     reason: Optional[str] = None
     risk: ConflictSeverity = ConflictSeverity.LOW
     rollback_command: Optional[str] = None
+    # Verification failures often need a targeted retry, not rollback of an
+    # otherwise healthy deployment. Defaults to the historical behaviour.
+    rollback_on_failure: bool = True
     timeout: int = 300
     log_lines: int = 20
 

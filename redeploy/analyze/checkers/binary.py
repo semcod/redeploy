@@ -5,15 +5,37 @@ import re
 import shlex
 import shutil
 
-from ..models import AnalysisResult, IssueSeverity
+from ..models import IssueSeverity
 from .base import Checker
 
 _WRAPPERS = frozenset({"sudo", "env", "command", "nohup", "time", "exec"})
 _KEYWORDS = frozenset({
     "if", "then", "else", "fi", "for", "do", "done", "while", "case", "esac",
     "function", "in", "until", "select", "echo", "true", "false", "test", "[", "[[",
+    "break", "continue", "return", "exit", "shift", "read", "printf", "cd", "pwd",
+    "export", "readonly", "local", "declare", "typeset", "unset", "set", "source", ".",
+    "alias", "unalias", "trap", "wait", "jobs", "fg", "bg", "getopts", "hash",
 })
 _SEPARATORS = frozenset({"&&", "||", "|", ";", "(", ")", "{", "}"})
+_REMOTE_ACTIONS = frozenset({
+    "ssh_cmd",
+    "inline_script",
+    "systemctl_stop",
+    "systemctl_disable",
+    "systemctl_start",
+    "kubectl_delete",
+    "docker_compose_up",
+    "docker_compose_down",
+    "docker_build",
+    "docker_health_wait",
+    "container_log_tail",
+    "podman_build",
+    "ensure_config_line",
+    "raspi_config",
+    "ensure_kanshi_profile",
+    "ensure_autostart_entry",
+    "ensure_browser_kiosk_script",
+})
 
 
 def extract_binaries(cmd: str) -> list[str]:
@@ -57,7 +79,10 @@ class BinaryChecker(Checker):
     def check(self, spec, document, base_dir, result):
         for step in spec.extra_steps:
             action = str(step.get("action") or "")
-            if action in {"ensure_kanshi_profile"}:
+            # Commands for these actions execute on the deployment target.
+            # Checking them with shutil.which() on the controller produces
+            # false warnings and says nothing about target availability.
+            if action in _REMOTE_ACTIONS:
                 continue
             cmd = step.get("command") or ""
             for binary in extract_binaries(cmd):

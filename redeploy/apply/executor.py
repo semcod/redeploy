@@ -280,8 +280,13 @@ class Executor:
             if not step_fail_emitted:
                 self._emitter.step_fail(i, step, str(error))
             self._emitter.failed(len(self._completed), len(self.plan.steps), str(error))
-        if not self.dry_run:
+        if not self.dry_run and step.rollback_on_failure:
             self._rollback()
+        elif not self.dry_run:
+            logger.warning(
+                "Rollback suppressed by step policy: "
+                f"[{step.id}] rollback_on_failure=false"
+            )
 
     def _handle_completion(self, ok: bool, elapsed: float) -> None:
         """Handle plan completion or failure."""

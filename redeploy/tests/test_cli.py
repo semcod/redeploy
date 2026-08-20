@@ -3,9 +3,7 @@ from __future__ import annotations
 
 import textwrap
 from pathlib import Path
-from unittest.mock import MagicMock, patch
-
-import pytest
+from unittest.mock import patch
 import yaml
 from click.testing import CliRunner
 
@@ -104,6 +102,35 @@ class TestRunPlanOnly:
         runner = _runner()
         result = runner.invoke(cli, ["run", str(spec), "--plan-only"])
         assert result.exit_code == 0, result.output
+
+    def test_plan_only_does_not_write_default_preflight_schema(self, tmp_path):
+        spec = tmp_path / "migration.yaml"
+        spec.write_text(_migration_yaml())
+        runner = _runner()
+        with runner.isolated_filesystem(temp_dir=tmp_path):
+            result = runner.invoke(cli, ["run", str(spec), "--plan-only"])
+            assert not Path(".redeploy/preflight-schema.yaml").exists()
+
+        assert result.exit_code == 0, result.output
+
+    def test_plan_only_can_explicitly_save_preflight_schema(self, tmp_path):
+        spec = tmp_path / "migration.yaml"
+        output = tmp_path / "preflight.yaml"
+        spec.write_text(_migration_yaml())
+
+        result = _runner().invoke(
+            cli,
+            [
+                "run",
+                str(spec),
+                "--plan-only",
+                "--preflight-schema-out",
+                str(output),
+            ],
+        )
+
+        assert result.exit_code == 0, result.output
+        assert output.exists()
 
     def test_plan_only_shows_steps(self, tmp_path):
         spec = tmp_path / "migration.yaml"
@@ -297,7 +324,7 @@ class TestApply:
     def _plan_file(self, tmp_path, host="local") -> Path:
         from redeploy.models import (
             DeployStrategy, MigrationPlan, MigrationStep, StepAction,
-            ConflictSeverity, StepStatus,
+            ConflictSeverity,
         )
         plan = MigrationPlan(
             host=host, app="myapp",

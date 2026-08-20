@@ -3,7 +3,7 @@
 
 ## AI Cost Tracking
 
-![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.2.79-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
+![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.2.80-blue) ![Python](https://img.shields.io/badge/python-3.11+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
 ![AI Cost](https://img.shields.io/badge/AI%20Cost-$6.77-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-42.0h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
 
 - 🤖 **LLM usage:** $6.7749 (101 commits)
@@ -13,7 +13,7 @@ Generated on 2026-05-20 using [openrouter/qwen/qwen3-coder-next](https://openrou
 
 ---
 
-![PyPI](https://img.shields.io/badge/pypi-redeploy-blue) ![Version](https://img.shields.io/badge/version-0.2.79-blue) ![Python](https://img.shields.io/badge/python-3.10+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
+![PyPI](https://img.shields.io/badge/pypi-redeploy-blue) ![Version](https://img.shields.io/badge/version-0.2.80-blue) ![Python](https://img.shields.io/badge/python-3.11+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
 
 Infrastructure migration and device deploy toolkit — VPS, Raspberry Pi kiosk, Podman Quadlet, k3s.
 
@@ -80,6 +80,24 @@ redeploy run migration.yaml --detect
 # Or without --detect (faster, uses spec source as-is)
 redeploy run migration.yaml
 ```
+
+## Safe post-deploy verification
+
+Steps roll back completed actions on failure by default. A post-deploy check
+can fail the run without undoing an otherwise healthy deployment:
+
+```yaml
+extra_steps:
+  - id: smoke_after_commit
+    action: testql
+    query_source: tests/smoke.testql.toon.yaml
+    url: https://example.test
+    rollback_on_failure: false
+```
+
+`redeploy run SPEC --plan-only` evaluates lint and preflight locally without
+contacting the target or writing generated state. Use
+`--preflight-schema-out PATH` when a persisted planning artifact is required.
 
 ## Quick start — Raspberry Pi kiosk
 
