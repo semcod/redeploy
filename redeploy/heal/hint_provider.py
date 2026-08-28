@@ -176,6 +176,12 @@ def ask_llm(
             kwargs["api_key"] = api_key
         if api_base:
             kwargs["api_base"] = api_base
+            kwargs["extra_headers"] = {
+                "HTTP-Referer": os.getenv(
+                    "OPENROUTER_APP_URL", "https://github.com/semcod/redeploy"
+                ),
+                "X-OpenRouter-Title": os.getenv("OPENROUTER_APP_NAME", "redeploy"),
+            }
 
         # Suppress litellm stdout/stderr spam (Provider List, etc.)
         import contextlib
