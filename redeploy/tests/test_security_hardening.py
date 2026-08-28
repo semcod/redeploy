@@ -81,6 +81,13 @@ def test_exec_ssh_allows_override_for_trusted_environments(monkeypatch):
     from redeploy import mcp_server
 
     monkeypatch.setenv("REDEPLOY_MCP_ALLOW_UNSAFE_SSH", "1")
+    actor = "reviewer"
+    proposal = mcp_server.exec_ssh(
+        "pi@192.168.1.10",
+        "echo ok && whoami",
+        actor=actor,
+    )
+    monkeypatch.setenv("REDEPLOY_MCP_ALLOW_APPLY", "1")
 
     class Proc:
         returncode = 0
@@ -88,6 +95,12 @@ def test_exec_ssh_allows_override_for_trusted_environments(monkeypatch):
         stderr = ""
 
     with patch("redeploy.mcp_server.subprocess.run", return_value=Proc()):
-        result = mcp_server.exec_ssh("pi@192.168.1.10", "echo ok && whoami")
+        result = mcp_server.exec_ssh(
+            "pi@192.168.1.10",
+            "echo ok && whoami",
+            execute=True,
+            actor=actor,
+            approval_hash=proposal["approval_hash"],
+        )
 
     assert result["success"] is True

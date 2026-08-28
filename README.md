@@ -973,7 +973,9 @@ Language is auto-detected — Polish, English, or any language the model support
 
 redeploy exposes an [MCP (Model Context Protocol)](https://modelcontextprotocol.io) server,
 letting AI assistants (Claude Desktop, VS Code Copilot, custom agents) call redeploy operations
-as structured tools.
+as structured tools. Planning is enabled by default. Deployment, version, generated-command, and SSH
+mutations require the server-side capability `REDEPLOY_MCP_ALLOW_APPLY=1`, an
+`actor`, and the exact `approval_hash` returned for that operation.
 
 ### Start
 
