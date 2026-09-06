@@ -1233,3 +1233,4 @@ pytest
 | `examples` | Usage examples and code samples | [View](./examples) |
 
 <!-- code2docs:end -->
+- [Aktualizacja i kontrola zależności wewnętrznych](information/internal-dependencies.md)

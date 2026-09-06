@@ -74,7 +74,17 @@ def call_llm(instruction: str, schema: dict | None = None) -> dict:
 # Schema sanity (no LLM required)
 # ---------------------------------------------------------------------------
 
-def test_schema_discovers_c2004_specs():
+@pytest.fixture
+def schema_workspace(tmp_path, monkeypatch):
+    """Exercise discovery without relying on a developer's sibling checkout."""
+    target = tmp_path / "redeploy" / "pi109"
+    target.mkdir(parents=True)
+    (target / "migration.yaml").write_text("name: fixture-app\nversion: 1.0.0\n")
+    monkeypatch.setattr(__name__ + ".C2004_ROOT", tmp_path)
+    return tmp_path
+
+
+def test_schema_discovers_c2004_specs(schema_workspace):
     """Schema build must find pi109 specs in c2004."""
     schema = build_c2004_schema()
     assert "specs" in schema
@@ -83,7 +93,7 @@ def test_schema_discovers_c2004_specs():
     assert any("pi109" in p for p in paths), f"No pi109 spec found in schema: {paths}"
 
 
-def test_schema_has_command_catalogue():
+def test_schema_has_command_catalogue(schema_workspace):
     schema = build_c2004_schema()
     assert "commands" in schema
     assert "run" in schema["commands"]
@@ -91,13 +101,13 @@ def test_schema_has_command_catalogue():
     assert "import" in schema["commands"]
 
 
-def test_schema_has_version_and_cwd():
+def test_schema_has_version_and_cwd(schema_workspace):
     schema = build_c2004_schema()
     assert "version" in schema
-    assert "cwd" in schema
+    assert Path(schema["cwd"]) == schema_workspace
 
 
-def test_schema_has_iac_metadata():
+def test_schema_has_iac_metadata(schema_workspace):
     schema = build_c2004_schema()
     assert "iac" in schema
     assert "parsers" in schema["iac"]

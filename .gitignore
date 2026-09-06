@@ -92,3 +92,6 @@ apply-results.yaml
 
 # Environment variables
 .env
+
+# Linked development checkouts
+/worktrees/
