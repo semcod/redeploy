@@ -1,0 +1,803 @@
+"""Step action handlers for migration execution."""
+from __future__ import annotations
+
+import base64
+import json
+import os
+import shlex
+import subprocess
+import threading
+import time
+from pathlib import Path
+from typing import TYPE_CHECKING
+
+from loguru import logger
+
+from ..models import MigrationStep, StepAction, StepStatus
+from .exceptions import StepError
+
+if TYPE_CHECKING:
+    from ..detect.remote import RemoteProbe
+    from ..models import MigrationPlan
+    from .progress import ProgressEmitter
+
+
+def _format_step_output(stdout: str, stderr: str, max_chars: int = 8000) -> str:
+    out = str(stdout or "").strip()
+    err = str(stderr or "").strip()
+    chunks: list[str] = []
+    if out:
+        chunks.append("stdout:\n" + out)
+    if err:
+        chunks.append("stderr:\n" + err)
+    if not chunks:
+        return "ok"
+    joined = "\n\n".join(chunks)
+    return joined[:max_chars]
+
+
+def run_ssh(step: MigrationStep, probe: RemoteProbe) -> None:
+    """Execute SSH command on remote host."""
+    cmd = step.command
+    if not cmd:
+        raise StepError(step, "No command specified")
+    timeout = step.timeout or 300
+    r = probe.run(cmd, timeout=timeout)
+    step.result = _format_step_output(r.out, r.stderr)
+    if not r.ok:
+        raise StepError(step, f"exit={r.exit_code}: {_format_step_output(r.out, r.stderr, 400)}")
+    step.status = StepStatus.DONE
+
+
+def run_scp(step: MigrationStep, probe: RemoteProbe, plan: MigrationPlan) -> None:
+    """Copy file via SCP."""
+    if not step.src or not step.dst:
+        raise StepError(step, "scp requires src and dst")
+    if probe.is_local and Path(step.src).resolve() == Path(step.dst).resolve():
+        step.status = StepStatus.DONE
+        step.result = "skipped (same file)"
+        return
+    if probe.is_local:
+        Path(step.dst).parent.mkdir(parents=True, exist_ok=True)
+        cmd = ["cp", step.src, step.dst]
+    else:
+        _ensure_remote_parent_dir(probe, step.dst)
+        cmd = ["scp", "-o", "StrictHostKeyChecking=no",
+               step.src, f"{plan.host}:{step.dst}"]
+    result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+    if result.returncode != 0:
+        raise StepError(step, f"scp failed: {_format_step_output(result.stdout, result.stderr, 400)}")
+    step.status = StepStatus.DONE
+    step.result = _format_step_output(result.stdout, result.stderr)
+
+
+def run_rsync(step: MigrationStep, probe: RemoteProbe, plan: MigrationPlan) -> None:
+    """Sync files via rsync.
+
+    W trybie FROZEN (env ``REDEPLOY_FROZEN_COMMIT``, ustawiany przez
+    ``redeploy run --frozen-commit``) źródła względne trackowane w zamrożonym
+    commicie jadą z eksportu ``git archive`` zamiast żywego working tree —
+    inaczej kroki spec-a przemycają WIP mimo zamrożonego syncu projektu.
+    """
+    if not step.src or not step.dst:
+        raise StepError(step, "rsync requires src and dst")
+
+    src = step.src
+    frozen_note = ""
+    frozen_commit = os.environ.get("REDEPLOY_FROZEN_COMMIT", "").strip()
+    export_ctx = None
+    if frozen_commit:
+        import tempfile
+
+        from ..gitsync import GitSyncError, frozen_rsync_src
+
+        export_ctx = tempfile.TemporaryDirectory(prefix="redeploy-frozen-rsync-")
+        try:
+            src, frozen_note = frozen_rsync_src(
+                Path.cwd(), frozen_commit, step.src, Path(export_ctx.name)
+            )
+        except GitSyncError as exc:
+            export_ctx.cleanup()
+            raise StepError(step, f"frozen rsync src: {exc}") from exc
+        logger.info(f"  [{step.id}] {frozen_note}")
+
+    try:
+        if probe.is_local:
+            dst = step.dst
+            Path(dst).mkdir(parents=True, exist_ok=True)
+        else:
+            _ensure_remote_parent_dir(probe, step.dst)
+            dst = f"{plan.host}:{step.dst}"
+        cmd = [
+            "rsync",
+            "-az",
+            "--delete",
+            "--filter",
+            ":- .gitignore",
+            "--filter",
+            ":- .redeployignore",
+        ]
+        for exc in step.excludes:
+            cmd += ["--exclude", exc]
+        cmd += [src, dst]
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
+        if result.returncode != 0:
+            raise StepError(step, f"rsync failed: {_format_step_output(result.stdout, result.stderr, 400)}")
+        step.status = StepStatus.DONE
+        parts = [p for p in (frozen_note, _format_step_output(result.stdout, result.stderr)) if p]
+        step.result = "\n".join(parts)
+    finally:
+        if export_ctx is not None:
+            export_ctx.cleanup()
+
+
+def _ensure_remote_parent_dir(probe: RemoteProbe, remote_dst: str) -> None:
+    """Best-effort mkdir -p for remote transfer destinations."""
+    target = remote_dst.strip()
+    if not target:
+        return
+
+    mkdir_target = target if target.endswith("/") else os.path.dirname(target)
+    if not mkdir_target or mkdir_target == ".":
+        return
+
+    cmd = f"mkdir -p {shlex.quote(mkdir_target)}"
+    r = probe.run(cmd, timeout=30)
+    if not r.ok:
+        # Non-fatal here; scp/rsync call will still provide concrete error if needed.
+        logger.debug("mkdir preflight failed for {}: {}", remote_dst, (r.stderr or "")[:200])
+
+
+def run_docker_build(
+    step: MigrationStep,
+    probe: RemoteProbe,
+    emitter: ProgressEmitter | None,
+) -> None:
+    """Run docker compose build on remote with periodic progress polling."""
+    from .utils import run_container_build
+    run_container_build(step, probe, emitter, engine="docker")
+
+
+def run_podman_build(
+    step: MigrationStep,
+    probe: RemoteProbe,
+    emitter: ProgressEmitter | None,
+) -> None:
+    """Run podman build on remote with periodic progress polling."""
+    from .utils import run_container_build
+    run_container_build(step, probe, emitter, engine="podman")
+
+
+def run_docker_health_wait(
+    step: MigrationStep,
+    probe: RemoteProbe,
+) -> None:
+    """Wait until all containers reach 'healthy' or 'running' status."""
+    cmd = step.command  # should be: "cd <dir> && docker compose -f ... ps --format json"
+    if not cmd:
+        raise StepError(step, "No command specified for docker_health_wait")
+
+    timeout = step.timeout or 120
+    poll_interval = 8
+    elapsed = 0
+    last_status = ""
+
+    while elapsed < timeout:
+        r = probe.run(cmd, timeout=20)
+        if r.ok and r.out.strip():
+            statuses = _parse_container_statuses(r.out)
+            status_str = ", ".join(f"{n}:{s}" for n, s in statuses)
+
+            if status_str != last_status:
+                logger.info(f"    [{elapsed}s] containers: {status_str}")
+                last_status = status_str
+
+            if _all_containers_healthy(statuses):
+                step.status = StepStatus.DONE
+                step.result = f"all containers healthy after {elapsed}s: {status_str}"
+                logger.debug(f"    ✓ all containers healthy ({elapsed}s)")
+                return
+        else:
+            logger.debug(f"    [{elapsed}s] waiting for containers (no output yet)...")
+
+        time.sleep(poll_interval)
+        elapsed += poll_interval
+
+    # timeout — log final state and continue (don't fail hard, http_check will catch it)
+    step.status = StepStatus.DONE
+    step.result = f"timeout {timeout}s reached, last: {last_status or 'unknown'}"
+    logger.warning(f"    docker_health_wait timed out after {timeout}s — proceeding to health check")
+
+
+def _parse_container_statuses(output: str) -> list[tuple[str, str]]:
+    """Parse docker compose ps output into (name, status) tuples."""
+    lines = output.strip().splitlines()
+    statuses = []
+    for line in lines:
+        if line.startswith("NAME") or not line.strip():
+            continue
+        parts = line.split(None, 1)
+        name = parts[0] if parts else "?"
+        status = parts[1].strip() if len(parts) > 1 else "?"
+        statuses.append((name, status))
+    return statuses
+
+
+def _all_containers_healthy(statuses: list[tuple[str, str]]) -> bool:
+    """Check if all containers are in a healthy/running state."""
+    if not statuses:
+        return False
+    unhealthy = [
+        n for n, s in statuses
+        if not any(kw in s.lower() for kw in ("up", "running", "healthy"))
+    ]
+    return not unhealthy
+
+
+def run_container_log_tail(step: MigrationStep, probe: RemoteProbe) -> None:
+    """Fetch and log the last N lines from each container after start."""
+    cmd = step.command
+    if not cmd:
+        raise StepError(step, "No command specified for container_log_tail")
+
+    r = probe.run(cmd, timeout=30)
+    if r.ok and r.out.strip():
+        for line in r.out.strip().splitlines():
+            logger.debug(f"    log: {line}")
+        step.result = f"{len(r.out.splitlines())} log lines fetched"
+    else:
+        step.result = "no log output (containers may still be starting)"
+    step.status = StepStatus.DONE
+
+
+def run_http_check(
+    step: MigrationStep,
+    probe: RemoteProbe,
+    retries: int = 5,
+    delay: int = 8,
+) -> None:
+    """HTTP check via SSH curl on the remote host (avoids local network/firewall issues)."""
+    if not step.url:
+        raise StepError(step, "http_check requires url")
+    last_err = ""
+    for attempt in range(retries):
+        if step.expect:
+            cmd = f"curl -skf --max-time 10 '{step.url}' | grep -F '{step.expect}'"
+        else:
+            cmd = f"curl -skf --max-time 10 '{step.url}'"
+        r = probe.run(cmd, timeout=20)
+        if r.ok and (not step.expect or step.expect in r.out):
+            step.status = StepStatus.DONE
+            step.result = f"OK (expect='{step.expect}' found)" if step.expect else r.out[:200]
+            return
+        last_err = f"expected '{step.expect}' not found in: {r.out[:80]}" if r.ok else (r.stderr[:100] or f"curl exit={r.exit_code}")
+        logger.debug(f"    retry {attempt + 1}/{retries}: {last_err}")
+        time.sleep(delay)
+    raise StepError(step, f"HTTP check failed after {retries} retries: {last_err}")
+
+
+# ── Query-language post-deploy tests (testql / oql / aql) ─────────────────────
+# These run LOCALLY on the controller (where the interpreters live) and target
+# the freshly deployed host via `step.url`. Each supports an inline command
+# override via `step.command` with {url}/{source}/{mode}/{locale}/{context}
+# placeholders; otherwise a sensible default argv is built per language.
+
+def _run_local_query(step: MigrationStep, label: str, default_argv: list[str]) -> subprocess.CompletedProcess:
+    """Run a query-language runner locally; command-template override wins."""
+    timeout = step.timeout or 300
+    if step.command:
+        # Podmieniamy TYLKO znane placeholdery (nie .format() — literalne {}
+        # w komendzie, np. JSON, nie mogą być traktowane jako pola formatu).
+        cmd = step.command
+        for key, val in {
+            "url": step.url or "",
+            "source": step.query_source or "",
+            "mode": step.query_mode or "",
+            "locale": step.query_locale or "en",
+            "context": step.query_context or "",
+        }.items():
+            cmd = cmd.replace("{" + key + "}", val)
+        logger.info(f"{label}: {cmd}")
+        shell, argv = True, cmd
+    else:
+        argv = [a for a in default_argv if a != ""]
+        logger.info(f"{label}: {' '.join(shlex.quote(a) for a in argv)}")
+        shell = False
+    try:
+        return subprocess.run(argv, shell=shell, capture_output=True, text=True, timeout=timeout)
+    except FileNotFoundError:
+        raise StepError(step, f"{label}: runner not found on PATH — {default_argv[0]!r} (ustaw query_runner albo command)")
+    except subprocess.TimeoutExpired:
+        raise StepError(step, f"{label}: timeout po {timeout}s")
+
+
+def _query_output(r: subprocess.CompletedProcess) -> str:
+    return ((r.stdout or "") + ("\n" + r.stderr if r.stderr else "")).strip()
+
+
+def run_testql(step: MigrationStep, probe: RemoteProbe) -> None:
+    """TestQL smoke przeciw wdrożonemu hostowi: `testql run --url <url> <scenario>`."""
+    if not step.query_source and not step.command:
+        raise StepError(step, "testql wymaga query_source (plik .testql.toon.yaml) albo command")
+    runner = step.query_runner or "testql"
+    default_argv = [runner, "run"] + (["--url", step.url] if step.url else []) \
+        + list(step.flags or []) + ([step.query_source] if step.query_source else [])
+    r = _run_local_query(step, "testql", default_argv)
+    out = _query_output(r)
+    if r.returncode == 0 and (not step.expect or step.expect in out):
+        step.status = StepStatus.DONE
+        step.result = f"testql OK: {step.query_source or step.command}" + (f" (expect '{step.expect}')" if step.expect else "")
+        return
+    raise StepError(step, f"testql FAILED (rc={r.returncode}): {out[-500:]}")
+
+
+def run_oql(step: MigrationStep, probe: RemoteProbe) -> None:
+    """OQL scenariusz przeciw wdrożonemu runtime: `oqlctl <scen.oql> -m <mode> --json`.
+
+    Zwykle celuje w firmware (`--firmware-url <url>`). Werdykt z pola JSON `ok`;
+    fallback: kod wyjścia 0.
+    """
+    if not step.query_source and not step.command:
+        raise StepError(step, "oql wymaga query_source (plik .oql) albo command")
+    runner = step.query_runner or "oqlctl"
+    mode = step.query_mode or "execute"
+    default_argv = [runner, step.query_source or "", "-m", mode, "--json", "-q"] \
+        + (["--firmware-url", step.url] if step.url else []) + list(step.flags or [])
+    r = _run_local_query(step, "oql", default_argv)
+    out = _query_output(r)
+    verdict, detail = _parse_oql_verdict(r.stdout, r.returncode)
+    if verdict:
+        step.status = StepStatus.DONE
+        step.result = f"oql OK: {step.query_source or step.command} ({detail})"
+        return
+    raise StepError(step, f"oql FAILED ({detail}): {out[-500:]}")
+
+
+def _parse_oql_verdict(stdout: str, returncode: int) -> tuple[bool, str]:
+    """Zwróć (ok, opis) z JSON-a oqlctl (`ok`, `errors`); fallback na exit code."""
+    text = (stdout or "").strip()
+    for candidate in (text, text.splitlines()[-1] if text else ""):
+        try:
+            data = json.loads(candidate)
+        except (json.JSONDecodeError, ValueError):
+            continue
+        ok = bool(data.get("ok"))
+        errs = data.get("errors") or []
+        return ok, ("ok=true" if ok else f"ok=false errors={errs[:2]}")
+    return returncode == 0, f"exit={returncode} (brak JSON)"
+
+
+def run_aql(step: MigrationStep, probe: RemoteProbe) -> None:
+    """AQL model decyzyjny: rozwiąż i sprawdź werdykt (wariant/plan).
+
+    Domyślnie `aql <source> [locale]`; asercja: exit 0 i (jeśli podano) `expect`
+    w wyjściu (np. nazwa wariantu). Dla resolve z kontekstem ustaw `command`,
+    np. `node relcom/central-node/aql/resolve.mjs {source} {context}`.
+    """
+    if not step.query_source and not step.command:
+        raise StepError(step, "aql wymaga query_source (plik .aql) albo command")
+    runner = step.query_runner or "aql"
+    default_argv = [runner, step.query_source or ""] \
+        + ([step.query_context] if step.query_context else []) \
+        + ([step.query_locale] if step.query_locale else []) + list(step.flags or [])
+    r = _run_local_query(step, "aql", default_argv)
+    out = _query_output(r)
+    if r.returncode == 0 and (not step.expect or step.expect in out):
+        step.status = StepStatus.DONE
+        step.result = f"aql OK: {step.query_source or step.command}" + (f" (expect '{step.expect}')" if step.expect else "")
+        return
+    raise StepError(step, f"aql FAILED (rc={r.returncode}): {out[-500:]}")
+
+
+def run_version_check(step: MigrationStep, probe: RemoteProbe) -> None:
+    """Version check via SSH curl on the remote host."""
+    if not step.url or not step.expect:
+        raise StepError(step, "version_check requires url and expect")
+    cmd = f"curl -skf --max-time 10 '{step.url}'"
+    r = probe.run(cmd, timeout=20)
+    if not r.ok:
+        raise StepError(step, f"curl failed: {r.stderr[:100]}")
+    if step.expect not in r.out:
+        raise StepError(step, f"version '{step.expect}' not found in response: {r.out[:100]}")
+    step.status = StepStatus.DONE
+    step.result = f"version {step.expect} confirmed"
+
+
+def run_plugin(
+    step: MigrationStep,
+    probe: RemoteProbe,
+    plan: MigrationPlan,
+    emitter: ProgressEmitter | None,
+    dry_run: bool,
+) -> None:
+    """Dispatch to a registered plugin handler."""
+    from ..plugins import PluginContext, registry as _plugin_registry
+
+    plugin_type = step.plugin_type
+    if not plugin_type:
+        raise StepError(step, "plugin action requires plugin_type field")
+    handler = _plugin_registry.get(plugin_type)
+    if not handler:
+        available = ", ".join(_plugin_registry.names()) or "(none loaded)"
+        raise StepError(step, f"unknown plugin_type '{plugin_type}'. Available: {available}")
+    ctx = PluginContext(
+        step=step,
+        host=plan.host,
+        probe=probe,
+        emitter=emitter,
+        params=step.plugin_params,
+        dry_run=dry_run,
+    )
+    handler(ctx)
+
+
+def run_wait(step: MigrationStep) -> None:
+    """Wait for specified number of seconds."""
+    total = step.seconds
+    if total <= 0:
+        step.status = StepStatus.DONE
+        step.result = "waited 0s"
+        return
+    tick = min(10, max(5, total // 6))  # log every 5–10s
+    elapsed = 0
+    while elapsed < total:
+        chunk = min(tick, total - elapsed)
+        time.sleep(chunk)
+        elapsed += chunk
+        if elapsed < total:
+            logger.debug(f"    waiting... {elapsed}/{total}s")
+    step.status = StepStatus.DONE
+    step.result = f"waited {total}s"
+
+
+def run_inline_script(
+    step: MigrationStep,
+    probe: RemoteProbe,
+    plan: MigrationPlan,
+) -> None:
+    """Execute multiline bash script via SSH using base64 encoding."""
+    script = step.command
+
+    # If command_ref is set, extract script from markdown file
+    if step.command_ref:
+        script = _resolve_command_ref(step.command_ref, step, plan)
+
+    if not script:
+        raise StepError(step, "inline_script requires command field or command_ref with script content")
+
+    # Base64 encode the script to safely pass it through SSH
+    encoded = base64.b64encode(script.encode()).decode()
+    timeout = step.timeout or 300
+
+    # Create temp file, decode script, run it, then clean up
+    cmd = (
+        f"tmpfile=$(mktemp) && "
+        f"echo '{encoded}' | base64 -d > \"$tmpfile\" && "
+        f"chmod +x \"$tmpfile\" && "
+        f"\"$tmpfile\"; "
+        f"rc=$?; "
+        f"rm -f \"$tmpfile\"; "
+        f"exit $rc"
+    )
+
+    r = probe.run(cmd, timeout=timeout)
+    step.result = _format_step_output(r.out, r.stderr, 500) or "script executed"
+    if not r.ok:
+        raise StepError(
+            step,
+            f"script failed with exit={r.exit_code}: {_format_step_output(r.out, r.stderr, 800)}",
+        )
+    step.status = StepStatus.DONE
+
+
+def _resolve_command_ref(command_ref: str, step: MigrationStep, plan: MigrationPlan) -> str:
+    """Resolve command_ref to script content from markdown file.
+
+    command_ref formats:
+    - "./file.md#section-id" - script from section in specific file
+    - "#section-id" - script from section in current spec file
+    - "#kiosk-browser-configuration-script" - markpact:ref block
+    """
+    from ..markpact import resolve_script_ref
+
+    # Parse command_ref
+    if "#" in command_ref:
+        file_part, section_id = command_ref.split("#", 1)
+        file_path = file_part if file_part else getattr(plan, 'spec_path', None)
+    else:
+        section_id = command_ref
+        file_path = getattr(plan, 'spec_path', None)
+
+    if not file_path:
+        raise StepError(step, f"Cannot resolve command_ref '{command_ref}': no file path available")
+
+    file_path = Path(file_path)
+    if not file_path.exists():
+        raise StepError(step, f"Command ref file not found: {file_path}")
+
+    markdown_content = file_path.read_text(encoding="utf-8")
+    result = resolve_script_ref(markdown_content, section_id, language="bash")
+
+    if result is None:
+        raise StepError(
+            step,
+            f"Could not find bash script for ref '{section_id}' in {file_path} (tried markpact:ref and section heading)"
+        )
+    script, _ = result
+    return script
+
+
+# ── hardware-specific handlers ────────────────────────────────────────────────
+
+def run_ensure_config_line(step: MigrationStep, probe: "RemoteProbe") -> None:
+    """Idempotent add/replace a line in a remote config.txt."""
+    from ..hardware.config_txt import ensure_line
+
+    if not step.config_file or not step.config_line:
+        raise StepError(step, "ensure_config_line requires config_file and config_line")
+
+    config_path = step.config_file
+    r = probe.run(f"sudo cat {config_path}", timeout=10)
+    if not r.ok:
+        raise StepError(step, f"Cannot read {config_path}: {r.stderr[:200]}")
+
+    edit = ensure_line(
+        r.out,
+        step.config_line,
+        section=step.config_section or "all",
+        replaces_pattern=step.config_replaces_pattern,
+    )
+
+    if not edit.changed:
+        step.status = StepStatus.DONE
+        step.result = f"no-op: {edit.diff_summary}"
+        return
+
+    # Write atomically: base64-encode to avoid shell quoting issues
+    encoded = base64.b64encode(edit.new_content.encode()).decode()
+    tmp = f"/tmp/redeploy-cfg-{step.id}.txt"
+    write_r = probe.run(
+        f"echo '{encoded}' | base64 -d | sudo tee {tmp} > /dev/null && sudo mv {tmp} {config_path}",
+        timeout=15,
+    )
+    if not write_r.ok:
+        raise StepError(step, f"Cannot write {config_path}: {write_r.stderr[:200]}")
+
+    step.status = StepStatus.DONE
+    step.result = edit.diff_summary
+
+
+def run_raspi_config(step: MigrationStep, probe: "RemoteProbe") -> None:
+    """Run raspi-config nonint to enable/disable an interface."""
+    from ..hardware.raspi_config import build_raspi_config_command
+
+    if not step.raspi_interface or not step.raspi_state:
+        raise StepError(step, "raspi_config requires raspi_interface and raspi_state")
+
+    try:
+        cmd = build_raspi_config_command(step.raspi_interface, step.raspi_state)
+    except ValueError as exc:
+        raise StepError(step, str(exc))
+
+    r = probe.run(cmd, timeout=30)
+    if not r.ok:
+        raise StepError(step, f"raspi-config failed: {r.stderr[:200]}")
+
+    step.status = StepStatus.DONE
+    step.result = f"applied: {cmd}"
+
+
+# ── kiosk handlers ────────────────────────────────────────────────────────────
+
+def run_ensure_kanshi_profile(step: MigrationStep, probe: "RemoteProbe") -> None:
+    """Idempotently write or replace a named kanshi output profile.
+
+    Declarative mode (preferred)::
+
+        profile_name: waveshare-only
+        outputs_on: [DSI-2]
+        outputs_off: [HDMI-A-2]
+
+    Legacy mode (pre-rendered block)::
+
+        step.command   — the profile block to write (rendered kanshi syntax)
+        step.config_file — kanshi config path (default: ~/.config/kanshi/config)
+    """
+    from ..hardware.kiosk.output_profiles import OutputProfile
+
+    # Declarative mode: build profile from semantic fields
+    if step.profile_name:
+        profile = OutputProfile(
+            name=step.profile_name,
+            enabled=list(step.outputs_on),
+            disabled=list(step.outputs_off),
+        )
+        profile_block = profile.to_kanshi_config()
+    else:
+        profile_block = step.command
+
+    if not profile_block:
+        raise StepError(
+            step,
+            "ensure_kanshi_profile requires profile_name+outputs_on/outputs_off "
+            "or step.command with pre-rendered profile block",
+        )
+
+    config_path = step.config_file or "~/.config/kanshi/config"
+    mkdir_cmd = f"mkdir -p $(dirname {config_path})"
+    probe.run(mkdir_cmd, timeout=10)
+
+    r = probe.run(f"cat {config_path} 2>/dev/null || echo ''", timeout=10)
+    existing = r.out if r.ok else ""
+
+    # Extract profile name from block (first line: "profile <name> {")
+    first_line = profile_block.strip().splitlines()[0]
+    import re
+    m = re.match(r"profile\s+(\S+)\s*\{", first_line)
+    if not m:
+        raise StepError(step, f"Cannot parse profile name from block: {first_line!r}")
+    profile_name = m.group(1)
+
+    # Replace existing profile block or append
+    pattern = re.compile(
+        rf"^profile\s+{re.escape(profile_name)}\s*\{{[^}}]*\}}", re.MULTILINE | re.DOTALL
+    )
+    if pattern.search(existing):
+        if profile_block.strip() in existing:
+            step.status = StepStatus.DONE
+            step.result = f"no-op: profile '{profile_name}' already correct"
+            return
+        new_content = pattern.sub(profile_block.strip(), existing)
+        changed = True
+    else:
+        sep = "\n" if existing and not existing.endswith("\n") else ""
+        new_content = existing + sep + profile_block.strip() + "\n"
+        changed = True
+
+    encoded = base64.b64encode(new_content.encode()).decode()
+    tmp = f"/tmp/redeploy-kanshi-{step.id}.conf"
+    write_r = probe.run(
+        f"echo '{encoded}' | base64 -d | tee {tmp} > /dev/null && mv {tmp} {config_path}",
+        timeout=15,
+    )
+    if not write_r.ok:
+        raise StepError(step, f"Cannot write {config_path}: {write_r.stderr[:200]}")
+
+    # Reload kanshi if running
+    probe.run("pkill -SIGUSR1 kanshi 2>/dev/null || true", timeout=5)
+
+    step.status = StepStatus.DONE
+    step.result = f"profile '{profile_name}' written to {config_path}"
+
+
+def run_ensure_autostart_entry(step: MigrationStep, probe: "RemoteProbe") -> None:
+    """Idempotently add or replace keyed entries in a compositor autostart file.
+
+    Declarative mode (preferred)::
+
+        compositor: labwc
+        entries:
+          - "kanshid &"
+          - "sleep 3"
+          - "bash /home/pi/c2004/scripts/kiosk-launch.sh &"
+
+    Legacy mode (single entry)::
+
+        step.config_file — path to autostart file
+        step.config_line — the line to write (the entry body)
+        step.config_section — used as the entry key for idempotent marker
+    """
+    from ..hardware.kiosk.autostart import AutostartEntry, ensure_autostart_entry
+    from ..hardware.kiosk.compositors import COMPOSITORS
+
+    # Determine autostart path
+    config_file = step.config_file
+    if not config_file and step.compositor:
+        comp = COMPOSITORS.get(step.compositor)
+        if not comp:
+            raise StepError(step, f"Unknown compositor '{step.compositor}'")
+        config_file = comp.autostart_abs()
+    if not config_file:
+        raise StepError(step, "ensure_autostart_entry requires config_file or compositor")
+
+    # Collect entries to apply
+    entries: list[AutostartEntry] = []
+    if step.entries:
+        for i, line in enumerate(step.entries):
+            key = f"redeploy-{i}-{line.split()[0] if line else 'entry'}"
+            entries.append(AutostartEntry(key=key, line=line))
+    elif step.config_line:
+        key = step.config_section or "redeploy"
+        entries.append(AutostartEntry(key=key, line=step.config_line))
+
+    if not entries:
+        raise StepError(step, "ensure_autostart_entry requires entries or config_line")
+
+    r = probe.run(f"cat {config_file} 2>/dev/null || echo ''", timeout=10)
+    existing = r.out if r.ok else ""
+
+    changed_any = False
+    new_content = existing
+    for entry in entries:
+        new_content, changed = ensure_autostart_entry(new_content, entry)
+        if changed:
+            changed_any = True
+
+    if not changed_any:
+        step.status = StepStatus.DONE
+        step.result = f"no-op: {len(entries)} autostart entry(ies) already correct"
+        return
+
+    mkdir_cmd = f"mkdir -p $(dirname {config_file})"
+    probe.run(mkdir_cmd, timeout=10)
+
+    encoded = base64.b64encode(new_content.encode()).decode()
+    tmp = f"/tmp/redeploy-autostart-{step.id}.txt"
+    write_r = probe.run(
+        f"echo '{encoded}' | base64 -d | tee {tmp} > /dev/null && mv {tmp} {config_file}",
+        timeout=15,
+    )
+    if not write_r.ok:
+        raise StepError(step, f"Cannot write {config_file}: {write_r.stderr[:200]}")
+
+    step.status = StepStatus.DONE
+    step.result = f"{len(entries)} autostart entry(ies) written to {config_file}"
+
+
+def run_ensure_browser_kiosk_script(step: MigrationStep, probe: "RemoteProbe") -> None:
+    """Write a kiosk-launch.sh script to the remote device.
+
+    Declarative mode (preferred)::
+
+        browser_profile: chromium_wayland_kiosk
+        url: "http://localhost:8100/connect-id?font=xlarge&theme=dark"
+        kiosk_script_path: /home/pi/c2004/scripts/kiosk-launch.sh
+
+    Legacy mode (pre-rendered script)::
+
+        step.command   — the full script content to write
+        step.dst       — destination path (default: ~/kiosk-launch.sh)
+    """
+    from ..hardware.kiosk.browsers import CHROMIUM_WAYLAND_KIOSK
+
+    # Declarative mode: build script from profile + URL
+    if step.browser_profile:
+        # Registry lookup (extend when more profiles exist)
+        if step.browser_profile == "chromium_wayland_kiosk":
+            profile = CHROMIUM_WAYLAND_KIOSK
+        else:
+            raise StepError(step, f"Unknown browser_profile '{step.browser_profile}'")
+        if not step.url:
+            raise StepError(step, "browser_profile mode requires 'url' field")
+        script_content = profile.build_launch_cmd(step.url)
+    else:
+        script_content = step.command
+
+    if not script_content:
+        raise StepError(
+            step,
+            "ensure_browser_kiosk_script requires browser_profile+url "
+            "or step.command with pre-rendered script body",
+        )
+
+    dst = step.kiosk_script_path or step.dst or "~/kiosk-launch.sh"
+
+    r = probe.run(f"cat {dst} 2>/dev/null || echo ''", timeout=10)
+    existing = r.out if r.ok else ""
+    if existing.strip() == script_content.strip():
+        step.status = StepStatus.DONE
+        step.result = f"no-op: {dst} already correct"
+        return
+
+    encoded = base64.b64encode(script_content.encode()).decode()
+    tmp = f"/tmp/redeploy-kiosk-{step.id}.sh"
+    write_r = probe.run(
+        f"echo '{encoded}' | base64 -d | tee {tmp} > /dev/null"
+        f" && chmod +x {tmp} && mv {tmp} {dst}",
+        timeout=15,
+    )
+    if not write_r.ok:
+        raise StepError(step, f"Cannot write {dst}: {write_r.stderr[:200]}")
+
+    step.status = StepStatus.DONE
+    step.result = f"kiosk script written to {dst}"

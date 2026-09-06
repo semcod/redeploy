@@ -5,6 +5,7 @@ import textwrap
 from pathlib import Path
 from unittest.mock import patch
 import yaml
+import pytest
 from click.testing import CliRunner
 
 from redeploy.cli import cli
@@ -96,6 +97,12 @@ def _runner():
 
 
 class TestRunPlanOnly:
+    @pytest.fixture(autouse=True)
+    def isolated_project(self, tmp_path, monkeypatch):
+        """Provide only the local artifacts declared by these test specs."""
+        monkeypatch.chdir(tmp_path)
+        (tmp_path / ".env").write_text("TEST_MODE=1\n")
+
     def test_plan_only_exit_zero(self, tmp_path):
         spec = tmp_path / "migration.yaml"
         spec.write_text(_migration_yaml())

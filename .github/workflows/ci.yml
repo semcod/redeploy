@@ -5,29 +5,48 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     strategy:
+      fail-fast: false
       matrix:
         python-version: ["3.11", "3.12", "3.13"]
         use-op3: [0, 1]
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-
-      - name: Install dependencies
-        run: uv sync --frozen
-
-      - name: Run tests (REDEPLOY_USE_OP3=${{ matrix.use-op3 }})
+      - name: Check out immutable documentation standard
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: wellmanifest/docs
+          ref: ebe7501063ef4f3e63ded610c2d3183010ca636e # v0.1.1
+          path: .docs-standard
+          token: ${{ secrets.ORG_SYNC_PAT }}
+          persist-credentials: false
+      - name: Validate documentation placement
+        shell: bash
+        env:
+          DOCS_BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          args=(--root . --standard-revision ebe7501063ef4f3e63ded610c2d3183010ca636e)
+          if [[ -n "$DOCS_BASE" ]]; then args+=(--base "$DOCS_BASE"); fi
+          python .docs-standard/docs/standard/check.py "${args[@]}"
+      - run: python -m pip install uv
+      - name: Install locked test dependencies
+        run: uv sync --locked --extra dev --extra op3 --python "${{ matrix.python-version }}"
+      - name: Test supported Python versions
         env:
           REDEPLOY_USE_OP3: ${{ matrix.use-op3 }}
-        run: uv run pytest tests/ tests/contract/ tests/integration/ -v --tb=short
+        run: uv run --no-sync python -m pytest tests redeploy/tests -q
