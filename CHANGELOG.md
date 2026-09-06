@@ -12,18 +12,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Deprecate legacy `post_deploy` and `pre_deploy` fields in migration specs.
 - Keep backward compatibility: legacy `post_deploy`/`pre_deploy` are auto-converted to `hooks` during spec loading.
 
-## [0.2.80] - 2026-07-24
+## [0.2.80] - 2026-09-06
 
 ### Added
 - Add per-step `rollback_on_failure` control for post-deploy verification steps.
 - Keep required YAML runtime templates in built wheels.
 
 ### Fixed
+- Restore the accidentally emptied apply handlers module in published artifacts.
+- Restrict retry-safe Twine uploads to artifacts for the selected redeploy version.
 - Do not lint remote shell commands against binaries installed on the controller.
 - Resolve `insert_before` references against strategy-generated plan steps.
 - Make `--plan-only` skip remote preflight probes.
 
 ### Changed
+- Update internal dependencies and move Goal into the Python >=3.12 automation group.
 - Exclude the internal test suite from wheels.
 - Retain only the newest redeploy run logs by default.
 
