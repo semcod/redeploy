@@ -19,7 +19,6 @@ dependencies = [
     "rich>=13.0",
     "jmespath>=1.0",
     "costs>=0.2.0",
-    "pfix>=0.1.79",
 ]
 license = "Apache-2.0"
 
@@ -30,7 +29,6 @@ redeploy-mcp = "redeploy.mcp_server:serve"
 [project.optional-dependencies]
 dev = ["pytest>=8.0", "ruff>=0.4",
     "costs>=0.2.0",
-    "pfix>=0.1.79",
 ]
 op3 = ["op3>=0.1.8"]
 mcp = ["mcp>=1.0,<2"]
@@ -51,22 +49,6 @@ redeploy = ["**/*.yaml"]
 
 [tool.setuptools.exclude-package-data]
 redeploy = ["tests/*", "tests/**/*"]
-
-[tool.pfix]
-# Self-healing Python configuration
-model = "openrouter/qwen/qwen3-coder-next"
-auto_apply = true
-auto_install_deps = true
-auto_restart = false
-max_retries = 3
-create_backups = false
-git_auto_commit = false
-
-[tool.pfix.runtime_todo]
-enabled = true
-todo_file = "TODO.md"
-min_severity = "low"
-deduplicate = true
 
 [tool.costs]
 # AI Cost tracking configuration
