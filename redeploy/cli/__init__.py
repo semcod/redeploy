@@ -25,9 +25,16 @@ def _setup_logging(verbose: bool) -> None:
 @click.pass_context
 def cli(ctx, verbose):
     """redeploy — Infrastructure migration toolkit: detect → plan → apply"""
+    try:
+        from ..autoupdate import check_for_updates
+        check_for_updates("redeploy")
+    except Exception:
+        pass
+
     _setup_logging(verbose)
     ctx.ensure_object(dict)
     ctx.obj["verbose"] = verbose
+
 
 
 # Import all commands from submodules (not from package level)
